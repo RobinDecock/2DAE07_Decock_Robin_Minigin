@@ -1,0 +1,9 @@
+#pragma once
+#include "RigidbodyComponent.h"
+#include "Animator.h"
+#include "AnimatorState.h"
+#include "AnimatorBlackboard.h"
+#include "BoxCollider.h"
+#include "SpriteComponent.h"
+#include "TextureComponent.h"
+#include "TransformComponent.h"
