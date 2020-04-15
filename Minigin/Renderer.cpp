@@ -47,7 +47,7 @@ void Renderer::RenderTexture(const Texture2D& texture)
 	pivotOffset.y = int(pivot.y * dstRect.h);
 
 	dstRect.x -= pivotOffset.x;
-	dstRect.y += pivotOffset.y;
+	dstRect.y -= pivotOffset.y;
 
 	SDL_RenderCopyEx(m_Renderer, texture.GetSDLTexture(), &srcRect, &dstRect, texture.GetAngle(), &pivotOffset,
 	                 SDL_FLIP_NONE);

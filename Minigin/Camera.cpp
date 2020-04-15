@@ -7,15 +7,16 @@
 Camera::Camera()
 {
 	tag = "Camera";
+	windowSize = Minigin::m_WindSize;
+
+	//ONLY TESTING
+	ortho = { windowSize.x / 2,windowSize.y / 2 };
 }
 
 void Camera::Initialize()
 {
 	GameObject::Initialize();
-	windowSize = Minigin::m_WindSize;
 
-	//ONLY TESTING
-	ortho = windowSize;
 }
 
 void Camera::Draw()
@@ -48,8 +49,7 @@ glm::mat4 Camera::GetViewMatrix()const
 
 glm::mat4 Camera::GetProjectionMatrix()const
 {
-	glm::mat4 projection = glm::ortho(0.0f,(float) ortho.x,(float) ortho.y, 0.0f, -1.0f, 1.0f);//NES 256 x 240 
-	return projection;
+	return glm::ortho(0.0f,(float) ortho.x,0.0f, (float) ortho.y, -1.0f, 100.0f);//NES 256 x 240 
 }
 
 glm::vec2 Camera::ConvertToWorldSpace(glm::vec2 pos)

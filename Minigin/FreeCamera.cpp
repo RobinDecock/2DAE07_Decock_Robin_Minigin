@@ -37,8 +37,6 @@ void FreeCamera::Update(float elapsedSec)
 		m_Transform->Move({ 0, vel * elapsedSec });
 	}
 
-
-
 	if (InputManager::IsDown(SDL_SCANCODE_KP_PLUS))
 	{
 		m_Transform->SetScale(m_Transform->GetScale() + 10 * elapsedSec);

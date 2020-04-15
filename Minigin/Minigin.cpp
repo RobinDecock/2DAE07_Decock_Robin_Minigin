@@ -9,7 +9,7 @@
 #include "Settings.h"
 #include "Project.h"
 
-int2 Minigin::m_WindSize = int2(600, 800);;
+int2 Minigin::m_WindSize = int2(256*2, 224*2);;
 
 void Minigin::Initialize()
 {

@@ -117,16 +117,17 @@ void SpriteComponent::UpdateDestination2D()
 
 
 		glm::vec4 beginPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition(), 1.0f);
-		glm::vec4 endPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition() + glm::vec3(m_Texture->GetWidth() * scale.x, m_Texture->GetHeight() * scale.y, 0.0f), 1.0f);
+		glm::vec4 endPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition() + glm::vec3(m_TileSize.x* scale.x, m_TileSize.y* scale.y, 1.0f), 1.0f);
 
-		beginPos = cam->GetProjectionMatrix() * cam->GetViewMatrix() * beginPos;
-		endPos = cam->GetProjectionMatrix() * cam->GetViewMatrix()*endPos;
+		glm::mat4 viewProj = cam->GetProjectionMatrix() * cam->GetViewMatrix() ;
+		beginPos = viewProj * beginPos;
+		endPos = viewProj * endPos;
 
 		float width = endPos.x - beginPos.x;
 		float height = endPos.y - beginPos.y;
 
 		m_Texture->SetDestRect({ (int)beginPos.x,(int)beginPos.y,(int)width ,(int)height });
-		m_Texture->SetAngle(m_pGameObject->GetTransform()->GetRotation());
+		//m_Texture->SetAngle(m_pGameObject->GetTransform()->GetRotation());
 	}
 	else
 	{

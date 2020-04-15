@@ -28,21 +28,36 @@ void TextureComponent::Update(float elapsedSec)
 	
 	Camera* cam = m_pGameObject->GetScene()->GetCamera();
 	glm::vec2 scale = m_pGameObject->GetTransform()->GetScale();
+	if (cam != nullptr)
+	{
 
 
 
-	glm::vec4 beginPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition(),1.0f);
-	glm::vec4 endPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition()+glm::vec3(m_Texture->GetWidth() * scale.x, m_Texture->GetHeight() * scale.y,0.0f),1.0f);
 
-	glm::mat4 projView = cam->GetProjectionMatrix() * cam->GetViewMatrix();
+		glm::vec4 beginPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition(), 1.0f);
 
-	beginPos = projView * beginPos;
-	endPos = projView * endPos;
 
-	float width = endPos.x - beginPos.y;
-	float height = endPos.y - beginPos.y;
+		glm::vec3 end = m_pGameObject->GetTransform()->GetPosition() + glm::vec3(m_Texture->GetWidth() * scale.x, m_Texture->GetHeight() * scale.y, 0.0f);
+		glm::vec4 endPos = glm::vec4(end, 1.0f);
 
-	SetDestinationRectangle({ (int)beginPos.x,(int)beginPos.y,(int)width ,(int)height});
+		glm::mat4 viewProj = cam->GetViewMatrix() ;
+
+		beginPos = viewProj *beginPos;
+		
+		endPos = viewProj * endPos;
+
+		float width = endPos.x-beginPos.x;
+		float height = endPos.y - beginPos.y;
+
+		m_Texture->SetDestRect({ (int)beginPos.x,(int)beginPos.y,(int)width ,(int)height });
+		m_Texture->SetAngle(m_pGameObject->GetTransform()->GetRotation());
+	}
+	else
+	{
+		//TODO CHECK IF NOT WRONG
+		//m_Texture->SetDestRect({ m_pGameObject->GetTransform()->GetPosition(),m_Texture->GetWidth() * scale.x, m_Texture->GetHeight() * scale.y });
+		m_Texture->SetAngle(m_pGameObject->GetTransform()->GetRotation());
+	}
 }
 
 void TextureComponent::SetSourceRectangle(SDL_Rect rect)
