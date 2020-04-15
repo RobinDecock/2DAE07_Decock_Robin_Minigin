@@ -58,12 +58,12 @@ public:
 
 protected:
 
-	//* Virtual Function *//
-	virtual void Initialize();
-	virtual void Update(float elapsedSec);
-	virtual void LateUpdate(float elapsedSec);
-	virtual void Draw();
-	//*                  *//
+	void RootInitialize();
+	void RootUpdate(float elapsedSec);
+	void RootLateUpdate(float elapsedSec);
+	void RootDraw();
+	
+
 
 
 	std::vector<std::shared_ptr<BaseComponent>> m_pComponents;
@@ -75,4 +75,14 @@ protected:
 	bool isInitialized = false;
 	int id = 0;
 	bool m_Visibility = true;
+
+private:
+	//* Virtual Function *//
+	virtual void Initialize() {}
+	virtual void Update(float elapsedSec);
+	virtual void LateUpdate(float elapsedSec);
+	virtual void Draw(){}
+	//*                  *//
+
+	
 };

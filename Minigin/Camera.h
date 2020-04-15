@@ -15,7 +15,7 @@ public:
 	glm::vec2 ConvertToScreenSpace(glm::vec2 pos);
 	void SetOrthoSize(int2 size) { ortho = size; }
 	int2 GetOrthoSize() { return ortho; }
-private:
+protected:
 	glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	int2 ortho = int2(256, 240);

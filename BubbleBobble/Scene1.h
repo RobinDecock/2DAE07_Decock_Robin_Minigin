@@ -2,7 +2,6 @@
 #include "GameScene.h"
 
 class Bub;
-
 class Scene1 final:
 	public GameScene
 {
@@ -14,7 +13,9 @@ protected:
 	void Initialize() override;
 	void Draw() const override;
 	void Update(float elapsedSec) override;
+
 private:
+
 	Bub* m_pBub = nullptr;
 };
 

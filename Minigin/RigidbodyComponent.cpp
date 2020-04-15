@@ -3,15 +3,12 @@
 #include "TransformComponent.h"
 #include "GameObject.h"
 #include "GameScene.h"
-
-
-
-
 #include "Utils.h"
 
 RigidbodyComponent::RigidbodyComponent(bool isStatic)
 {
 	bodyDef.type = isStatic ? b2_staticBody : b2_dynamicBody;
+	bodyDef.userData = m_pGameObject;
 }
 
 void RigidbodyComponent::Initialize()

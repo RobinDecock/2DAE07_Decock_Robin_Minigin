@@ -76,3 +76,15 @@ static std::map<Direction, int2> DirectionMap
 	{Direction::Up, int2(0, -1)},
 	{Direction::Down, int2(0, 1)},
 };
+
+struct Color
+{
+	Color(char vr, char vg, char vb, char va) : r(vr), g(vg), b(vb), a(va)
+	{
+	}
+
+	char r;
+	char g;
+	char b;
+	char a;
+};

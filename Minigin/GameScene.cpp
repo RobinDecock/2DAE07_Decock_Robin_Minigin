@@ -23,7 +23,7 @@ void GameScene::RootInitialize()
 	{
 		m_pActiveCam = new Camera();
 	}
-	
+	m_IsInitialized = true;
 }
 
 void GameScene::RootDraw()
@@ -70,6 +70,16 @@ GameScene::~GameScene()
 	m_pGameObjects.clear();
 }
 
+void GameScene::SetCamera(Camera* cam)
+{
+	if(m_pActiveCam!=nullptr)
+	{
+		Remove(m_pActiveCam, true);
+	}
+	m_pActiveCam = cam;
+	Add(m_pActiveCam);
+}
+
 
 void GameScene::Add(GameObject* obj)
 {
@@ -77,8 +87,11 @@ void GameScene::Add(GameObject* obj)
 	obj->SetId(idCount);
 	idCount += 1;
 	obj->m_ParentScene = this;
-	obj->Initialize();
 
+	if(m_IsInitialized)
+	{
+		obj->Initialize();
+	}
 	//DEPRECATED SORT
 	//auto lambda = [](GameObject* obj1, GameObject* obj2) {return obj1->GetTransform()->GetPosition().z < obj2->GetTransform()->GetPosition().z; };
 	//std::sort(m_pGameObjects.begin(), m_pGameObjects.end(), lambda);
@@ -99,5 +112,10 @@ void GameScene::Remove(GameObject* obj, bool deleteObj)
 			}
 			return;
 		}
+	}
+	if (deleteObj)
+	{
+		delete obj;
+		obj = nullptr;
 	}
 }

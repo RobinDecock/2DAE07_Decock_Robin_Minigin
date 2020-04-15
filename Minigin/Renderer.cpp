@@ -15,6 +15,7 @@ void Renderer::Init(SDL_Window* window)
 
 void Renderer::Clear()
 {
+	SDL_SetRenderDrawColor(m_Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(m_Renderer);
 }
 

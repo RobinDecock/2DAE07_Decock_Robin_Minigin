@@ -12,9 +12,9 @@ GameObject::GameObject()
 	AddComponent(m_Transform);
 }
 
-
-void GameObject::Initialize()
+void GameObject::RootInitialize()
 {
+	Initialize();
 	for (auto comp : m_pComponents)
 	{
 		comp->Initialize();
@@ -30,9 +30,9 @@ void GameObject::Initialize()
 	isInitialized = true;
 }
 
-
-void GameObject::Update(float elapsedSec)
+void GameObject::RootUpdate(float elapsedSec)
 {
+	Update(elapsedSec);
 	for (auto child : m_pChildren)
 	{
 		child->Update(elapsedSec);
@@ -45,8 +45,9 @@ void GameObject::Update(float elapsedSec)
 	}
 }
 
-void GameObject::LateUpdate(float elapsedSec)
+void GameObject::RootLateUpdate(float elapsedSec)
 {
+	LateUpdate(elapsedSec);
 	for (auto comp : m_pComponents)
 	{
 		comp->LateUpdate(elapsedSec);
@@ -57,8 +58,11 @@ void GameObject::LateUpdate(float elapsedSec)
 	}
 }
 
-void GameObject::Draw()
+
+
+void GameObject::RootDraw()
 {
+	Draw();
 	for (auto comp : m_pComponents)
 	{
 		comp->PreDraw();
@@ -71,6 +75,16 @@ void GameObject::Draw()
 	{
 		child->Draw();
 	}
+}
+
+void GameObject::Update(float elapsedSec)
+{
+	UNREF(elapsedSec);
+}
+
+void GameObject::LateUpdate(float elapsedSec)
+{
+	UNREF(elapsedSec); 
 }
 
 void GameObject::SetPosition(glm::vec2 pos)
@@ -189,6 +203,8 @@ GameObject* GameObject::GetParent()
 {
 	return m_ParentObj;
 }
+
+
 
 void GameObject::AddChild(GameObject* child)
 {

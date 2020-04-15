@@ -6,6 +6,8 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include <SDL.h>
+
+#include "DebugRenderer.h"
 #include "Settings.h"
 #include "Project.h"
 
@@ -62,21 +64,15 @@ void Minigin::Run()
 			Renderer::Clear();
 
 
-
+			//DRAW ORIGIN
+			DebugRenderer::DrawLine({ 0,0 }, { 1000,0 }, { '\xFF',0x0,0x00,0x0 });
+			DebugRenderer::DrawLine({ 0,0 }, { 0,1000 }, { 0x0,'\xFF'	,0x0,0x0 });
 			
 			m_pProject->Update(m_elapsedSec);
 			m_pProject->Draw();
 
-
-			//DRAW ORIGIN
-			SDL_SetRenderDrawColor(Renderer::GetSDLRenderer(), 1, 0, 0, SDL_ALPHA_OPAQUE);
-			if (SDL_RenderDrawLine(Renderer::GetSDLRenderer(), 100, 100, 100000, 100) != 0)
-			{
-				std::cout << SDL_GetError() << std::endl;
-			}
-			SDL_SetRenderDrawColor(Renderer::GetSDLRenderer(), 0, 1, 0, SDL_ALPHA_OPAQUE);
-			SDL_RenderDrawLine(Renderer::GetSDLRenderer(), 100, 100, 100, 100000);
-
+			
+		
 		
 			Renderer::Render();
 

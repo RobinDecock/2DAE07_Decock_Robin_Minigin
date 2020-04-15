@@ -217,6 +217,8 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClInclude Include="ColliderComponent.h" />
     <ClInclude Include="b2DebugDraw .h" />
     <ClInclude Include="Components.h" />
+    <ClInclude Include="DebugRenderer.h" />
+    <ClInclude Include="FixedCamera.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="FreeCamera.h" />
     <ClInclude Include="GameObject.h" />
@@ -253,6 +255,8 @@ xcopy "$(SolutionDir)3rdParty\SDL2_ttf\lib\x64\*.dll" "$(OutputPath)" /R /Y</Com
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ColliderComponent.cpp" />
     <ClCompile Include="b2DebugDraw .cpp" />
+    <ClCompile Include="DebugRenderer.cpp" />
+    <ClCompile Include="FixedCamera.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="GameObject.cpp" />

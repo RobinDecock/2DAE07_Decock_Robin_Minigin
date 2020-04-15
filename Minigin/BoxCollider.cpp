@@ -7,7 +7,7 @@ BoxCollider::BoxCollider(glm::vec2 widthHeight, LayerMask mask, LayerMask collid
 	UNREFERENCED_PARAMETER(mask);
 	UNREFERENCED_PARAMETER(collideWith);
 	m_Shape = new b2PolygonShape();
-	m_Shape->SetAsBox(widthHeight.x, widthHeight.y);
+	m_Shape->SetAsBox(widthHeight.x/2.0f, widthHeight.y/2.0f);
 }
 
 void BoxCollider::Initialize()

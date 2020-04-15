@@ -11,13 +11,11 @@ void FreeCamera::OnTrigger(BoxCollider* col, BoxCollider* other)
 
 void FreeCamera::Initialize()
 {
-	GameObject::Initialize();
+
 }
 
 void FreeCamera::Update(float elapsedSec)
 {
-	GameObject::Update(elapsedSec);
-
 	float vel = 200;
 	
 	if(InputManager::IsDown(SDL_SCANCODE_LEFT))
@@ -30,20 +28,20 @@ void FreeCamera::Update(float elapsedSec)
 	}
 	if (InputManager::IsDown(SDL_SCANCODE_UP))
 	{	
-		m_Transform->Move({ 0,-vel * elapsedSec });
+		m_Transform->Move({ 0,vel * elapsedSec });
 	}
 	if (InputManager::IsDown(SDL_SCANCODE_DOWN))
 	{
-		m_Transform->Move({ 0, vel * elapsedSec });
+		m_Transform->Move({ 0, -vel * elapsedSec });
 	}
 
 	if (InputManager::IsDown(SDL_SCANCODE_KP_PLUS))
 	{
-		m_Transform->SetScale(m_Transform->GetScale() + 10 * elapsedSec);
+		m_Transform->SetScale(m_Transform->GetScale() + 5 * elapsedSec);
 	}
 	if (InputManager::IsDown(SDL_SCANCODE_KP_MINUS))
 	{
-		m_Transform->SetScale(m_Transform->GetScale() - 10 * elapsedSec);
+		m_Transform->SetScale(m_Transform->GetScale() - 5 * elapsedSec);
 	}
 	
 }
@@ -55,7 +53,7 @@ void FreeCamera::LateUpdate(float elapsedSec)
 
 void FreeCamera::Draw()
 {
-	GameObject::Draw();
+
 }
 
 FreeCamera::~FreeCamera()

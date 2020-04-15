@@ -1,9 +1,13 @@
 #include "MiniginPCH.h"
 #include "Camera.h"
 
+
+#include "DebugRenderer.h"
 #include "Minigin.h"
 #include "TransformComponent.h"
 #include "GLMC.h"
+#include "GameScene.h"
+#include "b2DebugDraw .h"
 Camera::Camera()
 {
 	tag = "Camera";
@@ -11,17 +15,19 @@ Camera::Camera()
 
 	//ONLY TESTING
 	ortho = { windowSize.x / 2,windowSize.y / 2 };
+
+	DebugRenderer::SetCamera(this);
 }
 
 void Camera::Initialize()
 {
-	GameObject::Initialize();
+
 
 }
 
 void Camera::Draw()
 {
-	GameObject::Draw();
+
 	//ImGui::Begin("Camera");
 	//ImGui::Text(("Scale: "+std::to_string(m_Transform->GetScale().x)).c_str());
 	//ImGui::Text(("Position: " + std::to_string(m_Transform->Get2DPosition().x)).c_str());
