@@ -138,6 +138,9 @@
     <ClInclude Include="FixedCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="InputDefinitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RigidbodyComponent.cpp">
@@ -225,6 +228,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FixedCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -36,8 +36,6 @@ private:
 		OnGround,
 		IsBurping
 	};
-
-
-	
+	bool isRight = true;
 };
 

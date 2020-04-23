@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "GameObject.h"
 #include "Camera.h"
+#include "DebugRenderer.h"
 #include "Renderer.h"
 GameScene::GameScene()
 {
@@ -15,7 +16,7 @@ void GameScene::RootInitialize()
 
 	for (GameObject* obj : m_pGameObjects)
 	{
-		obj->Initialize();
+		obj->RootInitialize();
 	}
 
 
@@ -28,23 +29,38 @@ void GameScene::RootInitialize()
 
 void GameScene::RootDraw()
 {
-
-
-
-
-
+	//DRAW ORIGIN
+	DebugRenderer::DrawLine({ 0,0 }, { 1000,0 }, { '\xFF',0x0,0x00,0x0 });
+	DebugRenderer::DrawLine({ 0,0 }, { 0,1000 }, { 0x0,'\xFF'	,0x0,0x0 });
 	
 	Draw();
 	
 	for (GameObject* obj : m_pGameObjects)
 	{
-		obj->Draw();
+		obj->RootDraw();
 	}
+
+	if (m_pColWorld != nullptr)
+	{
+		m_pColWorld->DrawDebugData();
+	}
+
 }
 
 void GameScene::RootUpdate(float elapsedSec)
 {
+	if(m_pActiveCam!=nullptr)
+	{
+		m_pActiveCam->Update(elapsedSec);
+	}
+	if(m_pColWorld!=nullptr)
+	{
+		m_pColWorld->Step(elapsedSec, 1, 1);
+	}
+
+	
 	Update(elapsedSec);
+
 	for (size_t i = 0; i < m_pGameObjects.size(); i++)
 	{
 		if (m_pGameObjects[i] == nullptr)
@@ -52,12 +68,7 @@ void GameScene::RootUpdate(float elapsedSec)
 			m_pGameObjects.erase(m_pGameObjects.begin() + i);
 			i -= 1;
 		}
-		m_pGameObjects[i]->Update(elapsedSec);
-	}
-
-	for (size_t i = 0; i < m_pGameObjects.size(); i++)
-	{
-		m_pGameObjects[i]->LateUpdate(elapsedSec);
+		m_pGameObjects[i]->RootUpdate(elapsedSec);
 	}
 }
 
@@ -77,7 +88,6 @@ void GameScene::SetCamera(Camera* cam)
 		Remove(m_pActiveCam, true);
 	}
 	m_pActiveCam = cam;
-	Add(m_pActiveCam);
 }
 
 

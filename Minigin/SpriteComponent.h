@@ -41,6 +41,7 @@ public:
 	////HELPER GET FUNCTIONS
 	int2 GetState() const;
 	int GetCycle() { return m_Cycle; }
+	void SetFlip(bool flip) { m_Texture->SetFlip(flip); }
 private:
 	void UpdateSource2D();
 	void UpdateDestination2D();

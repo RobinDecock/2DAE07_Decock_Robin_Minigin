@@ -21,8 +21,6 @@ Camera::Camera()
 
 void Camera::Initialize()
 {
-
-
 }
 
 void Camera::Draw()

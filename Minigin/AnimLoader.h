@@ -25,12 +25,20 @@
 #include <string>
 #include <map>
 #include <fstream>
-
-static class AnimLoader
+#include "GeneralStructs.h"
+class AnimLoader
 {
 public:
+	
 	static std::map<int, AnimData> Load(std::string filePath)
 	{
+
+		std::map<std::string, std::map<int, AnimData>>::iterator it = AnimTexMap.find(filePath);
+		if(it!=AnimTexMap.end())
+		{
+			return AnimTexMap[filePath];
+		}
+		
 		int index = 0;
 		std::map<int, AnimData> animMap;
 		std::ifstream inputStream(filePath.c_str());
@@ -48,7 +56,7 @@ public:
 		while (!inputStream.eof())
 		{
 			animMap.insert(std::pair<int, AnimData>(index, AnimData()));
-			int endName = line.find(">");
+			size_t endName = line.find(">");
 			if (endName == -1)
 			{
 				//Logger::LogWarning("[Animation File: Invalid Format]");
@@ -72,25 +80,28 @@ public:
 		}
 		
 		inputStream.close();
+
+		AnimTexMap.insert(std::pair<std::string,std::map<int,AnimData>>(filePath, animMap));
 		return animMap;
 	}
 private:
+	static std::map < std::string, std::map<int, AnimData>> AnimTexMap;
 	static int4 GetVec4FromLine(std::string paramName, std::string line)
 	{
-		int paramBegin = line.find(paramName) + paramName.size() + 2;
-		int commaPos1 = line.find(",", paramBegin);
+		size_t paramBegin = line.find(paramName) + paramName.size() + 2;
+		size_t commaPos1 = line.find(",", paramBegin);
 		std::string param = line.substr(paramBegin, commaPos1 - paramBegin);
 		int value1 = std::stoi(param);
 
-		int commaPos2 = line.find(",", commaPos1 + 1);
+		size_t commaPos2 = line.find(",", commaPos1 + 1);
 		param = line.substr(commaPos1 + 1, commaPos2 - commaPos1);
 		int value2 = std::stoi(param);
 
-		int commaPos3 = line.find(",", commaPos2 + 1);
+		size_t commaPos3 = line.find(",", commaPos2 + 1);
 		param = line.substr(commaPos2 + 1, commaPos3 - commaPos2);
 		int value3 = std::stoi(param);
 
-		int commaPos4 = line.find("\"", commaPos3) - 1;
+		size_t commaPos4 = line.find("\"", commaPos3) - 1;
 		param = line.substr(commaPos3 + 1, commaPos4 - commaPos3);
 		int value4 = std::stoi(param);
 
@@ -100,15 +111,16 @@ private:
 
 	static int2 GetVec2FromLine(std::string paramName, std::string line)
 	{
-		int paramBegin = line.find(paramName) + paramName.size() + 2;
-		int commaPos1 = line.find(",", paramBegin);
+		size_t paramBegin = line.find(paramName) + paramName.size() + 2;
+		size_t commaPos1 = line.find(",", paramBegin);
 		std::string param = line.substr(paramBegin, commaPos1 - paramBegin);
 		int value1 = std::stoi(param);
 
-		int commaPos2 = line.find("\"", commaPos1 + 1) - 1;
+		size_t commaPos2 = line.find("\"", commaPos1 + 1) - 1;
 		param = line.substr(commaPos1 + 1, commaPos2 - commaPos1);
 		int value2 = std::stoi(param);
 
 		return int2(value1, value2);
 	}
 };
+

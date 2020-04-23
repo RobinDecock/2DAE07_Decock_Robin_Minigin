@@ -6,8 +6,6 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include <SDL.h>
-
-#include "DebugRenderer.h"
 #include "Settings.h"
 #include "Project.h"
 
@@ -52,28 +50,43 @@ void Minigin::Cleanup()
 void Minigin::Run()
 {
 	Initialize();
+
 	m_pProject->Initialize();
 	{
-		InputManager::Initialize();
+
+		SDL_Event evt;
 		bool doContinue = true;
+		bool doOnce = true;
 		while (doContinue)
 		{
+			while (SDL_PollEvent(&evt))
+			{
+				switch (evt.type)
+				{
+				case SDL_QUIT:  doContinue = false;   break;
+				}
+			}
+
+
+			if(doOnce)
+			{
+				InputManager::GetInstance()->Initialize();
+				doOnce = false;
+			}
+
+			
 			auto loopStart = std::chrono::high_resolution_clock::now();
-			InputManager::ProcessInput();
+			InputManager::GetInstance()->Update();
 
 			Renderer::Clear();
 
 
-			//DRAW ORIGIN
-			DebugRenderer::DrawLine({ 0,0 }, { 1000,0 }, { '\xFF',0x0,0x00,0x0 });
-			DebugRenderer::DrawLine({ 0,0 }, { 0,1000 }, { 0x0,'\xFF'	,0x0,0x0 });
+
 			
 			m_pProject->Update(m_elapsedSec);
 			m_pProject->Draw();
 
 			
-		
-		
 			Renderer::Render();
 
 			//std::this_thread::sleep_until(loopStart+ std::chrono::milliseconds(5));

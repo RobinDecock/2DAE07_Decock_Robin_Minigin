@@ -11,39 +11,48 @@ void FreeCamera::OnTrigger(BoxCollider* col, BoxCollider* other)
 
 void FreeCamera::Initialize()
 {
-
 }
 
 void FreeCamera::Update(float elapsedSec)
 {
 	float vel = 200;
+	InputManager *  input = InputManager::GetInstance();
+
+	if(input->IsKeyPressed(KEY_R))
+	{
+		m_IsLocked = !m_IsLocked;
+	}
+
+	if (m_IsLocked) 
+	{
+		return;
+	}
 	
-	if(InputManager::IsDown(SDL_SCANCODE_LEFT))
+	if(input->IsKeyDown(KEY_LEFT))
 	{
 		m_Transform->Move({ -vel * elapsedSec,0 });
 	}
-	if (InputManager::IsDown(SDL_SCANCODE_RIGHT))
+	if (input->IsKeyDown(KEY_RIGHT))
 	{
 		m_Transform->Move({ vel * elapsedSec,0 });
 	}
-	if (InputManager::IsDown(SDL_SCANCODE_UP))
+	if (input->IsKeyDown(KEY_UP))
 	{	
 		m_Transform->Move({ 0,vel * elapsedSec });
 	}
-	if (InputManager::IsDown(SDL_SCANCODE_DOWN))
+	if (input->IsKeyDown(KEY_DOWN))
 	{
 		m_Transform->Move({ 0, -vel * elapsedSec });
 	}
 
-	if (InputManager::IsDown(SDL_SCANCODE_KP_PLUS))
+	if (input->IsKeyDown(KEY_KEYPAD_PLUS))
 	{
 		m_Transform->SetScale(m_Transform->GetScale() + 5 * elapsedSec);
 	}
-	if (InputManager::IsDown(SDL_SCANCODE_KP_MINUS))
+	if (input->IsKeyDown(KEY_KEYPAD_MINUS))
 	{
 		m_Transform->SetScale(m_Transform->GetScale() - 5 * elapsedSec);
 	}
-	
 }
 
 void FreeCamera::LateUpdate(float elapsedSec)

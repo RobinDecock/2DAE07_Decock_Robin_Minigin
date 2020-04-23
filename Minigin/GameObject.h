@@ -62,7 +62,6 @@ protected:
 	void RootUpdate(float elapsedSec);
 	void RootLateUpdate(float elapsedSec);
 	void RootDraw();
-	
 
 
 

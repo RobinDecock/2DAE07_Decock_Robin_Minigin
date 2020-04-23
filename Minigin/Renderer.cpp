@@ -15,7 +15,7 @@ void Renderer::Init(SDL_Window* window)
 
 void Renderer::Clear()
 {
-	SDL_SetRenderDrawColor(m_Renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(m_Renderer, 0, 0,2, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(m_Renderer);
 }
 
@@ -51,7 +51,7 @@ void Renderer::RenderTexture(const Texture2D& texture)
 	dstRect.y -= pivotOffset.y;
 
 	SDL_RenderCopyEx(m_Renderer, texture.GetSDLTexture(), &srcRect, &dstRect, texture.GetAngle(), &pivotOffset,
-	                 SDL_FLIP_NONE);
+	                 texture.GetFlipped()?SDL_FLIP_HORIZONTAL:SDL_FLIP_NONE);
 }
 
 void Renderer::RenderTexture(const Texture2D& texture, const float x, const float y)

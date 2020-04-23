@@ -180,12 +180,16 @@
     <ClInclude Include="BubbleBobble.h" />
     <ClInclude Include="ColBlock.h" />
     <ClInclude Include="ProjectPCH.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Scene1.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Minigin\Minigin.vcxproj">
       <Project>{41b0ec47-d48c-4b0f-951b-d98595ffae0a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BubbleBobble.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

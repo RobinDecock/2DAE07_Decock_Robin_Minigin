@@ -1,4 +1,6 @@
 #pragma once
+#include <map>
+
 #include "Singleton.h"
 #include "Texture2D.h"
 #include <string>
@@ -14,6 +16,9 @@ public:
 
 	void Init(std::string&& data);
 
-	Texture2D* LoadTexture(const std::string& file);
+	SDL_Texture* LoadTexture(const std::string& file);
 	std::shared_ptr<Font> LoadFont(const std::string& file, unsigned int size);
+
+private:
+	std::map<std::string, SDL_Texture*> m_Texturemap; //todo fix this mess
 };

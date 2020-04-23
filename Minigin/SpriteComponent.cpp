@@ -10,7 +10,7 @@
 SpriteComponent::SpriteComponent(std::string filePath) :
 	m_Speed{1.0f}, m_Offset(0.f, 0.f)
 {
-	m_Texture = ResourceManager::GetInstance().LoadTexture(filePath);
+	m_Texture = new Texture2D(ResourceManager::GetInstance().LoadTexture(filePath));
 	m_Type = CompType::SpriteC;
 }
 

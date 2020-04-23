@@ -8,7 +8,7 @@
 #include "Components.h"
 TextureComponent::TextureComponent(std::string filePath)
 {
-	m_Texture = ResourceManager::GetInstance().LoadTexture(filePath);
+	m_Texture = new Texture2D(ResourceManager::GetInstance().LoadTexture(filePath));
 	m_Type = CompType::TextureC;
 }
 
@@ -37,7 +37,7 @@ void TextureComponent::Update(float elapsedSec)
 		glm::vec4 beginPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition(), 1.0f);
 
 
-		glm::vec3 end = m_pGameObject->GetTransform()->GetPosition() + glm::vec3(m_Texture->GetWidth() * scale.x, m_Texture->GetHeight() * scale.y, 0.0f);
+		glm::vec3 end = m_pGameObject->GetTransform()->GetPosition() + glm::vec3(m_Texture->GetSrcRect().w * scale.x, m_Texture->GetSrcRect().h * scale.y, 0.0f);
 		glm::vec4 endPos = glm::vec4(end, 1.0f);
 
 		glm::mat4 viewProj = cam->GetViewMatrix() ;
