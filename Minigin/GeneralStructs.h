@@ -88,3 +88,7 @@ struct Color
 	char b;
 	char a;
 };
+
+enum Logic { BIGGER, SMALLER, EQUAL };
+
+

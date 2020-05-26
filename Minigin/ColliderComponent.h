@@ -1,28 +1,27 @@
 #pragma once
 #include "BaseComponent.h"
-//#include <vector>
-
-//struct b2Vec2;
+typedef unsigned short uint16;
 class b2Body;
 class b2Shape;
 class b2PolygonShape;
-
-
+class b2Fixture;
 class ColliderComponent : public BaseComponent
 {
 public:
 	void Initialize() override;
-
-	void Draw() override;;
-
-	void PreDraw() override;;
-
-	virtual void CreateShape(b2Body& bd);;
-	//virtual void CreateNewShape(b2Vec2 dim, bool isStatic) {}//DEPRECATED?
-
-
+	
+	void SetCategory(uint16 i);
+	void SetIgnoreMask(uint16 i);
+	void SetSensor(bool b);
+	bool IsSensor();
 	//std::vector<b2Vec2> GetVerticesList();//DEPRECATED ??
 	b2Shape* GetShape();
+	b2Fixture* GetFixture() { return m_pFixture; }
+	b2FixtureDef m_FixtureDef;
 protected:
-	b2PolygonShape* m_Shape;
+	b2PolygonShape* m_Shape{};
+
+	b2Fixture* m_pFixture = nullptr;
+	b2Filter filter;
+	bool m_IsInitialized = false;
 };

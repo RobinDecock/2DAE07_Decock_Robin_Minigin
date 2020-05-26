@@ -1,81 +1,76 @@
 #include "MiniginPCH.h"
 #include "AnimatorState.h"
 #include "AnimatorBlackboard.h"
+#include "Utils.h"
 
-AnimatorState::Node::Node(::AnimatorState* act)
+AnimatorState::Connection::Connection(std::shared_ptr<::AnimatorState> act)
 {
 	AnimatorState = act;
 	hasRequirement = false;
 }
 
-AnimatorState::Node::Node(::AnimatorState* act, std::vector<Requirement> require)
+AnimatorState::Connection::Connection(std::shared_ptr<::AnimatorState> act, std::vector<Req> require)
 {
 	AnimatorState = act;
 	requirements = require;
 	hasRequirement = true;
 }
 
-AnimatorState::Node::Node(::AnimatorState* act, Requirement require)
+AnimatorState::Connection::Connection(std::shared_ptr<::AnimatorState> act, Req require)
 {
 	requirements.push_back(require);
 	AnimatorState = act;
 	hasRequirement = true;
 }
 
-AnimatorState::AnimatorState(int v, std::string name)
+AnimatorState::Connection::~Connection()
 {
-	m_EnumValue = v;
-	m_isLooping = false;
-	m_pRequirements = std::vector<Requirement>();
+}
+
+AnimatorState::AnimatorState(int id,std::string name)
+{
+	m_EnumValue = id;
+	m_pRequirements = std::vector<Req>();
 	m_Name = name;
 }
 
-
-AnimatorState::~AnimatorState()
+void AnimatorState::AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState)
 {
-	for (int i = 0; i < m_NextAnimatorStates.size(); i++)
+	for (size_t i = 0; i < m_NextConnections.size(); i++)
 	{
-		SafeDelete(m_NextAnimatorStates[i]);
-	}
-}
-
-void AnimatorState::AddNextAnimatorState(AnimatorState* AnimatorState)
-{
-	for (size_t i = 0; i < m_NextAnimatorStates.size(); i++)
-	{
-		if (m_NextAnimatorStates[i]->AnimatorState == AnimatorState)
+		if (m_NextConnections[i]->AnimatorState == AnimatorState)
 		{
 			throw std::exception("[ERROR: Next AnimatorState has already been added");
 			return;
 		}
 	}
-	m_NextAnimatorStates.push_back(new Node(AnimatorState));
+	m_NextConnections.push_back( new Connection(AnimatorState));
 }
 
-void AnimatorState::AddNextAnimatorState(AnimatorState* AnimatorState, std::vector<Requirement> requirements)
+void AnimatorState::AddNextAnimatorState(std::shared_ptr<::AnimatorState>AnimatorState, std::vector<Req> requirements)
 {
-	for (size_t i = 0; i < m_NextAnimatorStates.size(); i++)
+	for (size_t i = 0; i < m_NextConnections.size(); i++)
 	{
-		if (m_NextAnimatorStates[i]->AnimatorState == AnimatorState)
+		if (m_NextConnections[i]->AnimatorState == AnimatorState)
 		{
 			throw std::exception("[ERROR: Next AnimatorState has already been added");
 			return;
 		}
 	}
-	m_NextAnimatorStates.push_back(new Node(AnimatorState, requirements));
+	m_NextConnections.push_back(new Connection(AnimatorState, requirements));
 }
 
-void AnimatorState::AddNextAnimatorState(AnimatorState* AnimatorState, Requirement requirement)
+void AnimatorState::AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState, Req requirement)
 {
-	for (size_t i = 0; i < m_NextAnimatorStates.size(); i++)
+	for (size_t i = 0; i < m_NextConnections.size(); i++)
 	{
-		if (m_NextAnimatorStates[i]->AnimatorState == AnimatorState)
+		if (m_NextConnections[i]->AnimatorState == AnimatorState)
 		{
 			throw std::exception("[ERROR: Next AnimatorState has already been added");
 			return;
 		}
 	}
-	m_NextAnimatorStates.push_back(new Node(AnimatorState, requirement));
+	m_NextConnections.push_back(new Connection(AnimatorState, requirement));
 }
 
 bool AnimatorState::HasFunction()
@@ -105,4 +100,14 @@ void AnimatorState::Execute(float elapsedSec)
 			m_EventFunctions[i].second();
 		}
 	}
+}
+
+AnimatorState::~AnimatorState()
+{
+	for(int i = 0;i< m_NextConnections.size();i++)
+	{
+		delete m_NextConnections[i];
+		m_NextConnections[i] = nullptr;
+	}
+	m_NextConnections.clear();
 }

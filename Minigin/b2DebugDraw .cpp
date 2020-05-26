@@ -1,7 +1,6 @@
 #include "MiniginPCH.h"
 #include "b2DebugDraw .h"
 #include "Camera.h"
-#include "DebugRenderer.h"
 #include "Renderer.h"
 
 void b2DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
@@ -24,17 +23,16 @@ void b2DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b
 
 	}
 
-	SDL_Point* points = new SDL_Point[vertexCount];
+	SDL_Point* points = new SDL_Point[vertexCount+1];
 	for (int i = 0; i < vertexCount; i++)
 	{
 		points[i] = { (int)glmPoints[i].x,(int)glmPoints[i].y };
 	}
-
+	points[vertexCount] = { (int)glmPoints[0].x, (int)glmPoints[0].y };
 	SDL_SetRenderDrawColor(Renderer::GetSDLRenderer(), Uint8(color.r * 255.0f), Uint8(color.g * 255.0f), Uint8(color.b * 255.0f), Uint8(color.a * 255.0f));
 	SDL_RenderDrawLines(Renderer::GetSDLRenderer(), points, vertexCount);
 
-	delete points;
-	points = nullptr;
+	delete[] points;
 }
 
 void b2DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
@@ -59,18 +57,16 @@ void b2DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, co
 
 	
 
-	SDL_Point* points = new SDL_Point[vertexCount];
+	SDL_Point* points = new SDL_Point[vertexCount+1];
 	for (int i = 0; i < vertexCount; i++)
 	{
 		points[i] = { (int)glmPoints[i].x,(int)glmPoints[i].y };
 	}
-
+	points[vertexCount] = { (int)glmPoints[0].x, (int)glmPoints[0].y };
 	SDL_SetRenderDrawColor(Renderer::GetSDLRenderer(), Uint8(color.r * 255.0f), Uint8(color.g * 255.0f), Uint8(color.b * 255.0f), Uint8(color.a * 255.0f));
 	SDL_RenderDrawLines(Renderer::GetSDLRenderer(), points, vertexCount);
 
-	delete points;
-	points = nullptr;
-
+	delete[] points;
 }
 
 void b2DebugDraw::DrawCircle(const b2Vec2& center, float radius, const b2Color& color)

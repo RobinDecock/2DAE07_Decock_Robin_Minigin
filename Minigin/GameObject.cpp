@@ -15,33 +15,36 @@ GameObject::GameObject()
 void GameObject::RootInitialize()
 {
 	Initialize();
-	for (auto comp : m_pComponents)
+	
+	for(int i = 0;i<m_pChildren.size();i++)
 	{
-		comp->Initialize();
+		m_pChildren[i]->m_ParentScene = m_ParentScene;
+		m_pChildren[i]->RootInitialize();
 	}
-	for (auto comp : m_pComponents)
+	for (int i = 0; i < m_pComponents.size(); i++)
 	{
-		comp->LateInitialize();
+		m_pComponents[i]->Initialize();
 	}
-	for (auto child : m_pChildren)
+	for (int i = 0; i < m_pComponents.size(); i++)
 	{
-		child->Initialize();
+		m_pComponents[i]->LateInitialize();
 	}
-	isInitialized = true;
+	LateInitialize();
+	m_IsInitialized = true;
 }
 
 void GameObject::RootUpdate(float elapsedSec)
 {
 	Update(elapsedSec);
-	for (auto child : m_pChildren)
+	for (int i = 0; i < m_pChildren.size(); i++)
 	{
-		child->Update(elapsedSec);
+		m_pChildren[i]->RootUpdate(elapsedSec);
 	}
 
 
-	for (auto comp : m_pComponents)
+	for (int i = 0; i<m_pComponents.size();i++)
 	{
-		comp->Update(elapsedSec);
+		m_pComponents[i]->Update(elapsedSec);
 	}
 }
 
@@ -54,7 +57,7 @@ void GameObject::RootLateUpdate(float elapsedSec)
 	}
 	for (auto child : m_pChildren)
 	{
-		child->LateUpdate(elapsedSec);
+		child->RootLateUpdate(elapsedSec);
 	}
 }
 
@@ -73,7 +76,7 @@ void GameObject::RootDraw()
 	}
 	for (auto child : m_pChildren)
 	{
-		child->Draw();
+		child->RootDraw();
 	}
 }
 
@@ -127,10 +130,12 @@ void GameObject::AddComponent(std::shared_ptr<BaseComponent> comp)
 	          });
 
 	comp->m_pGameObject = this;
-	if (isInitialized)
+	if(m_IsInitialized)
 	{
 		comp->Initialize();
+		comp->LateInitialize();
 	}
+
 }
 
 void GameObject::SetScene(GameScene* scene)
@@ -155,28 +160,20 @@ void GameObject::SetParent(GameObject* obj)
 
 void GameObject::SetTag(std::string t)
 {
-	tag = t;
+	m_Tag = t;
 }
 
 std::string GameObject::GetTag()
 {
-	return tag;
+	return m_Tag;
 }
 
-void GameObject::OnTrigger(BoxCollider* col, BoxCollider* other)
+void GameObject::Contact(b2Fixture* thisfix, b2Fixture* other, b2Contact* contact, ContactType contactType)
 {
-	UNREF(col);
-	UNREF(other);
-}
-
-bool GameObject::GetIsInitialized()
-{
-	return isInitialized;
-}
-
-void GameObject::SetIsInitialized(bool b)
-{
-	isInitialized = b;
+	for (int i = 0; i < m_ContactCallbacks.size(); i++)
+	{		
+		m_ContactCallbacks[i](thisfix,other,contact,contactType);
+	}
 }
 
 int GameObject::GetId()
@@ -211,10 +208,11 @@ void GameObject::AddChild(GameObject* child)
 	child->GetTransform()->SetParent(m_Transform);
 	m_pChildren.push_back(child);
 	child->SetParent(this);
-	child->m_ParentScene = this->m_ParentScene;
-	if (isInitialized)
+	if(m_IsInitialized)
 	{
+		child->m_ParentScene = m_ParentScene;
 		child->Initialize();
+		
 	}
 }
 

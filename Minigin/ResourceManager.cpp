@@ -1,12 +1,23 @@
 #include "MiniginPCH.h"
 #include "ResourceManager.h"
-#include <SDL.h>
-#include <SDL_image.h>
+
 #include <SDL_ttf.h>
+#include <SDL_image.h>
+#include <SDL_render.h>
+#include "Font.h"
 
 #include "Renderer.h"
-#include "TextureComponent.h"
-#include "Font.h"
+
+ResourceManager::~ResourceManager()
+{
+	std::map<std::string, SDL_Texture*>::iterator itr = m_Texturemap.begin();
+	while(m_Texturemap.size()!=0)
+	{
+		SDL_DestroyTexture(m_Texturemap.begin()->second);
+		m_Texturemap.erase(m_Texturemap.begin());
+		
+	}
+}
 
 void ResourceManager::Init(std::string&& dataPath)
 {
@@ -21,6 +32,7 @@ void ResourceManager::Init(std::string&& dataPath)
 
 	if ((IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) != IMG_INIT_JPG)
 	{
+		std::cout << SDL_GetError() << std::endl;
 		throw std::runtime_error(std::string("Failed to load support for jpg's: ") + SDL_GetError());
 	}
 
@@ -33,7 +45,7 @@ void ResourceManager::Init(std::string&& dataPath)
 SDL_Texture* ResourceManager::LoadTexture(const std::string& file)
 {
 	std::string fullPath = mDataPath + file;
-
+	//TODO USE HASH MATE
 	std::map<std::string, SDL_Texture*>::iterator it = m_Texturemap.find(file);
 	if(it !=m_Texturemap.end())
 	{

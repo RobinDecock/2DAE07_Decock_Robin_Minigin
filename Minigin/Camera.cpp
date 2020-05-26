@@ -6,11 +6,9 @@
 #include "Minigin.h"
 #include "TransformComponent.h"
 #include "GLMC.h"
-#include "GameScene.h"
-#include "b2DebugDraw .h"
 Camera::Camera()
 {
-	tag = "Camera";
+	m_Tag = "Camera";
 	windowSize = Minigin::m_WindSize;
 
 	//ONLY TESTING
@@ -23,28 +21,35 @@ void Camera::Initialize()
 {
 }
 
-void Camera::Draw()
+void Camera::Update(float elapsedSec)
 {
-
-	//ImGui::Begin("Camera");
-	//ImGui::Text(("Scale: "+std::to_string(m_Transform->GetScale().x)).c_str());
-	//ImGui::Text(("Position: " + std::to_string(m_Transform->Get2DPosition().x)).c_str());
-	//ImGui::End();
 }
 
-glm::mat4 Camera::GetViewMatrix()const
+void Camera::Draw()
 {
-	glm::vec3 position = glm::vec3(-m_Transform->GetPosition().x + ortho.x / 2.0f, m_Transform->GetPosition().y + ortho.y / 2.0f, m_Transform->GetPosition().z);
+	DebugRenderer::DrawPoint(camPos);
+}
+
+void Camera::MoveToLocation(float elapsedSec, glm::vec2 goPos)
+{
+	m_Transform->SetPosition(m_Transform->Get2DPosition()+elapsedSec * (goPos - m_Transform->Get2DPosition()));
+}
+
+glm::mat4 Camera::GetViewMatrix()
+{
 	glm::vec2 scale = m_Transform->GetScale();
+	glm::vec2 middoffset = glm::vec2(ortho.x , ortho.y);
+	glm::vec3 position = glm::vec3(-m_Transform->GetPosition().x+middoffset.x, -m_Transform->GetPosition().y+ middoffset.y, m_Transform->GetPosition().z);
+	camPos = glm::vec2(position.x,position.y);
 	glm::mat4 view = glm::mat4(1);
 
-	glm::vec2 middoffset = glm::vec2(ortho.x / 2.0f, ortho.y / 2.0f);
 
 	view = glm::translate(view, (glm::vec3(middoffset, 0)));
+
 	view = glm::rotate(view, this->m_Transform->GetRotation(), glm::vec3(0.0, 0.0, 1.0f));
 	view = glm::scale(view, glm::vec3(scale.x, scale.y, 1.0f));
-	view = glm::translate(view, (position));
 
+	view = glm::translate(view, (position));
 	view = glm::translate(view, (glm::vec3(-middoffset, 0)));
 
 

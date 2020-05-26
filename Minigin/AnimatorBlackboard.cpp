@@ -1,4 +1,5 @@
 #include "MiniginPCH.h"
+#include "GeneralStructs.h"
 #include "AnimatorBlackboard.h"
 #include <map>
 
@@ -12,7 +13,7 @@ AnimatorBlackboard::~AnimatorBlackboard()
 {
 }
 
-void AnimatorBlackboard::AddKey(int key, BlackboardValueType type)
+void AnimatorBlackboard::AddKey(int key, ValueType type)
 {
 	if (m_AnimatorBlackboardMap.find(key) == m_AnimatorBlackboardMap.end())
 	{
@@ -29,7 +30,7 @@ void AnimatorBlackboard::SetKeyValue(int key, bool bValue)
 	if (m_AnimatorBlackboardMap.find(key) != m_AnimatorBlackboardMap.end())
 	{
 		auto& pProperty = m_AnimatorBlackboardMap.at(key);
-		if (pProperty.type != BlackboardValueType::boolValue)
+		if (pProperty.type != ValueType::boolValue)
 		{
 			throw std::exception("[ERROR: SetKey(bool) => keyValue is not of type bool!!]");
 			return;
@@ -47,7 +48,7 @@ void AnimatorBlackboard::SetKeyValue(int key, int iValue)
 	if (m_AnimatorBlackboardMap.find(key) != m_AnimatorBlackboardMap.end())
 	{
 		auto& pProperty = m_AnimatorBlackboardMap.at(key);
-		if (pProperty.type != BlackboardValueType::intValue)
+		if (pProperty.type !=ValueType::intValue)
 		{
 			throw std::exception("[ERROR: SetKey(int) => keyValue is not of type int!!]");
 			return;
@@ -65,7 +66,7 @@ void AnimatorBlackboard::SetKeyValue(int key, float fValue)
 	if (m_AnimatorBlackboardMap.find(key) != m_AnimatorBlackboardMap.end())
 	{
 		auto& pProperty = m_AnimatorBlackboardMap.at(key);
-		if (pProperty.type != BlackboardValueType::floatValue)
+		if (pProperty.type != ValueType::floatValue)
 		{
 			throw std::exception("[ERROR: SetKey(float) => keyValue is not of type float!!]");
 			return;
@@ -83,7 +84,7 @@ void AnimatorBlackboard::SetKeyValue(int key, glm::vec2 V2Value)
 	if (m_AnimatorBlackboardMap.find(key) != m_AnimatorBlackboardMap.end())
 	{
 		auto& pProperty = m_AnimatorBlackboardMap.at(key);
-		if (pProperty.type != BlackboardValueType::Vector2Value)
+		if (pProperty.type != ValueType::V2Value)
 		{
 			throw std::exception("[ERROR: SetKey(Vector2) => keyValue is not of type Vector2!!]");
 		}
@@ -103,7 +104,7 @@ bool AnimatorBlackboard::GetBoolProperty(int key)
 	if (m_AnimatorBlackboardMap.find(key) != m_AnimatorBlackboardMap.end())
 	{
 		const auto pProperty = m_AnimatorBlackboardMap.at(key);
-		if (pProperty.type != BlackboardValueType::boolValue)
+		if (pProperty.type !=ValueType::boolValue)
 		{
 			throw std::exception("[ERROR: SetKey(bool) => keyValue is not of type bool!!]");
 		}
@@ -117,7 +118,7 @@ int AnimatorBlackboard::GetIntProperty(int key)
 	if (m_AnimatorBlackboardMap.find(key) != m_AnimatorBlackboardMap.end())
 	{
 		auto& pProperty = m_AnimatorBlackboardMap.at(key);
-		if (pProperty.type != BlackboardValueType::intValue)
+		if (pProperty.type !=ValueType::intValue)
 		{
 			throw std::exception("[ERROR: SetKey(int) => keyValue is not of type int!!]");
 		}
@@ -131,7 +132,7 @@ float AnimatorBlackboard::GetFloatProperty(int key)
 	if (m_AnimatorBlackboardMap.find(key) != m_AnimatorBlackboardMap.end())
 	{
 		auto& pProperty = m_AnimatorBlackboardMap.at(key);
-		if (pProperty.type != BlackboardValueType::floatValue)
+		if (pProperty.type !=ValueType::floatValue)
 		{
 			throw std::exception("[ERROR: SetKey(float) => keyValue is not of type float!!]");
 		}
@@ -146,7 +147,7 @@ glm::vec2 AnimatorBlackboard::GetVector2Property(int key)
 	{
 		auto& pProperty = m_AnimatorBlackboardMap.at(key);
 
-		if (pProperty.type != BlackboardValueType::Vector2Value)
+		if (pProperty.type !=ValueType::V2Value)
 		{
 			throw std::exception("[ERROR: SetKey(Vector2) => keyValue is not of type Vector2!!]");
 		}

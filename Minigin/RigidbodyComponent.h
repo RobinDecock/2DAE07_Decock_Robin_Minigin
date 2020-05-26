@@ -3,9 +3,7 @@
 #include "BaseComponent.h"
 #include <vector>
 #include "ColliderComponent.h"
-#include "GeneralStructs.h"
-class b2Body;
-
+#include "Box2D/Box2D.h"
 class RigidbodyComponent final : public BaseComponent
 {
 	friend class BoxCollider;
@@ -16,33 +14,42 @@ public:
 	RigidbodyComponent& operator=(RigidbodyComponent&& other) noexcept = delete;
 	RigidbodyComponent(bool isStatic = false);
 
+	~RigidbodyComponent();
 	void Initialize() override;
-	void LateInitialize() override;
+	
 	void Update(float elapsedSec) override;
-	void AddCollider(ColliderComponent* collider);
-
+	b2Fixture* AddCollider(const b2FixtureDef& fixDef);
+	b2Body * GetBody();
 	void SetBodyPosition(glm::vec2 pos);
 	void Release() override;
 	glm::vec2 GetVelocity();
+	void SetGravityScale(float scale);
 
 	void AddVelocity(glm::vec2 vec)
 	{
-		m_Velocity += vec;
+		b2Vec2 vel = m_Body->GetLinearVelocity();
+		vel.x += vec.x;
+		vel.y += vec.y;
+		m_Body->SetLinearVelocity(vel);
 	}
 
 	void AddVelocityY(float v)
 	{
-		m_Velocity.y += v;
+		b2Vec2 vel = m_Body->GetLinearVelocity();
+		vel.y += v;
+		m_Body->SetLinearVelocity(vel);
 	}
 
 	void AddVelocityX(float v)
 	{
-		m_Velocity.x += v;
+		b2Vec2 vel = m_Body->GetLinearVelocity();
+		vel.x += v;
+		m_Body->SetLinearVelocity(vel);
 	}
+	
 
 private:
+	bool m_IsInitialized =false;
 	b2Body* m_Body = nullptr;
 	b2BodyDef bodyDef;
-	glm::vec2 m_Velocity = glm::vec2(0, 0);
-	std::vector<ColliderComponent*> m_pColliders;
 };

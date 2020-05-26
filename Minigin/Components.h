@@ -7,3 +7,4 @@
 #include "SpriteComponent.h"
 #include "TextureComponent.h"
 #include "TransformComponent.h"
+#include "EffectorComponent.h"

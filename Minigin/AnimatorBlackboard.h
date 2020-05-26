@@ -1,22 +1,24 @@
 #pragma once
-
 #include <map>
+#include "vec2.hpp"
 #include "GeneralStructs.h"
 
-enum class Logic { BIGGER, SMALL, EQUAL };
-
-enum class BlackboardValueType
+enum class ValueType
 {
 	unAssigned,
 	boolValue,
 	intValue,
 	floatValue,
-	Vector2Value
+	V2Value
 };
 
 
 union UnionValue
 {
+	UnionValue(bool b):bValue(b){}
+	UnionValue(float f) :fValue(f) {}
+	UnionValue(int i) :iValue(i) {}
+	UnionValue(glm::vec2 vec) :V2Value(vec) {}
 	bool bValue;
 	int iValue;
 	float fValue;
@@ -26,30 +28,32 @@ union UnionValue
 //	int key;
 struct BlackboardValue
 {
-	UnionValue value{false};
-	BlackboardValueType type = BlackboardValueType::unAssigned;
+	UnionValue value{ false };
+	ValueType type = ValueType::unAssigned;
 
 	BlackboardValue()
 	{
-		this->type = BlackboardValueType::unAssigned;
+		this->type = ValueType::unAssigned;
 	}
 
-	BlackboardValue(BlackboardValueType type)
+	BlackboardValue(ValueType type)
 	{
 		this->type = type;
 		switch (type)
 		{
-		case BlackboardValueType::floatValue:
+		case ValueType::floatValue:
 			this->value.fValue = 0.f;
 			break;
-		case BlackboardValueType::boolValue:
+		case ValueType::boolValue:
 			this->value.bValue = false;
 			break;
-		case BlackboardValueType::Vector2Value:
-			this->value.V2Value = glm::vec2(0, 0);
-			break;
-		case BlackboardValueType::intValue:
+		case ValueType::intValue:
 			this->value.iValue = 0;
+			break;
+		case ValueType::V2Value:
+			this->value.V2Value = glm::vec2();
+			break;
+		default:
 			break;
 		}
 	}
@@ -57,46 +61,56 @@ struct BlackboardValue
 	BlackboardValue(bool bValue)
 	{
 		this->value.bValue = bValue;
-		this->type = BlackboardValueType::boolValue;
+		this->type = ValueType::boolValue;
 	}
 
 	BlackboardValue(int iValue)
 	{
 		this->value.iValue = iValue;
-		this->type = BlackboardValueType::intValue;
+		this->type = ValueType::intValue;
 	}
 
 	BlackboardValue(float fValue)
 	{
 		this->value.fValue = fValue;
-		this->type = BlackboardValueType::floatValue;
+		this->type = ValueType::floatValue;
 	}
-
 	BlackboardValue(glm::vec2 v2Value)
 	{
 		this->value.V2Value = v2Value;
-		this->type = BlackboardValueType::Vector2Value;
+		this->type = ValueType::V2Value;
 	}
 };
 
-struct Requirement
+struct Req
 {
 	int key;
 	BlackboardValue property;
 	Logic logic;
 
-	Requirement(int k, BlackboardValue value, Logic l)
+	Req(int k, float value, Logic l = Logic::EQUAL)
 	{
 		this->key = k;
 		this->property = value;
 		this->logic = l;
 	}
-
-	Requirement(int k, BlackboardValue value)
+	Req(int k, int value, Logic l = Logic::EQUAL)
 	{
 		this->key = k;
 		this->property = value;
-		this->logic = Logic::EQUAL;
+		this->logic = l;
+	}
+	Req(int k, bool value, Logic l = Logic::EQUAL)
+	{
+		this->key = k;
+		this->property = value;
+		this->logic = l;
+	}
+	Req(int k, glm::vec2 value, Logic l = Logic::EQUAL)
+	{
+		this->key = k;
+		this->property = value;
+		this->logic = l;
 	}
 };
 
@@ -106,7 +120,7 @@ public:
 	AnimatorBlackboard();
 	~AnimatorBlackboard();
 
-	void AddKey(int key, BlackboardValueType type);
+	void AddKey(int key, ValueType type);
 	void SetKeyValue(int key, bool bValue);
 	void SetKeyValue(int key, int iValue);
 	void SetKeyValue(int key, float fValue);

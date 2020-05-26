@@ -1,93 +1,246 @@
 #include "MiniginPCH.h"
 #include "InputManager.h"
 
-InputManager* InputManager::m_Instance = nullptr;
+#include "InputHandler.h"
+#include <iostream>
+Uint8 InputManager::m_CurrKeyboardState[SDL_NUM_SCANCODES];
+Uint8 InputManager::m_PrevKeyboardState[SDL_NUM_SCANCODES];
 
+Uint32 InputManager::m_CurrMouseState;
+Uint32 InputManager::m_PrevMouseState;
 
-
-
-InputManager::InputManager() :
-	m_MousePos(0,0)
-{
-
-}
-
-
-InputManager* InputManager::GetInstance()
-{
-	if (!m_Instance)
-		m_Instance = new InputManager();
-
-	return m_Instance;
-}
-
+int2 InputManager::m_MousePos;
+std::vector<XINPUT_STATE> InputManager::m_pCurGamepadStates;
+std::vector<XINPUT_STATE> InputManager::m_pPrevGamepadStates;
 void InputManager::Initialize()
 {
 	///--- Initialize the las frame array to 0
 	memset(m_PrevKeyboardState, 0, sizeof(Uint8) * SDL_NUM_SCANCODES);
 	///--- Copy the current status
 	memcpy(m_CurrKeyboardState, SDL_GetKeyboardState(NULL), sizeof(Uint8) * SDL_NUM_SCANCODES);
+
+	m_pCurGamepadStates.resize(4);
+	m_pPrevGamepadStates.resize(4);
 }
 
 void InputManager::Update()
 {
-
 	memcpy(m_PrevKeyboardState, m_CurrKeyboardState, sizeof(Uint8) * SDL_NUM_SCANCODES);
 	memcpy(m_CurrKeyboardState, SDL_GetKeyboardState(NULL), sizeof(Uint8) * SDL_NUM_SCANCODES);
 
 	m_CurrMouseState = SDL_GetMouseState(&m_MousePos.x, &m_MousePos.y);
+
+
+	for(int i =0;i<4;i++)
+	{
+		XINPUT_STATE state;
+		ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+		if (XInputGetState(0, &state) == ERROR_SUCCESS)
+		{
+			m_pPrevGamepadStates[i] = m_pCurGamepadStates[i];
+			m_pCurGamepadStates[i] = state;
+		}
+	}
 }
-bool InputManager::IsKeyDown(int key)
+bool InputManager::IsKeyboardKeyDown(int key)
 {
 #if DEBUG
-	CheckKey((int)key);
+	CheckKeyboardKey((int)key);
 #endif
 	return m_CurrKeyboardState[key];
 }
-bool InputManager::IsKeyUp(int key)
+bool InputManager::IsKeyboardKeyUp(int key)
 {
 #if DEBUG
-	CheckKey((int)key);
+	CheckKeyboardKey((int)key);
 #endif
 	return m_CurrKeyboardState[key];
 }
-bool InputManager::IsKeyPressed(int key)
+bool InputManager::IsKeyboardKeyPressed(int key)
 {
 #if DEBUG
-	CheckKey((int)key);
+	CheckKeyboardKey((int)key);
 #endif
+	return m_CurrKeyboardState[key] && !m_PrevKeyboardState[key];
+}
+
+bool InputManager::IsGamePadKeyDown(int key, int playerId)
+{
+	return (m_pCurGamepadStates[playerId].Gamepad.wButtons & key) != 0;
+}
+
+bool InputManager::IsGamePadKeyUp(int key, int playerId)
+{
+	return (m_pCurGamepadStates[playerId].Gamepad.wButtons & key) == 0;
+}
+
+bool InputManager::IsGamePadKeyPressed(int key, int playerId)
+{
+	return (m_pCurGamepadStates[playerId].Gamepad.wButtons & key) != 0&&  (m_pPrevGamepadStates[playerId].Gamepad.wButtons & key) == 0;
+}
+
+float InputManager::GetGamePadJoyStick(int key,const int playerId)
+{
+
+	float StickMax = 32767.0f;
+	switch(key)
+	{
+	case LX:
+		return m_pCurGamepadStates[playerId].Gamepad.sThumbLX/ StickMax;
+	case LY:
+		return m_pCurGamepadStates[playerId].Gamepad.sThumbLY/ StickMax;
+	case RX:
+		return m_pCurGamepadStates[playerId].Gamepad.sThumbRX/ StickMax;
+	case RY:
+		return m_pCurGamepadStates[playerId].Gamepad.sThumbRY/ StickMax;
+	}
+}
+
+bool InputManager::CheckButton(const ButtonInput input,const int playerId)
+{
+
+	if(input.isGamePad)
+	{
+		switch (input.buttonType)
+		{
+		case Pressed:
+			return IsGamePadKeyPressed(input.buttonKey, playerId);
+		case Down:
+			return IsGamePadKeyDown(input.buttonKey, playerId);
+		case Up:
+			return IsGamePadKeyUp(input.buttonKey, playerId);
+		default:;
+		}
+	}
+	else
+	{
+		switch (input.buttonType)
+		{
+		case Pressed:
+			return IsKeyboardKeyPressed(input.buttonKey);
+		case Down:
+			return IsKeyboardKeyDown(input.buttonKey);
+		case Up:
+			return IsKeyboardKeyUp(input.buttonKey);
+		default:;
+		}
+	}
+}
+
+bool InputManager::CheckAxis(AxisInput &input,const int playerId)
+{
+	if(input.isGamePad)
+	{
+		if(input.negativeKey==-1)
+		{
+			input.currValue = GetGamePadJoyStick(input.PositiveKey,playerId);	
+		}
+		else
+		{
+			if (IsGamePadKeyDown(input.PositiveKey,playerId))
+			{
+				input.currValue += 0.1;
+				if (input.currValue > 1)
+				{
+					input.currValue = 1;
+				}
+			}
+			else if (IsGamePadKeyDown(input.negativeKey, playerId))
+			{
+				input.currValue -= 0.1;
+				if (input.currValue < -1)
+				{
+					input.currValue = -1;
+				}
+			}
+			else
+			{
+				if (input.currValue != 0)
+				{
+					input.currValue += input.currValue > 0 ? -0.1 : 0.1;
+					if (abs(input.currValue) < 0.05f)
+					{
+						input.currValue = 0.0f;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		if (IsKeyboardKeyDown(input.PositiveKey))
+		{
+			input.currValue += 0.1;
+			if (input.currValue > 1)
+			{
+				input.currValue = 1;
+			}
+		}
+		else if (IsKeyboardKeyDown(input.negativeKey))
+		{
+			input.currValue -= 0.1;
+			if (input.currValue < -1)
+			{
+				input.currValue = -1;
+			}
+		}
+		else
+		{
+			if (input.currValue != 0)
+			{
+				input.currValue += input.currValue > 0 ? -0.1 : 0.1;
+				if(abs(input.currValue)<0.05f)
+				{
+					input.currValue = 0.0f;
+				}
+			}
+		}
+	}
+
+
 	
-	return m_CurrKeyboardState[key]&&!m_PrevKeyboardState[key];
+	switch(input.logic)
+	{
+	case Logic::BIGGER:
+		return abs(input.currValue) >= input.treshholdValue;
+	case Logic::SMALLER:
+		return abs(input.currValue) <= input.treshholdValue;
+	case Logic::EQUAL:
+		return abs(input.currValue) == input.treshholdValue;
+	}
 }
+
+
 bool InputManager::Shift()
 {
-	return IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT);
+	return IsKeyboardKeyPressed(KeyboardKey::KEY_LEFT_SHIFT) || IsKeyboardKeyPressed(KeyboardKey::KEY_RIGHT_SHIFT);
 }
 bool InputManager::Ctrl()
 {
-	return IsKeyPressed(KEY_LEFT_CTRL) || IsKeyPressed(KEY_RIGHT_CTRL);
+	return IsKeyboardKeyPressed(KeyboardKey::KEY_LEFT_CTRL) || IsKeyboardKeyPressed(KeyboardKey::KEY_RIGHT_CTRL);
 }
 bool InputManager::Alt()
 {
-	return IsKeyPressed(KEY_LEFT_ALT) || IsKeyPressed(KEY_RIGHT_ALT);
+	return IsKeyboardKeyPressed(KeyboardKey::KEY_LEFT_ALT) || IsKeyboardKeyPressed(KeyboardKey::KEY_RIGHT_ALT);
 }
 bool InputManager::IsMouseDown(MouseButton button)
 {
-	if (button >= MOUSE_MAX)
+	if (button >= MouseButton::MOUSE_MAX)
 		return false;
 
 	return m_CurrMouseState & button;
 }
 bool InputManager::IsMouseUp(MouseButton button)
 {
-	if (button >= MOUSE_MAX)
+	if (button >= MouseButton::MOUSE_MAX)
 		return false;
 
 	return !m_CurrMouseState & button;
 }
 bool InputManager::IsMousePressed(MouseButton button)
 {
-	if (button >= MOUSE_MAX)
+	if (button >= MouseButton::MOUSE_MAX)
 		return false;
 
 	return m_CurrMouseState& button &&
@@ -95,19 +248,19 @@ bool InputManager::IsMousePressed(MouseButton button)
 }
 int InputManager::GetMouseX()
 {
-	return this->m_MousePos.x;
+	return m_MousePos.x;
 }
 int InputManager::GetMouseY()
 {
-	return this->m_MousePos.y;
+	return m_MousePos.y;
 }
 
 int2 InputManager::GetMousePos()
 {
-	return this->m_MousePos;
+	return m_MousePos;
 }
 #if DEBUG
-void InputManager::CheckKey(int keyCode)
+void InputManager::CheckKeyboardKey(int keyCode)
 {
 	if (keyCode > SDL_NUM_SCANCODES)
 	{

@@ -11,7 +11,6 @@ protected:
 	void LateUpdate(float elapsedSec) override;
 public:
 	void Initialize() override;
-	void Draw() override;
 	~FixedCamera() override;
 private:
 	GameObject* targetLock = nullptr;

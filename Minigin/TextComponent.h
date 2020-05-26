@@ -1,6 +1,8 @@
 #pragma once
 #include "BaseComponent.h"
-#include "Font.h"
+#include "GeneralStructs.h"
+class Font;
+class Texture2D;
 class TextureComponent;
 
 class TextComponent final : public BaseComponent
@@ -11,10 +13,13 @@ public:
 	void Draw() override;
 	void Update(float elapsedSec) override;
 	void SetText(const std::string& text);
+	void SetColor(SDL_Color color);
 	~TextComponent();
 private:
-	bool m_NeedsUpdate = false;
+	bool m_NeedsUpdate = true;
 	std::string m_Text = "";
 	std::shared_ptr<Font> m_Font;
-	std::shared_ptr<TextureComponent> m_Texture;
+	Texture2D * m_Texture=nullptr;
+	SDL_Color m_Color;
 };
+

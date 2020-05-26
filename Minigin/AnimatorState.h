@@ -4,31 +4,35 @@
 #include <functional>
 #include <ctime>
 #include <string>
-struct Requirement;
+struct Req;
 
 
 class AnimatorState
 {
 public:
-	struct Node
+	class Connection
 	{
-		Node(AnimatorState* act);
+	public:
+		Connection(std::shared_ptr<AnimatorState>act);
 
-		Node(AnimatorState* act, std::vector<Requirement> require);
+		Connection(std::shared_ptr<AnimatorState>act, std::vector<Req> require);
 
-		Node(AnimatorState* act, Requirement require);
+		Connection(std::shared_ptr<AnimatorState> act, Req require);
+		~Connection();
 		bool hasRequirement = true;
-		AnimatorState* AnimatorState;
-		std::vector<Requirement> requirements;
+		std::shared_ptr<AnimatorState> AnimatorState;
+		std::vector<Req> requirements;
 	};
 
 	friend class PlayerN;
-	AnimatorState(int v, std::string name = "");
+	AnimatorState(int id,std::string name);
 	~AnimatorState();
 
-	void AddNextAnimatorState(AnimatorState* AnimatorState);
-	void AddNextAnimatorState(AnimatorState* AnimatorState, std::vector<Requirement> requirements);
-	void AddNextAnimatorState(AnimatorState* AnimatorState, Requirement requirement);
+	void AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState);
+	void AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState, std::vector<Req> requirements);
+	void AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState, Req requirement);
+	void SetSpeed(float speed) { m_Speed = speed; }
+	float GetSpeed() { return m_Speed; }
 	void Execute(float elapsedSec);
 	bool HasFunction();
 
@@ -38,7 +42,7 @@ public:
 		runTime = 0;
 	}
 
-	std::vector<Node*> GetNextAnimatorStates() { return m_NextAnimatorStates; };
+	std::vector<Connection*> GetNextAnimatorStates() { return m_NextConnections; };
 	std::string GetName() { return m_Name; }
 	std::function<void(void)> m_Function;
 
@@ -53,15 +57,23 @@ public:
 	{
 		return m_EnumValue;
 	}
-
+	void SetLooping(bool b)
+	{
+		m_isLooping = b;
+	}
+	bool GetLooping() { return m_isLooping; }
+	bool m_WaitUntilAnimDone = false;
 private:
+	
+	float m_Speed = 1.0f;
 	bool m_isLooping = true;
 	bool m_hasRun = false;
-	std::vector<Node*> m_NextAnimatorStates;
-	std::vector<Requirement> m_pRequirements;
+	std::vector<Connection*> m_NextConnections;
+	std::vector<Req> m_pRequirements;
 
 	std::vector<std::pair<float, std::function<void(void)>>> m_EventFunctions;
 
 	float runTime = 0.f;
 	std::string m_Name = "";
+	
 };

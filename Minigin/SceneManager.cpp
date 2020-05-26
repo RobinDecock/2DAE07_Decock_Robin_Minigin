@@ -3,8 +3,24 @@
 #include "GameScene.h"
 #include <map>
 #include "GameObject.h"
-#include <SDL_hints.h>
 #include <SDL.h>
+
+SceneManager* SceneManager::m_Instance = nullptr;
+
+
+SceneManager::SceneManager()
+{
+	m_Instance = this;
+}
+
+SceneManager::~SceneManager()
+{
+	for (int i = 0; i < mScenes.size(); i++)
+	{
+		SafeDelete(mScenes[i]);
+	}
+}
+
 
 void SceneManager::Update(float elapsedSec)
 {
@@ -39,6 +55,26 @@ void SceneManager::SetPreviousSceneIndex()
 	if (m_CurrentSceneIndex > 0)
 	{
 		m_CurrentSceneIndex -= 1;
+	}
+}
+
+SceneManager* SceneManager::GetInstance()
+{
+		if (!m_Instance)
+			m_Instance = new SceneManager();
+
+		return m_Instance;
+}
+
+void SceneManager::RemoveScene(GameScene* scenePtr)
+{
+	for(int i = 0; i<mScenes.size();i++)
+	{
+		if(mScenes[i] == scenePtr)
+		{
+			mScenes.erase(mScenes.begin() + i);
+			return;
+		}
 	}
 }
 

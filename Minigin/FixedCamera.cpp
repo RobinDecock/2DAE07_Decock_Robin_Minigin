@@ -23,11 +23,6 @@ void FixedCamera::Initialize()
 	Camera::Initialize();
 }
 
-void FixedCamera::Draw()
-{
-	Camera::Draw();
-}
-
 FixedCamera::~FixedCamera()
 {
 }

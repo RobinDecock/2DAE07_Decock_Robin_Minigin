@@ -10,27 +10,17 @@
 SpriteComponent::SpriteComponent(std::string filePath) :
 	m_Speed{1.0f}, m_Offset(0.f, 0.f)
 {
+
+#if DEBUG
+	m_FilePath = filePath;
+#endif
+	
 	m_Texture = new Texture2D(ResourceManager::GetInstance().LoadTexture(filePath));
 	m_Type = CompType::SpriteC;
 }
 
 void SpriteComponent::Initialize()
 {
-	//SDL_Rect rect = m_Texture->GetSourceRectangle();
-	//m_TileSize = int2((int)rect.w / m_Cols, (int)rect.h / m_Rows);
-	//m_SrcRect.w = (int)(m_TileSize.x);
-	//m_SrcRect.h = (int)(m_TileSize.y);
-	//
-
-	////SET DESTINATION 
-	//m_DestRect.x = (int)m_pGameObject->GetTransform().GetPosition().x;
-	//m_DestRect.y = (int)m_pGameObject->GetTransform().GetPosition().y;
-	//float v = (float)m_pGameObject->GetTransform().GetScale().x;
-	//UNREF(v);
-	//m_DestRect.w = (int)(m_TileSize.x*m_pGameObject->GetTransform().GetScale().x);
-	//m_DestRect.h = (int)(m_TileSize.y*m_pGameObject->GetTransform().GetScale().y);
-	//m_Texture->SetAngle(m_pGameObject->GetTransform().GetRotation());
-	//m_Texture->SetDestinationRectangle(m_DestRect);
 }
 
 void SpriteComponent::Draw()
@@ -43,8 +33,19 @@ void SpriteComponent::Update(float elapsedSec)
 {
 	UpdateDestination2D();
 	UpdateSource2D();
+	if (!m_IsLooping && m_Cycle > 0)
+	{
+		return;
+	}
+	m_Sec += elapsedSec * m_Speed;
+	
 	if ((m_Rows == 1 && m_Cols == 1) || pause)
 	{
+		if(m_Sec>1)
+		{
+			m_Cycle += 1;
+			m_Sec = 0;
+		}
 		return;
 	}
 	if (m_Sec > 1)
@@ -57,24 +58,28 @@ void SpriteComponent::Update(float elapsedSec)
 		}
 		else
 		{
-			m_Cycle += 1;
+			
 			if (m_Grid.y % m_Rows == 0)
 			{
-				m_Grid.y = 0;
+				if(m_IsLooping)
+				{
+					m_Grid.y = 0;
+				}
+				m_Cycle += 1;
+			
 			}
 			else
 			{
 				m_Grid.y += 1;
 			}
 
-
-			m_Grid.x = 0;
+			if(m_IsLooping)
+			{
+				m_Grid.x = 0;
+			}
+	
 			m_Sec = 0;
 		}
-	}
-	else
-	{
-		m_Sec += elapsedSec * m_Speed;
 	}
 
 	if (std::find(m_Exceptions.begin(), m_Exceptions.end(), m_Grid.x) != m_Exceptions.end())
@@ -96,6 +101,8 @@ void SpriteComponent::SetSpriteData(AnimData data)
 	m_TileSize = int2(m_SrcRect.w, m_SrcRect.h);
 	m_Grid.x = 0;
 	m_Grid.y = 0;
+	m_Sec = 0.0f;
+	m_Cycle = 0;
 	UpdateDestination2D();
 }
 
@@ -110,7 +117,7 @@ void SpriteComponent::UpdateDestination2D()
 
 	Camera* cam = m_pGameObject->GetScene()->GetCamera();
 	glm::vec2 scale = m_pGameObject->GetTransform()->GetScale();
-	if(cam!=nullptr)
+	if(m_UseCam&&cam!=nullptr)
 	{
 		glm::vec4 beginPos = glm::vec4(m_pGameObject->GetTransform()->GetPosition(), 1.0f);
 

@@ -42,6 +42,8 @@ public:
 	int2 GetState() const;
 	int GetCycle() { return m_Cycle; }
 	void SetFlip(bool flip) { m_Texture->SetFlip(flip); }
+	void SetLooping(bool b) { m_IsLooping = b; }
+	void SetUseCam(bool cam) { m_UseCam = cam; }
 private:
 	void UpdateSource2D();
 	void UpdateDestination2D();
@@ -50,6 +52,7 @@ private:
 	int2 m_Grid{};
 	int m_Change{};
 	float m_Speed{};
+	bool m_IsLooping  =true;
 	int m_Cycle{};
 	float m_Sec{};
 	int2 m_TileSize {};
@@ -62,4 +65,11 @@ private:
 	SDL_Rect m_SrcRect{};
 	float m_Rotation{};
 	bool pause = false;
+
+	bool m_UseCam = true;
+	
+#if DEBUG
+	std::string m_FilePath="";
+
+#endif
 };

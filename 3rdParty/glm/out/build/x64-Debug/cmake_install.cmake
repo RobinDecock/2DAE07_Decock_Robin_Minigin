@@ -1,8 +1,8 @@
-# Install script for directory: D:/DAE/Programming C++/MiniginFinal/fromrar/2DAE06_Decock_Robin_pengo/3rdParty/glm/glm
+# Install script for directory: D:/DAE/Programming4/2DAE07_Decock_Robin_Minigin/3rdParty/glm
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "D:/DAE/Programming C++/MiniginFinal/fromrar/2DAE06_Decock_Robin_pengo/3rdParty/glm/glm/out/install/x64-Debug")
+  set(CMAKE_INSTALL_PREFIX "D:/DAE/Programming4/2DAE07_Decock_Robin_Minigin/3rdParty/glm/out/install/x64-Debug")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "D:/DAE/Programming C++/MiniginFinal/fromrar/2DAE06_Decock_Robin_pengo/3rdParty/glm/glm/out/build/x64-Debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "D:/DAE/Programming4/2DAE07_Decock_Robin_Minigin/3rdParty/glm/out/build/x64-Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

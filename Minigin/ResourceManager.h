@@ -1,10 +1,7 @@
 #pragma once
 #include <map>
-
 #include "Singleton.h"
-#include "Texture2D.h"
-#include <string>
-#include <memory>
+#include <SDL_image.h>
 class TextureComponent;
 class Font;
 
@@ -13,7 +10,7 @@ class ResourceManager final : public Singleton<ResourceManager>
 	std::string mDataPath;
 public:
 	ResourceManager() = default;
-
+	~ResourceManager();
 	void Init(std::string&& data);
 
 	SDL_Texture* LoadTexture(const std::string& file);

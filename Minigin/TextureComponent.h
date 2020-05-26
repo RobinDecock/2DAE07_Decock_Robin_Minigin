@@ -31,7 +31,9 @@ public:
 
 	float GetAngle() const { return m_Texture->GetAngle(); }
 	void SetAngle(float a) { m_Texture->SetAngle(a); }
-
+	void SetUseCam(bool b) { useCam = b; }
 protected:
 	Texture2D* m_Texture;
+	bool useCam = true;
+	
 };

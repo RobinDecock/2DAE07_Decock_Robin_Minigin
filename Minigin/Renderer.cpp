@@ -1,7 +1,6 @@
 #include "MiniginPCH.h"
 #include "Renderer.h"
 #include <SDL.h>
-#include "SceneManager.h"
 #include "Texture2D.h"
 SDL_Renderer * Renderer::m_Renderer = nullptr;
 void Renderer::Init(SDL_Window* window)
@@ -21,10 +20,7 @@ void Renderer::Clear()
 
 void Renderer::Render()
 {
-	
 	SDL_RenderPresent(m_Renderer);
-
-
 }
 
 void Renderer::Destroy()

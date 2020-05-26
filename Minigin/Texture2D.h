@@ -17,7 +17,6 @@ public:
 
 	~Texture2D()
 	{
-		SDL_DestroyTexture(m_Texture);
 	}
 
 	SDL_Texture* GetSDLTexture() const { return m_Texture; }

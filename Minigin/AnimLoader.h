@@ -29,17 +29,15 @@
 class AnimLoader
 {
 public:
-	
 	static std::map<int, AnimData> Load(std::string filePath)
 	{
-
+		int index = 0;
 		std::map<std::string, std::map<int, AnimData>>::iterator it = AnimTexMap.find(filePath);
 		if(it!=AnimTexMap.end())
 		{
 			return AnimTexMap[filePath];
 		}
 		
-		int index = 0;
 		std::map<int, AnimData> animMap;
 		std::ifstream inputStream(filePath.c_str());
 		std::string line = "";
@@ -55,7 +53,6 @@ public:
 		std::getline(inputStream, line);
 		while (!inputStream.eof())
 		{
-			animMap.insert(std::pair<int, AnimData>(index, AnimData()));
 			size_t endName = line.find(">");
 			if (endName == -1)
 			{
@@ -65,13 +62,12 @@ public:
 			}
 			
 			std::string name = line.substr(1, endName - 1);
+			animMap.insert(std::pair<int, AnimData>(index, AnimData()));
 			std::getline(inputStream, line);
 			int2 RC = GetVec2FromLine("RC", line);
 			std::getline(inputStream, line);
 			int4 Rect = GetVec4FromLine("SRC", line);
 			std::getline(inputStream, line);
-
-		
 			
 			animMap[index].RowsCols = int2(RC.x, RC.y);
 			animMap[index].Src = Rect;

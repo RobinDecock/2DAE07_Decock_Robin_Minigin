@@ -1,0 +1,24 @@
+<ZenChan>
+RC="1,2"
+SRC="4,5,38,16"
+<Maita>
+RC="1,2"
+SRC="4,26,40,16"
+<MaitaBubble>
+RC="1,2"
+SRC="130,26,40,16"
+<ZenChanBubble>
+RC="1,2"
+SRC="130,5,40,16"
+<Melon>
+RC="1,1"
+SRC="144,248,16,13"
+<Fries>
+RC="1,1"
+SRC="166,246,12,16"
+
+GENERATED ENUM:
+enum AnimType
+{
+ZenChan,Maita,MaitaBubble,ZenChanBubble,Melon,Fries
+}

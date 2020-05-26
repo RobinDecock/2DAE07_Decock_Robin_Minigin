@@ -6,8 +6,12 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include <SDL.h>
+#include <SDL_mixer.h>
+
 #include "Settings.h"
 #include "Project.h"
+#include "SceneManager.h"
+#include "SoundManager.h"
 
 int2 Minigin::m_WindSize = int2(256*2, 224*2);;
 
@@ -34,17 +38,15 @@ void Minigin::Initialize()
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
 
+	if(Mix_OpenAudio(44100,MIX_DEFAULT_FORMAT,2,2048)<0)
+	{
+		std::cout << "Error: " << Mix_GetError() << std::endl;
+	}
+
+	
+
 	Renderer::Init(window);
 
-}
-
-void Minigin::Cleanup()
-{
-	m_pProject->CleanUp();
-	Renderer::Destroy();
-	SDL_DestroyWindow(window);
-	window = nullptr;
-	SDL_Quit();
 }
 
 void Minigin::Run()
@@ -56,7 +58,7 @@ void Minigin::Run()
 
 		SDL_Event evt;
 		bool doContinue = true;
-		bool doOnce = true;
+		InputManager::Initialize();
 		while (doContinue)
 		{
 			while (SDL_PollEvent(&evt))
@@ -66,18 +68,9 @@ void Minigin::Run()
 				case SDL_QUIT:  doContinue = false;   break;
 				}
 			}
-
-
-			if(doOnce)
-			{
-				InputManager::GetInstance()->Initialize();
-				doOnce = false;
-			}
-
-			
 			auto loopStart = std::chrono::high_resolution_clock::now();
-			InputManager::GetInstance()->Update();
-
+			InputManager::Update();
+			SoundManager::Update();
 			Renderer::Clear();
 
 
@@ -96,4 +89,16 @@ void Minigin::Run()
 	}
 
 	Cleanup();
+}
+
+void Minigin::Cleanup()
+{
+	m_pProject->CleanUp();
+	delete m_pProject;
+	SoundManager::Cleanup();
+	Renderer::Destroy();
+	SDL_DestroyWindow(window);
+	window = nullptr;
+	SDL_Quit();
+
 }

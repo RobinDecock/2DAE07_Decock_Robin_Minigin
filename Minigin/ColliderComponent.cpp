@@ -1,35 +1,65 @@
 #include "MiniginPCH.h"
 #include "RigidBodyComponent.h"
 #include "ColliderComponent.h"
-#include "GameObject.h"
 
+#include "../BubbleBobble/BubbleBobble.h"
+#include "GameObject.h"
+#include "Box2D/Collision/Shapes/b2Shape.h"
+#include "GameScene.h"
 void ColliderComponent::Initialize()
 {
-	m_pGameObject->GetComponent<RigidbodyComponent>()->AddCollider(this);
+	m_FixtureDef.shape = m_Shape;
+	m_FixtureDef.filter = filter;
+	m_pFixture = m_pGameObject->GetComponent<RigidbodyComponent>()->AddCollider(m_FixtureDef);
+	m_pFixture->SetUserData(this->m_pGameObject);
+	m_IsInitialized = true;
 }
-
-void ColliderComponent::Draw()
+void ColliderComponent::SetCategory(uint16 i)
 {
+	if(m_IsInitialized)
+	{
+		b2Filter filter = m_pFixture->GetFilterData();
+		filter.categoryBits = i;
+		m_pFixture->SetFilterData(filter);
+	}
+	else
+	{
+		filter.categoryBits = i;
+	}
+
 }
 
-void ColliderComponent::PreDraw()
+void ColliderComponent::SetIgnoreMask(uint16 i)
 {
+	if (m_IsInitialized)
+	{
+		b2Filter filter = m_pFixture->GetFilterData();
+		filter.maskBits = ~i;
+		m_pFixture->SetFilterData(filter);
+	}
+	else
+	{
+		filter.maskBits = ~i;
+	}
 }
 
-void ColliderComponent::CreateShape(b2Body& bd)
+void ColliderComponent::SetSensor(bool b)
 {
-	UNREF(bd);
+	if(m_IsInitialized)
+	{
+		m_pFixture->SetSensor(b);
+	}
+	else
+	{
+		m_FixtureDef.isSensor = b;
+	}
+
 }
 
-//std::vector<b2Vec2> ColliderComponent::GetVerticesList()
-//{
-//	std::vector<b2Vec2> l;
-//	for (int i = 0; i < 4; i++)
-//	{
-//		l.push_back(m_Shape->m_vertices[i]);
-//	}
-//	return l;
-//}
+bool ColliderComponent::IsSensor()
+{
+	return m_pFixture->IsSensor();
+}
 
 b2Shape* ColliderComponent::GetShape()
 {

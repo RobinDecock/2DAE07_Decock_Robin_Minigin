@@ -1,0 +1,33 @@
+<BubRespawn>
+RC="1,2"
+SRC="2,1,56,32"
+<BubWalk>
+RC="1,3"
+SRC="19,35,51,16"
+<BubJump>
+RC="1,2"
+SRC="2,53,34,16"
+<BubBurb>
+RC="1,1"
+SRC="74,53,16,16"
+<BubDie>
+RC="1,4"
+SRC="2,89,67,16"
+<BubIdle>
+RC="1,1"
+SRC="2,35,16,16"
+<BubbleV1>
+RC="1,4"
+SRC="1,71,56,16"
+<BubbleV2>
+RC="1,2"
+SRC="57,71,28,16"
+<BubFall>
+RC="1,2"
+SRC="36,53,36,16"
+
+GENERATED ENUM:
+enum AnimType
+{
+BubRespawn,BubWalk,BubJump,BubBurb,BubDie,BubIdle,BubbleV1,BubbleV2,BubFall
+}

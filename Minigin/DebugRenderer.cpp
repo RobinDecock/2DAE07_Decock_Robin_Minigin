@@ -27,6 +27,23 @@ void DebugRenderer::DrawLine(glm::vec2 p1,glm::vec2 p2,Color color)
 	}
 }
 
+void DebugRenderer::DrawPoint(glm::vec2 pos)
+{
+	glm::vec2 point1;
+	if (m_pCamera != nullptr)
+	{
+		point1 = m_pCamera->GetViewMatrix() * glm::vec4(pos, 0, 1);
+
+	}
+	else
+	{
+		point1 = glm::vec4(pos, 0, 1);
+	}
+	SDL_RenderDrawPoint(Renderer::GetSDLRenderer(), point1.x, point1.y);
+
+}
+
+
 void DebugRenderer::SetCamera(Camera* cam)
 {
 	m_pCamera = cam;
