@@ -1,9 +1,6 @@
 #pragma once
-#include <SDL.h>
-class Texture2D;
-struct SDL_Window;
-struct SDL_Renderer;
-
+#include "SDLS.h"
+#include "Texture2D.h"
 class Renderer
 {
 public:
@@ -11,7 +8,7 @@ public:
 	static void Clear();
 	static void Render();
 	static void Destroy();
-
+	
 	static void RenderTexture(const Texture2D& texture);
 	static void RenderTexture(const Texture2D& texture, float x, float y);
 	static SDL_Renderer* GetSDLRenderer() { return m_Renderer; }

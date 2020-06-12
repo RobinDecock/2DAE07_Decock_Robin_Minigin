@@ -1,17 +1,16 @@
 #pragma once
 #include "GeneralStructs.h"
 #include "InputDefinitions.h"
-#include "SDL.h"
 #include <Xinput.h>
 struct AxisInput;
 struct ButtonInput;
 
-enum JoyStick
+enum class JoyStick
 {
 	LX=0,LY=1,RX=2,RY=3
 };
 
-enum ButtonType
+enum class ButtonType
 {
 	Pressed, Down, Up
 };

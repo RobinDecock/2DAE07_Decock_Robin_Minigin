@@ -2,13 +2,10 @@
 #include "RigidBodyComponent.h"
 #include "ColliderComponent.h"
 
-#include "../BubbleBobble/BubbleBobble.h"
 #include "GameObject.h"
-#include "Box2D/Collision/Shapes/b2Shape.h"
-#include "GameScene.h"
 void ColliderComponent::Initialize()
 {
-	m_FixtureDef.shape = m_Shape;
+	m_FixtureDef.shape = &m_Shape;
 	m_FixtureDef.filter = filter;
 	m_pFixture = m_pGameObject->GetComponent<RigidbodyComponent>()->AddCollider(m_FixtureDef);
 	m_pFixture->SetUserData(this->m_pGameObject);
@@ -61,7 +58,32 @@ bool ColliderComponent::IsSensor()
 	return m_pFixture->IsSensor();
 }
 
-b2Shape* ColliderComponent::GetShape()
+void ColliderComponent::SetRestitution(float f)
+{
+	if (m_IsInitialized)
+	{
+		m_pFixture->SetRestitution(f);
+	}
+	else
+	{
+		m_FixtureDef.restitution = f;
+	}
+
+}
+
+b2Shape& ColliderComponent::GetShape()
 {
 	return m_Shape;
+}
+
+void ColliderComponent::SetFriction(float v)
+{
+	if(m_IsInitialized)
+	{
+		m_pFixture->SetFriction(v);
+	}
+	else
+	{
+		m_FixtureDef.friction = v;
+	}
 }

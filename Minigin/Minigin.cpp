@@ -5,18 +5,17 @@
 #include "InputManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include <SDL.h>
-#include <SDL_mixer.h>
+
 
 #include "Settings.h"
 #include "Project.h"
-#include "SceneManager.h"
 #include "SoundManager.h"
 
 int2 Minigin::m_WindSize = int2(256*2, 224*2);;
 
 void Minigin::Initialize()
 {
+	ResourceManager::SetInstance(new ResourceManager());
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
@@ -42,17 +41,14 @@ void Minigin::Initialize()
 	{
 		std::cout << "Error: " << Mix_GetError() << std::endl;
 	}
-
-	
-
 	Renderer::Init(window);
-
+	srand(static_cast<unsigned int>(time(nullptr)));
 }
+
 
 void Minigin::Run()
 {
 	Initialize();
-
 	m_pProject->Initialize();
 	{
 
@@ -61,6 +57,21 @@ void Minigin::Run()
 		InputManager::Initialize();
 		while (doContinue)
 		{
+			
+			auto loopStart = std::chrono::high_resolution_clock::now();
+			InputManager::Update();
+			SoundManager::Update();
+			Renderer::Clear();
+
+			m_pProject->Draw();
+			m_pProject->Update(m_elapsedSec);
+			
+			Renderer::Render();
+
+			//std::this_thread::sleep_until(loopStart+ std::chrono::milliseconds(5));
+			auto loopEnd = std::chrono::high_resolution_clock::now();
+			m_elapsedSec = std::chrono::duration<float>(loopEnd - loopStart).count();
+
 			while (SDL_PollEvent(&evt))
 			{
 				switch (evt.type)
@@ -68,23 +79,6 @@ void Minigin::Run()
 				case SDL_QUIT:  doContinue = false;   break;
 				}
 			}
-			auto loopStart = std::chrono::high_resolution_clock::now();
-			InputManager::Update();
-			SoundManager::Update();
-			Renderer::Clear();
-
-
-
-			
-			m_pProject->Update(m_elapsedSec);
-			m_pProject->Draw();
-
-			
-			Renderer::Render();
-
-			//std::this_thread::sleep_until(loopStart+ std::chrono::milliseconds(5));
-			auto loopEnd = std::chrono::high_resolution_clock::now();
-			m_elapsedSec = std::chrono::duration<float>(loopEnd - loopStart).count();
 		}
 	}
 
@@ -93,12 +87,13 @@ void Minigin::Run()
 
 void Minigin::Cleanup()
 {
-	m_pProject->CleanUp();
-	delete m_pProject;
+	SafeDelete(m_pProject);
+
+	ResourceManager::GetInstance().DestroyInstance();
+	
 	SoundManager::Cleanup();
 	Renderer::Destroy();
-	SDL_DestroyWindow(window);
-	window = nullptr;
-	SDL_Quit();
 
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 }

@@ -8,15 +8,19 @@ AutoDestroyComponent::AutoDestroyComponent(float time)
 {
 }
 
-AutoDestroyComponent::~AutoDestroyComponent()
-{
-}
-
 void AutoDestroyComponent::Update(float elapsedSec)
 {
 	timer += elapsedSec;
 	if(timer>delay)
 	{
-		this->m_pGameObject->GetScene()->Remove(this->m_pGameObject);
+		
+		if(m_pGameObject->GetParent()==nullptr)
+		{
+			this->m_pGameObject->GetScene()->Remove(this->m_pGameObject);
+		}
+		else
+		{
+			m_pGameObject->GetParent()->RemoveChild(this->m_pGameObject);
+		}
 	}
 }

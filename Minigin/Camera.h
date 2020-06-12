@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject.h"
-#include "vec2.hpp"
 #include "mat4x4.hpp"
 #include "GeneralStructs.h"
 class Camera :public GameObject
@@ -9,7 +8,7 @@ public:
 	Camera();
 	void  Initialize()override;
 	void Update(float elapsedSec) override;
-	void Draw() override;
+	void Draw()const override;
 	void MoveToLocation(float elapsedSec, glm::vec2 goPos);
 	glm::mat4 GetViewMatrix();
 	glm::mat4  GetProjectionMatrix()const;

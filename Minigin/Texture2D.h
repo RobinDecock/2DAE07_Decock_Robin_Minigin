@@ -1,13 +1,12 @@
 #pragma once
-#include <SDL.h>
-#include "vec2.hpp"
+#include "SDLS.h"
+#include "GLMS.h"
 class Texture2D
 {
 public:
 	Texture2D(SDL_Texture* texture)
 	{
 		m_Texture = texture;
-
 		SDL_QueryTexture(texture, nullptr, nullptr, &m_Width, &m_Height);
 		m_destinationRectangle.w = m_Width;
 		m_destinationRectangle.h = m_Height;
@@ -28,7 +27,8 @@ public:
 
 	int GetWidth() { return m_Width; }
 	int GetHeight() { return m_Height; }
-
+	float GetDepth() { return m_Depth; }
+	void SetDepth(float d) { m_Depth = d; }
 	SDL_Rect GetSrcRect() const { return m_sourceRectangle; }
 	SDL_Rect GetDestRect() const { return m_destinationRectangle; }
 	glm::vec2 GetPivot() const { return m_Pivot; }
@@ -43,5 +43,6 @@ private:
 	float m_Angle{};
 	int m_Width{};
 	int m_Height{};
+	float m_Depth = 0.0f;
 	SDL_Texture* m_Texture = nullptr;
 };

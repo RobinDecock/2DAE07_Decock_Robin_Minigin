@@ -1,6 +1,5 @@
 #pragma once
 #include "Camera.h"
-#include "GameObject.h"
 class FreeCamera:public Camera
 {
 public:

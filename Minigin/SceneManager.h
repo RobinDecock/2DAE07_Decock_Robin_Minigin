@@ -14,7 +14,7 @@ public:
 	void RemoveScene(GameScene* scenePtr);
 	void AddScene(GameScene* scenePtr);
 	void Update(float elapsedSec);
-	void Draw();
+	void Draw()const;
 	void SetCurrentSceneIndex(int value) { m_CurrentSceneIndex = value; }
 	void SetNextSceneIndex();
 	void SetPreviousSceneIndex();
@@ -22,5 +22,7 @@ public:
 private:
 	static SceneManager* m_Instance;
 	std::vector<GameScene*> mScenes;
+
+	std::vector<GameScene*>m_pToDelete;
 	int m_CurrentSceneIndex = 0;
 };

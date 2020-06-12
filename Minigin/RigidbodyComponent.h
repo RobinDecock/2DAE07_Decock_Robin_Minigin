@@ -1,9 +1,8 @@
 #pragma once
 
 #include "BaseComponent.h"
-#include <vector>
-#include "ColliderComponent.h"
-#include "Box2D/Box2D.h"
+
+
 class RigidbodyComponent final : public BaseComponent
 {
 	friend class BoxCollider;
@@ -20,11 +19,13 @@ public:
 	void Update(float elapsedSec) override;
 	b2Fixture* AddCollider(const b2FixtureDef& fixDef);
 	b2Body * GetBody();
+
+	b2Body* GetConstBody()const;
 	void SetBodyPosition(glm::vec2 pos);
-	void Release() override;
-	glm::vec2 GetVelocity();
+	glm::vec2 GetVelocity()const;
 	void SetGravityScale(float scale);
 
+	void CheckLock();
 	void AddVelocity(glm::vec2 vec)
 	{
 		b2Vec2 vel = m_Body->GetLinearVelocity();

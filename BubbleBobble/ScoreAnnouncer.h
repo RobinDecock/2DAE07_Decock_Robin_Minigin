@@ -1,5 +1,4 @@
 #pragma once
-#include "AnimLoader.h"
 #include "GameObject.h"
 #
 class ScoreAnnouncer:public GameObject

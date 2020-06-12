@@ -1,15 +1,13 @@
 #pragma once
 #include <map>
-#include "vec2.hpp"
+#include "GLMS.h"
 #include "GeneralStructs.h"
 
 enum class ValueType
 {
-	unAssigned,
 	boolValue,
 	intValue,
-	floatValue,
-	V2Value
+	floatValue
 };
 
 
@@ -29,13 +27,9 @@ union UnionValue
 struct BlackboardValue
 {
 	UnionValue value{ false };
-	ValueType type = ValueType::unAssigned;
+	ValueType type = ValueType::intValue;
 
-	BlackboardValue()
-	{
-		this->type = ValueType::unAssigned;
-	}
-
+	BlackboardValue() = default;
 	BlackboardValue(ValueType type)
 	{
 		this->type = type;
@@ -49,11 +43,6 @@ struct BlackboardValue
 			break;
 		case ValueType::intValue:
 			this->value.iValue = 0;
-			break;
-		case ValueType::V2Value:
-			this->value.V2Value = glm::vec2();
-			break;
-		default:
 			break;
 		}
 	}
@@ -74,11 +63,6 @@ struct BlackboardValue
 	{
 		this->value.fValue = fValue;
 		this->type = ValueType::floatValue;
-	}
-	BlackboardValue(glm::vec2 v2Value)
-	{
-		this->value.V2Value = v2Value;
-		this->type = ValueType::V2Value;
 	}
 };
 
@@ -106,12 +90,6 @@ struct Req
 		this->property = value;
 		this->logic = l;
 	}
-	Req(int k, glm::vec2 value, Logic l = Logic::EQUAL)
-	{
-		this->key = k;
-		this->property = value;
-		this->logic = l;
-	}
 };
 
 class AnimatorBlackboard
@@ -124,12 +102,28 @@ public:
 	void SetKeyValue(int key, bool bValue);
 	void SetKeyValue(int key, int iValue);
 	void SetKeyValue(int key, float fValue);
-	void SetKeyValue(int key, glm::vec2 V2Value);
 	bool GetBoolProperty(int key);
 	int GetIntProperty(int key);
 	float GetFloatProperty(int key);
-	glm::vec2 GetVector2Property(int key);
 	BlackboardValue GetProperty(int key);
+
+	template<class t1, class t2>
+	static bool CheckLogic(t1 value1, t2 value2, Logic l)
+	{
+		switch (l)
+		{
+		case Logic::BIGGER:
+			return value1 > value2;
+		case Logic::SMALLER:
+			return value1 < value2;
+		case Logic::EQUAL:
+			return value1 == value2;
+		default:
+			break;
+		}
+		return false;
+	}
+	bool CheckRequirement(Req desiredProperty);
 private:
 	std::map<int, BlackboardValue> m_AnimatorBlackboardMap;
 };

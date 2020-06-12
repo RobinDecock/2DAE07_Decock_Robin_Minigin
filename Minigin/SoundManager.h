@@ -7,7 +7,7 @@
 class SoundManager
 {
 public:
-	SoundManager();
+	SoundManager() = default;
 	static void Update();
 	static void PlayMusic(std::string path);
 	static void PlaySound(std::string path);

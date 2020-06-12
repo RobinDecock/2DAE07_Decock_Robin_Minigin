@@ -1,5 +1,5 @@
 #pragma once
-#include "SDL.h"
+#include "SDLS.h"
 enum KeyboardKey
 {
 	KEY_UNKNOWN = SDL_SCANCODE_UNKNOWN,
@@ -248,7 +248,7 @@ enum KeyboardKey
 	KEY_SLEEP = SDL_SCANCODE_SLEEP
 };
 
-enum MouseButton
+enum class MouseButton
 {
 	MOUSE_LEFT,
 	MOUSE_RIGHT,

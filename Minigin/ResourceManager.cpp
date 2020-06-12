@@ -1,22 +1,23 @@
 #include "MiniginPCH.h"
 #include "ResourceManager.h"
-
-#include <SDL_ttf.h>
-#include <SDL_image.h>
-#include <SDL_render.h>
+#include "SDL_image.h"
 #include "Font.h"
 
 #include "Renderer.h"
 
 ResourceManager::~ResourceManager()
 {
-	std::map<std::string, SDL_Texture*>::iterator itr = m_Texturemap.begin();
-	while(m_Texturemap.size()!=0)
+	for (auto element : m_Texturemap)
 	{
-		SDL_DestroyTexture(m_Texturemap.begin()->second);
-		m_Texturemap.erase(m_Texturemap.begin());
-		
+		SDL_DestroyTexture(element.second);
 	}
+	m_Texturemap.clear();
+
+	for (auto element : m_FontMap)
+	{
+		SafeDelete(element.second);
+	}
+	m_FontMap.clear();
 }
 
 void ResourceManager::Init(std::string&& dataPath)
@@ -62,7 +63,18 @@ SDL_Texture* ResourceManager::LoadTexture(const std::string& file)
 	return texture;
 }
 
-std::shared_ptr<Font> ResourceManager::LoadFont(const std::string& file, unsigned int size)
+Font* ResourceManager::LoadFont(const std::string& file, unsigned int size)
 {
-	return NEW(Font)(mDataPath + file, size);
+	std::map<std::string, Font*>::iterator it = m_FontMap.find(file);
+	if(it ==m_FontMap.end())
+	{
+		Font* pFont = new Font(mDataPath + file, size);
+		m_FontMap[file] = pFont;
+		return pFont;
+	}
+	else
+	{
+		return it->second;
+	}
 }
+

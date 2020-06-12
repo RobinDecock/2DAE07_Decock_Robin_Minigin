@@ -1,23 +1,25 @@
 #pragma once
+#include "Singleton.h"
 #include <GameObject.h>
-
+class LifeCounter;
 class Font;
 
-class Hud :
-	public GameObject
+class Hud final: public Singleton<Hud>,public GameObject
+
 {
 public:
+	Hud();
 	~Hud() override;
 	void AddScore(int score) { m_Score += score; }
+	void AddLifeCounter(LifeCounter* counter);
 private:
 	void Initialize() override;
 	
 	void Update(float elapsedSec) override;
 	void LateUpdate(float elapsedSec) override;
-	void Draw() override;
+	void Draw()const override;
 private:
-	GameObject* scoreObject = nullptr;
-	std::shared_ptr<Font> pFont;
 	int m_Score = 0;
+	std::vector<LifeCounter*> counters;
 };
 

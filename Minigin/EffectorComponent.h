@@ -17,21 +17,15 @@ public:
 class EffectorComponent:public BaseComponent
 {
 public:
-	EffectorComponent(PTR(BoxCollider) boxCollider,glm::vec2 localCenter,glm::vec2 size);
+	EffectorComponent(BoxCollider* boxCollider,glm::vec2 localCenter,glm::vec2 size);
 	void SetCategoryToAffect(uint16 category) { m_AffectedCat = category; }
 	void AddIgnore(b2Fixture* fix);
-	~EffectorComponent() override;
+	~EffectorComponent() override = default;
 protected:
 	void Initialize() override;
-
-	void Update(float elapsedSec) override;
-	void LateUpdate(float elapsedSec) override;
-	void Draw() override;
-	void PreDraw() override;
-	void Release() override;
 private:
-	PTR(BoxCollider) m_pBoxCollider{};
-	PTR(BoxTrigger)m_pTrigger = nullptr;
+	BoxCollider* m_pBoxCollider = nullptr;
+	BoxTrigger* m_pTrigger = nullptr;
 	std::vector<b2Fixture*>m_ToBlock;
 	std::vector<b2Fixture*>m_ToIgnore;
 

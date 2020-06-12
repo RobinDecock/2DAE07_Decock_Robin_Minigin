@@ -1,10 +1,10 @@
 #include "MiniginPCH.h"
-#include <SDL.h>
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "GameScene.h"
 #include "GameObject.h"
 #include "Camera.h"
+#include "GeneralStructs.h"
 #include "Components.h"
 TextureComponent::TextureComponent(std::string filePath)
 {
@@ -14,11 +14,15 @@ TextureComponent::TextureComponent(std::string filePath)
 
 TextureComponent::~TextureComponent()
 {
-	delete m_Texture;
+	SafeDelete(m_Texture);
 }
 
 void TextureComponent::Draw()
 {
+	if (!m_pGameObject->GetVisibility()) 
+	{
+		return;
+	}
 	Camera* cam = m_pGameObject->GetScene()->GetCamera();
 	glm::vec2 scale = m_pGameObject->GetTransform()->GetScale();
 	if (cam != nullptr && useCam)
@@ -49,20 +53,23 @@ void TextureComponent::Draw()
 		m_Texture->SetAngle(m_pGameObject->GetTransform()->GetRotation());
 	}
 
-	
+	m_Texture->SetDepth(m_pGameObject->GetTransform()->GetPosition().z);
 	Renderer::RenderTexture(*m_Texture);
 }
-
-void TextureComponent::Update(float elapsedSec)
-{
-	UNREF(elapsedSec);
-	
-
-}
-
 void TextureComponent::SetSourceRectangle(SDL_Rect rect)
 {
 	m_Texture->SetSrcRect(rect);
+}
+
+void TextureComponent::SetSourceRectangle(int4 rect)
+{
+	SDL_Rect rc;
+	rc.x = rect.x;
+	rc.y = rect.y;
+	rc.w = rect.w;
+	rc.h = rect.h;
+
+	m_Texture->SetSrcRect(rc);
 }
 
 void TextureComponent::SetDestinationRectangle(SDL_Rect rect)

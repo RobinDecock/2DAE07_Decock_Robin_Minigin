@@ -5,7 +5,7 @@
 #include "DebugRenderer.h"
 #include "Minigin.h"
 #include "TransformComponent.h"
-#include "GLMC.h"
+#include "GLMS.h"
 Camera::Camera()
 {
 	m_Tag = "Camera";
@@ -25,14 +25,15 @@ void Camera::Update(float elapsedSec)
 {
 }
 
-void Camera::Draw()
+void Camera::Draw()const
 {
 	DebugRenderer::DrawPoint(camPos);
 }
 
 void Camera::MoveToLocation(float elapsedSec, glm::vec2 goPos)
 {
-	m_Transform->SetPosition(m_Transform->Get2DPosition()+elapsedSec * (goPos - m_Transform->Get2DPosition()));
+	float speed = 200.0f;
+	m_Transform->SetPosition(m_Transform->Get2DPosition()+elapsedSec *glm::normalize(goPos - m_Transform->Get2DPosition())* speed);
 }
 
 glm::mat4 Camera::GetViewMatrix()

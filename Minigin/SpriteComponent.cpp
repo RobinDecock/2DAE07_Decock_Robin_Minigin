@@ -25,7 +25,10 @@ void SpriteComponent::Initialize()
 
 void SpriteComponent::Draw()
 {
-	Renderer::RenderTexture(*m_Texture);
+	if(m_IsActive&&m_pGameObject->GetVisibility())
+	{
+		Renderer::RenderTexture(*m_Texture);
+	}
 }
 
 
@@ -143,7 +146,7 @@ void SpriteComponent::UpdateDestination2D()
 		m_Texture->SetAngle(m_pGameObject->GetTransform()->GetRotation());
 	}
 	
-
+	m_Texture->SetDepth(m_pGameObject->GetTransform()->GetPosition().z);
 }
 
 void SpriteComponent::UpdateSource2D()

@@ -2,78 +2,112 @@
 
 #include <vector>
 #include <functional>
-#include <ctime>
 #include <string>
+class AnimatorBlackboard;
+class BaseState;
 struct Req;
 
+class ParentState;
+class AnimatorState;
 
-class AnimatorState
+class Connection
 {
 public:
-	class Connection
+	Connection(BaseState* act);
+
+	Connection(BaseState* act, std::vector<Req> require);
+
+	Connection(BaseState* act, Req require);
+	bool hasRequirement = true;
+	BaseState* AnimatorState;
+	std::vector<Req> requirements;
+};
+
+class BaseState
+{
+public:
+	virtual ~BaseState(){}
+	void AddNextAnimatorState(BaseState* AnimatorState);
+	void AddNextAnimatorState(BaseState* AnimatorState, std::vector<Req> requirements);
+	void AddNextAnimatorState(BaseState* AnimatorState, Req requirement);
+	std::vector<Connection> GetNextConnections() { return m_NextConnections; };
+	AnimatorState* GetNextState(BaseState* currentState, AnimatorBlackboard& pBlackboard);
+	void SetParent(ParentState* st) { m_pParent = st; }
+	void EndState()
 	{
-	public:
-		Connection(std::shared_ptr<AnimatorState>act);
-
-		Connection(std::shared_ptr<AnimatorState>act, std::vector<Req> require);
-
-		Connection(std::shared_ptr<AnimatorState> act, Req require);
-		~Connection();
-		bool hasRequirement = true;
-		std::shared_ptr<AnimatorState> AnimatorState;
-		std::vector<Req> requirements;
-	};
-
-	friend class PlayerN;
-	AnimatorState(int id,std::string name);
-	~AnimatorState();
-
-	void AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState);
-	void AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState, std::vector<Req> requirements);
-	void AddNextAnimatorState(std::shared_ptr<::AnimatorState> AnimatorState, Req requirement);
-	void SetSpeed(float speed) { m_Speed = speed; }
-	float GetSpeed() { return m_Speed; }
-	void Execute(float elapsedSec);
-	bool HasFunction();
-
-	void LeaveState()
-	{
-		m_hasRun = false;
-		runTime = 0;
+		if(hasEndFunction)
+		{
+			endFunction();
+		}
 	}
-
-	std::vector<Connection*> GetNextAnimatorStates() { return m_NextConnections; };
-	std::string GetName() { return m_Name; }
-	std::function<void(void)> m_Function;
-
-	void SetEventFunction(float time, std::function<void(void)> f)
-	{
-		m_EventFunctions.push_back(std::pair<float, std::function<void(void)>>(time, f));
+	void SetEndFunction(std::function<void()> f) {
+		endFunction = f; hasEndFunction
+			= true;
 	}
+protected:
+	static AnimatorState* GetNState(BaseState* currentState, AnimatorBlackboard& pBlackboard);
+	ParentState* m_pParent = nullptr;
 
-	int m_EnumValue = 0;
-
-	int GetValue()
-	{
-		return m_EnumValue;
-	}
-	void SetLooping(bool b)
-	{
-		m_isLooping = b;
-	}
-	bool GetLooping() { return m_isLooping; }
-	bool m_WaitUntilAnimDone = false;
-private:
+	std::function<void()> endFunction;
+	bool hasEndFunction = false;
+	std::vector<Connection> m_NextConnections{};
 	
+};
+
+
+class AnimatorState : public BaseState
+{
+public:
+	friend class PlayerN;
+	AnimatorState(std::string name);
+	AnimatorState(unsigned int id, std::string name);
+	~AnimatorState()override;
+
+	void RootExecute(float elapsedSec);
+	void LeaveState();
+
+	//SET
+	void SetSpeed(float speed);
+	void SetLooping(bool b);
+	void SetWaitUntilAnimDone(bool b) { m_WaitUntilAnimDone = b; }
+	//******
+
+	//GET
+	float GetSpeed() const;
+	unsigned int GetValue() const;
+	std::string GetName() const;
+	bool GetLooping()const;
+	bool GetWaitUntilAnimDone() const{ return m_WaitUntilAnimDone; }
+	//*****
+
+
+
+	
+protected:
+	ParentState* parentState = nullptr;
+	unsigned int m_EnumValue = 0;
+
 	float m_Speed = 1.0f;
 	bool m_isLooping = true;
 	bool m_hasRun = false;
-	std::vector<Connection*> m_NextConnections;
-	std::vector<Req> m_pRequirements;
-
-	std::vector<std::pair<float, std::function<void(void)>>> m_EventFunctions;
+	bool m_WaitUntilAnimDone = false;
 
 	float runTime = 0.f;
 	std::string m_Name = "";
 	
+	virtual void Execute(float elapsedSec){}
+};
+
+class ParentState final : public BaseState
+{
+public:
+	~ParentState()override{}
+	ParentState(AnimatorState* startState, std::string name) :m_pStartState(startState) { m_pStartState->SetParent(this); }
+	AnimatorState* GetStartState()
+	{
+		return m_pStartState;
+	}
+private:
+
+	AnimatorState* m_pStartState;
 };

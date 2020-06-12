@@ -5,7 +5,7 @@ class AutoDestroyComponent: public BaseComponent
 {
 public:
 	AutoDestroyComponent(float time);
-	~AutoDestroyComponent() override;
+	~AutoDestroyComponent() override = default;
 	float timer = 0.0f;
 	float delay = 1.0f;
 protected:

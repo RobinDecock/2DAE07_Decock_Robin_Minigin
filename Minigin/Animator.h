@@ -5,8 +5,9 @@
 #include "BaseComponent.h"
 #include "SpriteComponent.h"
 
+class BaseState;
 struct Req;
-enum Logic;
+enum class Logic;
 struct AnimData;
 class AnimatorBlackboard;
 class AnimatorState;
@@ -15,32 +16,35 @@ class Goal;
 class Animator : public BaseComponent
 {
 public:
-	Animator(PTR(SpriteComponent) spriteComp,PTR(AnimatorState) StartNode, AnimatorBlackboard& status);
-	
+	Animator(SpriteComponent* spriteComp, AnimatorState* StartNode, AnimatorBlackboard& status);
+
 	~Animator();
 	void Initialize() override;
 	void Update(float elapsedSec) override;
-	void LinkStates(std::shared_ptr<::AnimatorState> prevAnimatorState, std::shared_ptr<::AnimatorState>nextAnimatorState);
-	void LinkStates(std::shared_ptr<::AnimatorState>prevAnimatorState, std::shared_ptr<::AnimatorState>nextAnimatorState,
-	                std::vector<Req> requirements);
-	void LinkStates(std::shared_ptr<::AnimatorState> prevAnimatorState, std::shared_ptr<::AnimatorState> nextAnimatorState, Req requirement);
-	bool CheckRequirement(Req property);
+	
+	void LinkStates(BaseState* prevAnimatorState, BaseState* nextAnimatorState);
+	void LinkStates(BaseState* prevAnimatorState, BaseState* nextAnimatorState,
+		std::vector<Req> requirements);
+	void LinkStates(BaseState* prevAnimatorState, BaseState* nextAnimatorState, Req requirement);
 	bool CheckLogic(int value1, int value2, Logic l);
 	bool CheckLogic(float value1, float value2, Logic l);
-	std::shared_ptr<AnimatorState> GetPreviousState() { return m_pPreviousAnimatorState; }
-	std::shared_ptr<AnimatorState> GetCurrenState() { return m_pCurrentAnimatorState; }
-	void SetCurrentState(std::shared_ptr<AnimatorState> an);
+	AnimatorState* GetPreviousState()const { return m_pPreviousAnimatorState; }
+	AnimatorState* GetCurrenState()const { return m_pCurrentAnimatorState; }
+	void SetCurrentState(AnimatorState* an);
 	void SetAnimData(std::map<int, AnimData> data) { m_AnimData = data; };
-	
+	void AddState(BaseState* state);
+
 private:
+
+	
+
 	std::function<void(void)> m_Switch;
-	std::shared_ptr<AnimatorState> m_pCurrentAnimatorState = nullptr;
-	std::shared_ptr<AnimatorState> m_pPreviousAnimatorState = nullptr;
+	AnimatorState* m_pCurrentAnimatorState = nullptr;
+	AnimatorState* m_pPreviousAnimatorState = nullptr;
 	AnimatorBlackboard& m_pAnimatorBlackboard;
-	std::map<int, AnimData> m_AnimData;
+	std::map<int, AnimData> m_AnimData{};
 
-	//To delete all nodes
-	std::shared_ptr<AnimatorState> startState = nullptr;
+	std::vector<BaseState*> m_pStates;
 
-	PTR(SpriteComponent) m_pSpriteComp = nullptr;
+	SpriteComponent* m_pSpriteComp = nullptr;
 };

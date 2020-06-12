@@ -8,7 +8,7 @@ class TextureComponent;
 class TextComponent final : public BaseComponent
 {
 public:
-	TextComponent(std::shared_ptr<Font> font);
+	TextComponent(Font* font);
 	void Initialize() override;
 	void Draw() override;
 	void Update(float elapsedSec) override;
@@ -18,7 +18,7 @@ public:
 private:
 	bool m_NeedsUpdate = true;
 	std::string m_Text = "";
-	std::shared_ptr<Font> m_Font;
+	Font* m_Font = nullptr;
 	Texture2D * m_Texture=nullptr;
 	SDL_Color m_Color;
 };

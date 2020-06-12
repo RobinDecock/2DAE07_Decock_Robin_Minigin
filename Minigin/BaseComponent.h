@@ -31,19 +31,17 @@ public:
 protected:
 
 	//* Virtual Functions *//
-	virtual void Initialize();
+	virtual void Initialize() {}
 
-	virtual void LateInitialize();
+	virtual void LateInitialize() {}
 
-	virtual void Update(float elapsedSec);
+	virtual void Update(float elapsedSec) {}
+	virtual void PhysicsUpdate(float elapsedSec) {}
+	virtual void LateUpdate(float elapsedSec) {}
 
-	virtual void LateUpdate(float elapsedSec);;
+	virtual void Draw(){}
 
-	virtual void Draw();
-
-	virtual void PreDraw();
-
-	virtual void Release();
+	virtual void PreDraw(){}
 
 	//*                   *//
 

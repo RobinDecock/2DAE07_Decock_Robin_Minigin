@@ -5,7 +5,7 @@
 #include "TransformComponent.h"
 #include "Font.h"
 #include "Texture2D.h"
-TextComponent::TextComponent(std::shared_ptr<Font> font) :
+TextComponent::TextComponent(Font* font) :
 	m_NeedsUpdate(false), m_Font(font), m_Color({ 255,255,255 })
 {
 }
@@ -33,13 +33,12 @@ void TextComponent::Update(float elapsedSec)
 		{
 			throw std::runtime_error(std::string("Draw text failed: ") + SDL_GetError());
 		}
-		auto texture = SDL_CreateTextureFromSurface(Renderer::GetSDLRenderer(), surf);
+		const auto texture = SDL_CreateTextureFromSurface(Renderer::GetSDLRenderer(), surf);
 
 
-		if(m_Texture!=nullptr)
-		{
-			delete m_Texture;
-		}
+
+		SafeDelete(m_Texture);
+		
 
 		m_Texture = new Texture2D(texture);
 		if (texture == nullptr)
@@ -67,6 +66,5 @@ void TextComponent::SetColor(SDL_Color color)
 
 TextComponent::~TextComponent()
 {
-	delete m_Texture;
-	m_Texture = nullptr;
+	SafeDelete(m_Texture);
 }

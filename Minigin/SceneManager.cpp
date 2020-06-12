@@ -3,7 +3,6 @@
 #include "GameScene.h"
 #include <map>
 #include "GameObject.h"
-#include <SDL.h>
 
 SceneManager* SceneManager::m_Instance = nullptr;
 
@@ -15,7 +14,7 @@ SceneManager::SceneManager()
 
 SceneManager::~SceneManager()
 {
-	for (int i = 0; i < mScenes.size(); i++)
+	for (unsigned int i = 0; i < mScenes.size(); i++)
 	{
 		SafeDelete(mScenes[i]);
 	}
@@ -35,9 +34,25 @@ void SceneManager::Update(float elapsedSec)
 	{
 		SetPreviousSceneIndex();
 	}
+
+
+	while(m_pToDelete.size()!=0)
+	{
+		for (unsigned int i = 0; i < mScenes.size(); i++)
+		{
+			if (mScenes[i] == m_pToDelete[0])
+			{
+				delete mScenes[i];
+				mScenes.erase(mScenes.begin() + i);
+				return;
+			}
+		}
+		m_pToDelete.erase(m_pToDelete.begin());
+	}
+	
 }
 
-void SceneManager::Draw()
+void SceneManager::Draw()const
 {
 	mScenes[m_CurrentSceneIndex]->RootDraw();
 }
@@ -68,14 +83,8 @@ SceneManager* SceneManager::GetInstance()
 
 void SceneManager::RemoveScene(GameScene* scenePtr)
 {
-	for(int i = 0; i<mScenes.size();i++)
-	{
-		if(mScenes[i] == scenePtr)
-		{
-			mScenes.erase(mScenes.begin() + i);
-			return;
-		}
-	}
+	m_pToDelete.push_back(scenePtr);
+
 }
 
 void SceneManager::AddScene(GameScene* scenePtr)

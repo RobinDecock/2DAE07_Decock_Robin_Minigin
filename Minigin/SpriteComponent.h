@@ -59,7 +59,7 @@ private:
 	int2 m_StartPos {};
 	glm::vec2 pivotOffset = glm::vec2(0.5f, 0.5f);
 	glm::vec2 m_Offset {};
-	std::vector<int> m_Exceptions;
+	std::vector<int> m_Exceptions{};
 	Texture2D* m_Texture = nullptr;
 	SDL_Rect m_DestRect{};
 	SDL_Rect m_SrcRect{};

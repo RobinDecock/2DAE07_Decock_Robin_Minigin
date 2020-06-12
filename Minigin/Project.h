@@ -1,4 +1,6 @@
 #pragma once
+#include "SceneManager.h"
+
 class Project
 {
 public:
@@ -6,5 +8,6 @@ public:
 	virtual void Initialize() = 0;
 	virtual void Update(float elapsedSec) = 0;
 	virtual void Draw() = 0;
-	virtual void CleanUp() = 0;
+private:
+	SceneManager *m_pSceneManager = nullptr;
 };

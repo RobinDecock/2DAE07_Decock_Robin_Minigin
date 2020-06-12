@@ -5,15 +5,21 @@
 
 struct AxisInput
 {
-	AxisInput(int posKey,int negKey,bool gamePad = false, float treshold = 0.1f, Logic lg = Logic::BIGGER) :PositiveKey(posKey),negativeKey(negKey),isGamePad(gamePad),logic(lg),treshholdValue(treshold),currValue(0){}
+	AxisInput(int posKey,int negKey,bool gamePad = false,float speedChange = 0.1f, float treshold = 0.1f, Logic lg = Logic::BIGGER) :
+	PositiveKey(posKey),negativeKey(negKey),isGamePad(gamePad),logic(lg),treshholdValue(treshold),currValue(0), speedChangeAxis(speedChange) {}
 
-	AxisInput(int posKey, float treshold = 0.1f, Logic lg = Logic::BIGGER) :PositiveKey(posKey), negativeKey(-1), isGamePad(true), logic(lg), treshholdValue(treshold), currValue(0) {}
+	AxisInput(JoyStick posKey, float speedChange = 0.1f, float treshold = 0.1f, Logic lg = Logic::BIGGER) :
+	PositiveKey(int(posKey)), negativeKey(-1), isGamePad(true), logic(lg), treshholdValue(treshold), currValue(0),speedChangeAxis(speedChange) {}
 
-	float PositiveKey;
-	float negativeKey;
+	void SetAxisChangeSpeed(float f) { speedChangeAxis = f; }
+	int PositiveKey;
+	int negativeKey;
 	
 	float treshholdValue;
 	float currValue;
+
+	float speedChangeAxis = 0.1f;
+	
 	Logic logic;
 
 	bool isGamePad;
@@ -40,14 +46,14 @@ class InputHandler
 {
 public:
 	
-	void AddInputButton(ButtonInput input, ButtonCommand* command);
-	void AddInputAxis(AxisInput input, AxisCommand* command);
+	void AddInputButton(ButtonInput input, ButtonCommand& command);
+	void AddInputAxis(AxisInput input, AxisCommand& command);
 	void HandleInput(float elapsedSec);
 	~InputHandler();
 private:
-	int playerId;
-	std::vector<std::pair<ButtonInput, ButtonCommand*>> buttonVector;
-	std::vector<std::pair<AxisInput, AxisCommand*>> axisVector;
+	int playerId = 0;
+	std::vector<std::pair<ButtonInput, ButtonCommand&>> buttonVector{};
+	std::vector<std::pair<AxisInput, AxisCommand&>> axisVector{};
 
 };
 
@@ -58,12 +64,12 @@ private:
 //Key: ActionKey
 //Key : ButtonInput
 
-enum KeyAction
+enum class KeyAction
 {
 	K_Key1,C_Key1,K_Key2,C_Key2
 };
 
-enum AxisAction
+enum class AxisAction
 {
 	K_StickH,
 	K_StickV,
@@ -75,18 +81,18 @@ static std::map<int, std::map<KeyAction, ButtonInput>>S_ButtonMap
 {
 	{0,
 	{
-		{K_Key1,ButtonInput(KEY_UP)},
-		{C_Key1,ButtonInput(XINPUT_GAMEPAD_A,true)},
-		{K_Key2,ButtonInput(KEY_KEYPAD_0)},
-		{C_Key2,ButtonInput(XINPUT_GAMEPAD_X,true)}
+		{KeyAction::K_Key1,ButtonInput(KEY_UP)},
+		{KeyAction::C_Key1,ButtonInput(XINPUT_GAMEPAD_A,true)},
+		{KeyAction::K_Key2,ButtonInput(KEY_KEYPAD_0)},
+		{KeyAction::C_Key2,ButtonInput(XINPUT_GAMEPAD_X,true)}
 	}
 	},
 	{1,
 	{
-		{K_Key1,ButtonInput(KEY_W)},
-		{C_Key1,ButtonInput(XINPUT_GAMEPAD_A,true)},
-		{K_Key2,ButtonInput(KEY_F)},
-		{C_Key2,ButtonInput(XINPUT_GAMEPAD_X,true)}
+		{KeyAction::K_Key1,ButtonInput(KEY_W)},
+		{KeyAction::C_Key1,ButtonInput(XINPUT_GAMEPAD_A,true)},
+		{KeyAction::K_Key2,ButtonInput(KEY_F)},
+		{KeyAction::C_Key2,ButtonInput(XINPUT_GAMEPAD_X,true)}
 	}
 	}
 };
@@ -97,20 +103,20 @@ static std::map<int, std::map<AxisAction, AxisInput>>S_AxisMap
 {
 	{0,
 	{
-		{K_StickH,AxisInput(KEY_RIGHT,KEY_LEFT)},
-		{C_StickH,AxisInput((int)JoyStick::LX)},
+		{AxisAction::K_StickH,AxisInput(KEY_RIGHT,KEY_LEFT,false,1.0f)},
+		{AxisAction::C_StickH,AxisInput(JoyStick::LX,1.0f)},
 		
-		{K_StickV,AxisInput(KEY_UP,KEY_DOWN)},
-		{C_StickV,AxisInput((int)JoyStick::LY)},
+		{AxisAction::K_StickV,AxisInput(KEY_UP,KEY_DOWN,false,1.0f)},
+		{AxisAction::C_StickV,AxisInput(JoyStick::LY,1.0f)},
 	}
 	},
 	{1,
 	{
-		{K_StickH,AxisInput(KEY_D,KEY_A)},
-		{C_StickH,AxisInput((int)JoyStick::LX)},
+		{AxisAction::K_StickH,AxisInput(KEY_D,KEY_A,false,1.0f)},
+		{AxisAction::C_StickH,AxisInput(JoyStick::LX,1.0f)},
 
-		{K_StickV,AxisInput(KEY_W,KEY_S)},
-		{C_StickV,AxisInput((int)JoyStick::LY)},
+		{AxisAction::K_StickV,AxisInput(KEY_W,KEY_S,false,1.0f)},
+		{AxisAction::C_StickV,AxisInput(JoyStick::LY,1.0f)},
 	}
 	}
 };

@@ -10,6 +10,7 @@
     <Link>
       <AdditionalDependencies>Minigin.lib;Box2D.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)x64\Release;C:\Program Files (x86)Visual Leak Detector\lib\Win64;$(SolutionDir)3rdParty\Box2D\lib\x86_64\Release;$(SolutionDir)3rdParty\SDL2\lib\x64;$(SolutionDir)3rdParty\SDL2_ttf\lib\x64;$(SolutionDir)3rdParty\SDL2_image\lib\x64;$(SolutionDir)3rdParty\SDL2_mixer\lib\x64;D:\DAE\Programming4\2DAE07_Decock_Robin_Minigin\3rdParty\SDL2_mixer\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <SubSystem>Console</SubSystem>
     </Link>
     <Lib>
       <AdditionalDependencies>SDL2_mixer.lib</AdditionalDependencies>

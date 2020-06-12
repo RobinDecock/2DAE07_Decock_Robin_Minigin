@@ -3,9 +3,6 @@
 #include <SDL_mixer.h>
 
 Mix_Music* SoundManager::m_pMusic  =nullptr;
-SoundManager::SoundManager()
-{
-}
 
 void SoundManager::Update()
 {

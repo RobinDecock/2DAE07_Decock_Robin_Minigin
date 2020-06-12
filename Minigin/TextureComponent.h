@@ -1,8 +1,9 @@
 #pragma once
-#include <SDL.h>
+#include "SDLS.h"
 #include "BaseComponent.h"
 #include "Texture2D.h"
-#include "vec2.hpp"
+#include "GLMS.h"
+struct int4;
 struct SDL_Texture;
 
 class TextureComponent final : public BaseComponent
@@ -17,8 +18,8 @@ public:
 	TextureComponent& operator=(const TextureComponent&) = delete;
 	TextureComponent& operator=(const TextureComponent&&) = delete;
 	void Draw() override;
-	void Update(float elapsedSec) override;
 	void SetSourceRectangle(SDL_Rect rect);
+	void SetSourceRectangle(int4 rect);
 	void SetDestinationRectangle(SDL_Rect rect);
 	int GetWidth() const;
 	int GetHeight() const;
@@ -33,7 +34,7 @@ public:
 	void SetAngle(float a) { m_Texture->SetAngle(a); }
 	void SetUseCam(bool b) { useCam = b; }
 protected:
-	Texture2D* m_Texture;
+	Texture2D* m_Texture = nullptr;
 	bool useCam = true;
 	
 };

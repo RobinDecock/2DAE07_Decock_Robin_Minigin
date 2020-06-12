@@ -26,33 +26,3 @@ CompType BaseComponent::GetCompType()
 {
 	return m_Type;
 }
-
-void BaseComponent::Initialize()
-{
-}
-
-void BaseComponent::LateInitialize()
-{
-}
-
-void BaseComponent::Update(float elapsedSec)
-{
-	UNREF(elapsedSec);
-}
-
-void BaseComponent::LateUpdate(float elapsedSec)
-{
-	UNREF(elapsedSec);
-}
-
-void BaseComponent::Draw()
-{
-}
-
-void BaseComponent::PreDraw()
-{
-}
-
-void BaseComponent::Release()
-{
-}

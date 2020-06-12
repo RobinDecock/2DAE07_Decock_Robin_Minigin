@@ -1,6 +1,5 @@
 #pragma once
-#include "Box2D/Dynamics/b2WorldCallbacks.h"
-#include "Box2D/Dynamics/Contacts/b2Contact.h"
+#include "BOX2DS.h"
 
 class b2CContactListener:public b2ContactListener
 {

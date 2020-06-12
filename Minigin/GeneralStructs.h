@@ -79,16 +79,16 @@ static std::map<Direction, int2> DirectionMap
 
 struct Color
 {
-	Color(char vr, char vg, char vb, char va) : r(vr), g(vg), b(vb), a(va)
+	Color(unsigned char vr, unsigned char vg, unsigned char vb, unsigned char va) : r(vr), g(vg), b(vb), a(va)
 	{
 	}
 
-	char r;
-	char g;
-	char b;
-	char a;
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+	unsigned char a;
 };
 
-enum Logic { BIGGER, SMALLER, EQUAL };
+enum class Logic { BIGGER, SMALLER, EQUAL };
 
 

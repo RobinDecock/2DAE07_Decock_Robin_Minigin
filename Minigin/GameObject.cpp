@@ -1,4 +1,4 @@
-#include "MiniginPch.h"
+#include "MiniginPCH.h"
 #include "GameObject.h"
 #include "GameScene.h"
 #include "BaseComponent.h"
@@ -8,7 +8,7 @@
 
 GameObject::GameObject()
 {
-	m_Transform = NEW(TransformComponent)();
+	m_Transform = new TransformComponent();
 	AddComponent(m_Transform);
 }
 
@@ -16,16 +16,16 @@ void GameObject::RootInitialize()
 {
 	Initialize();
 	
-	for(int i = 0;i<m_pChildren.size();i++)
+	for(unsigned int i = 0;i<m_pChildren.size();i++)
 	{
 		m_pChildren[i]->m_ParentScene = m_ParentScene;
 		m_pChildren[i]->RootInitialize();
 	}
-	for (int i = 0; i < m_pComponents.size(); i++)
+	for (unsigned int i = 0; i < m_pComponents.size(); i++)
 	{
 		m_pComponents[i]->Initialize();
 	}
-	for (int i = 0; i < m_pComponents.size(); i++)
+	for (unsigned int i = 0; i < m_pComponents.size(); i++)
 	{
 		m_pComponents[i]->LateInitialize();
 	}
@@ -36,15 +36,30 @@ void GameObject::RootInitialize()
 void GameObject::RootUpdate(float elapsedSec)
 {
 	Update(elapsedSec);
-	for (int i = 0; i < m_pChildren.size(); i++)
+	for (unsigned int i = 0; i < m_pChildren.size(); i++)
 	{
 		m_pChildren[i]->RootUpdate(elapsedSec);
 	}
 
 
-	for (int i = 0; i<m_pComponents.size();i++)
+	for (unsigned int i = 0; i<m_pComponents.size();i++)
 	{
 		m_pComponents[i]->Update(elapsedSec);
+	}
+}
+
+void GameObject::RootPhysicsUpdate(float elapsedSec)
+{
+	PhysicsUpdate(elapsedSec);
+	for (unsigned int i = 0; i < m_pChildren.size(); i++)
+	{
+		m_pChildren[i]->RootPhysicsUpdate(elapsedSec);
+	}
+
+
+	for (unsigned int i = 0; i < m_pComponents.size(); i++)
+	{
+		m_pComponents[i]->PhysicsUpdate(elapsedSec);
 	}
 }
 
@@ -63,7 +78,7 @@ void GameObject::RootLateUpdate(float elapsedSec)
 
 
 
-void GameObject::RootDraw()
+void GameObject::RootDraw()const 
 {
 	Draw();
 	for (auto comp : m_pComponents)
@@ -80,24 +95,20 @@ void GameObject::RootDraw()
 	}
 }
 
-void GameObject::Update(float elapsedSec)
-{
-	UNREF(elapsedSec);
-}
-
-void GameObject::LateUpdate(float elapsedSec)
-{
-	UNREF(elapsedSec); 
-}
 
 void GameObject::SetPosition(glm::vec2 pos)
 {
+	RigidbodyComponent* rigid = GetComponent<RigidbodyComponent>();
+	if (rigid != nullptr)
+	{
+		rigid->SetBodyPosition(pos);
+	}
 	m_Transform->SetPosition(pos);
 }
 
 void GameObject::SetPosition(glm::vec3 pos)
 {
-	std::shared_ptr<RigidbodyComponent> rigid = GetComponent<RigidbodyComponent>();
+	RigidbodyComponent* rigid = GetComponent<RigidbodyComponent>();
 	if (rigid != nullptr)
 	{
 		rigid->SetBodyPosition(pos);
@@ -120,11 +131,11 @@ void GameObject::SetRotationRad(float rot)
 	m_Transform->SetRotationRad(rot);
 }
 
-void GameObject::AddComponent(std::shared_ptr<BaseComponent> comp)
+void GameObject::AddComponent(BaseComponent * comp)
 {
 	m_pComponents.push_back(comp);
 	std::sort(std::begin(m_pComponents), std::end(m_pComponents),
-	          [](std::shared_ptr<BaseComponent> comp1, std::shared_ptr<BaseComponent> comp2)
+	          [](BaseComponent * comp1, BaseComponent * comp2)
 	          {
 		          return comp1->GetCompType() < comp2->GetCompType();
 	          });
@@ -150,7 +161,7 @@ GameScene* GameObject::GetScene()
 
 TransformComponent* GameObject::GetTransform()
 {
-	return m_Transform.get();
+	return m_Transform;
 }
 
 void GameObject::SetParent(GameObject* obj)
@@ -170,18 +181,18 @@ std::string GameObject::GetTag()
 
 void GameObject::Contact(b2Fixture* thisfix, b2Fixture* other, b2Contact* contact, ContactType contactType)
 {
-	for (int i = 0; i < m_ContactCallbacks.size(); i++)
+	for (unsigned int i = 0; i < m_ContactCallbacks.size(); i++)
 	{		
 		m_ContactCallbacks[i](thisfix,other,contact,contactType);
 	}
 }
 
-int GameObject::GetId()
+unsigned int GameObject::GetId()
 {
 	return id;
 }
 
-void GameObject::SetId(int i)
+void GameObject::SetId(unsigned int i)
 {
 	id = i;
 }
@@ -205,20 +216,21 @@ GameObject* GameObject::GetParent()
 
 void GameObject::AddChild(GameObject* child)
 {
-	child->GetTransform()->SetParent(m_Transform);
 	m_pChildren.push_back(child);
+	child->GetTransform()->SetParent(m_Transform);
 	child->SetParent(this);
+
 	if(m_IsInitialized)
 	{
 		child->m_ParentScene = m_ParentScene;
-		child->Initialize();
-		
+		child->RootInitialize();
 	}
+
 }
 
 void GameObject::RemoveChild(GameObject* child, bool deleteObj)
 {
-	for (int i = 0; i < m_pChildren.size(); i++)
+	for (unsigned int i = 0; i < m_pChildren.size(); i++)
 	{
 		if (m_pChildren[i] == child)
 		{
@@ -237,6 +249,11 @@ GameObject::~GameObject()
 	for (auto child : m_pChildren)
 	{
 		SafeDelete(child);
+	}
+
+	for (auto comp : m_pComponents)
+	{
+		SafeDelete(comp);
 	}
 }
 

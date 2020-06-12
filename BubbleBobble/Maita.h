@@ -8,11 +8,16 @@ class Maita : public BaseEnemy
 {
 public:
 	Maita(LevelSegment* segment);
+	~Maita()override;
 private:
 	void Initialize() override;
+	EC::Shoot m_pShootC = nullptr;
 	
-	void Update(float elapsedSec) override;
-	void LateUpdate(float elapsedSec) override;
-	void Draw() override;
+protected:
+	void HandleAI(float elapsedSec) override;
+public:
+	void SetControlled(int PlayerId) override;
+
+	
 };
 

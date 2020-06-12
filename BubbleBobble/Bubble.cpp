@@ -5,16 +5,15 @@
 #include "AnimatorState.h"
 #include "AnimLoader.h"
 #include "AutoDestroyComponent.h"
+#include "BaseEnemy.h"
 #include "BoxTrigger.h"
 #include "SpriteComponent.h"
 #include "RigidbodyComponent.h"
 #include "GameObject.h"
 #include "BoxCollider.h"
 #include "BubbleBobble.h"
-AnimatorState* tryied;
-
-
-Bubble::Bubble(bool isRight,int playerId): m_IsRight(isRight), m_PlayerId(playerId)
+#include "EffectorComponent.h"
+Bubble::Bubble(bool isRight,int playerId): m_PlayerId(playerId), m_IsRight(isRight)
 {
 	m_Tag = "Bubble";
 }
@@ -26,55 +25,71 @@ Bubble::~Bubble()
 
 void Bubble::Initialize()
 {
-	AddComponent(NEW(AutoDestroyComponent)(5.0f));
-	m_pRigid = std::make_shared<RigidbodyComponent>(false);
+	AddComponent(new AutoDestroyComponent(5.0f));
+	m_pRigid = new RigidbodyComponent(false);
 	AddComponent(m_pRigid);
 
-	auto pBoxCol = std::make_shared<BoxCollider>(glm::vec2(16, 16));
+
+	
+	pBoxCol = new BoxCollider(glm::vec2(16, 16));
 	AddComponent(pBoxCol);
 	pBoxCol->SetCategory(LayerMask::Bubbles);
-	pBoxCol->SetIgnoreMask(LayerMask::Player|LayerMask::Enemies);
+	pBoxCol->SetIgnoreMask(LayerMask::Enemies);
 
-	m_pBoxTrigger = std::make_shared<BoxTrigger>(glm::vec2(14, 14));
+
+	//TEST
+	auto pEffect = new EffectorComponent(pBoxCol, glm::vec2(0, -14), glm::vec2(7, 7));
+	AddComponent(pEffect);
+	pEffect->SetCategoryToAffect(LayerMask::Player);
+	
+	m_pBoxTrigger = new BoxTrigger(glm::vec2(14, 14));
 	AddComponent(m_pBoxTrigger);
+	m_pBoxTrigger->SetCategory(LayerMask::Bubbles);
 	m_pBoxTrigger->SetActive(false);
 
 
 	this->AddContactCallback([this](b2Fixture* thisFix, b2Fixture* other, b2Contact* contact, ContactType type)
 		{
-			if(thisFix== m_pBoxTrigger->GetFixture())
+			if(type == ContactType::BeginContact &&((other->GetFilterData().categoryBits&LayerMask::Enemies)==LayerMask::Enemies))
 			{
-				if(other->GetFilterData().categoryBits==LayerMask::Player&& GetComponent<AutoDestroyComponent>()->timer > 1.0f)
+				auto pEnemy = static_cast<BaseEnemy*>(other->GetUserData());
+				if(!pEnemy->IsBubbled())
 				{
-					m_Blackboard.SetKeyValue((int)BlackboardKey::IsExploding, true);
+					pEnemy->SetBubbled(true);
+					m_ParentScene->Remove(this);
 				}
 			}
+
 		});
 
 
 
 	
-	m_pSprite = std::make_shared<SpriteComponent>("Bub.png");
+	m_pSprite = new SpriteComponent("Bub.png");
 	AddComponent(m_pSprite);
 
+	auto pBubble = new AnimatorState(6, "BubbleV1");
+
+	m_pAnimator = new Animator(m_pSprite, pBubble, m_Blackboard);
+	AddComponent(m_pAnimator);
 	//STATES
-	auto pBubble = NEW( AnimatorState)(6, "BubbleV1");
+
 	pBubble->SetLooping(false);
 	pBubble->SetSpeed(3.0f);
-	auto pBubbleExplode = NEW(AnimatorState)(7, "BubbleV2");
+	auto pBubbleExplode = new AnimatorState(7, "BubbleV2");
+	m_pAnimator->AddState(pBubbleExplode);
 	pBubbleExplode->SetLooping(false);
 	pBubbleExplode->SetSpeed(10.0f);
-	m_pAnimator = std::make_shared<Animator>(m_pSprite,pBubble, m_Blackboard);
-	AddComponent(m_pAnimator);
 
-	std::map<int, AnimData> animData = AnimLoader::Load("../BubbleBobble/Resources/Bub"+ std::to_string(m_PlayerId)+".anim");
+
+	std::map<int, AnimData> animData = Anim::Loader::Load("../BubbleBobble/Resources/Bub"+ std::to_string(m_PlayerId)+".anim");
 	m_pAnimator->SetAnimData(animData);
 
 	//BLACKBOARD KEYS
-	m_Blackboard.AddKey((int)BlackboardKey::IsExploding, ValueType::boolValue);
+	m_Blackboard.AddKey(int(BKey::IsExploding), ValueType::boolValue);
 
 	//LINKS
-	m_pAnimator->LinkStates(pBubble, pBubbleExplode, Req((int)BlackboardKey::IsExploding, true));
+	m_pAnimator->LinkStates(pBubble, pBubbleExplode, Req(int(BKey::IsExploding), true));
 
 	m_pRigid->SetGravityScale(-2.0f);
 
@@ -82,7 +97,7 @@ void Bubble::Initialize()
 
 void Bubble::LateInitialize()
 {
-	float impulse = m_pRigid->GetBody()->GetMass() * 500 * (m_IsRight ? 1 : -1);
+	float impulse = m_pRigid->GetBody()->GetMass() * 500.0f * (m_IsRight ? 1.0f : -1.0f);
 	m_pRigid->GetBody()->ApplyLinearImpulse(b2Vec2(impulse, 0), m_pRigid->GetBody()->GetWorldCenter() + b2Vec2(impulse, 0), true);
 }
 
@@ -90,12 +105,6 @@ void Bubble::Update(float elapsedSec)
 {	
 	if(GetComponent<AutoDestroyComponent>()->timer>4.5f)
 	{
-		m_Blackboard.SetKeyValue((int)BlackboardKey::IsExploding, true);
+		m_Blackboard.SetKeyValue((int)BKey::IsExploding, true);
 	}
 }
-
-void Bubble::LateUpdate(float elapsedSec)
-{}
-
-void Bubble::Draw()
-{}

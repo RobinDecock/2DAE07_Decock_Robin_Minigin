@@ -29,4 +29,13 @@ namespace EC
 		Maita* m_pEnemy = nullptr;
 	};
 
+	class GoDown :public AxisCommand
+	{
+	public:
+		GoDown(BaseEnemy* enemy) :m_pEnemy(enemy) {}
+		void execute(float elapsedSec, float axisValue) override;
+	private:
+		BaseEnemy* m_pEnemy = nullptr;
+	};
+
 }

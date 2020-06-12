@@ -9,6 +9,7 @@
 
 void BubbleBobble::Initialize()
 {
+	
 	sceneManager= new SceneManager();
 	ResourceManager::GetInstance().Init("../BubbleBobble/Resources/");
 	sceneManager->AddScene(new MainMenu());
@@ -24,12 +25,8 @@ void BubbleBobble::Draw()
 	sceneManager->Draw();
 }
 
-void BubbleBobble::CleanUp()
+BubbleBobble::~BubbleBobble()
 {
 	delete sceneManager;
 	sceneManager = nullptr;
-}
-
-BubbleBobble::~BubbleBobble()
-{
 }

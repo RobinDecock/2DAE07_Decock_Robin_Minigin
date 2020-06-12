@@ -1,14 +1,13 @@
 #pragma once
 #include "BaseComponent.h"
-#include "vec2.hpp"
-#include "vec3.hpp"
+#include "GLMS.h"
 
 class TransformComponent final : public BaseComponent
 {
 public:
 	TransformComponent(glm::vec3 pos, float rot);
 	TransformComponent();
-	~TransformComponent();
+	~TransformComponent() = default;
 
 	glm::vec3 GetPosition() const;
 	glm::vec2 Get2DPosition() const;
@@ -22,14 +21,15 @@ public:
 	void SetRotationDegree(float r);
 	void SetRotationRad(float rot);
 	void AddRotationDegree(float r);
-
-	void SetParent(std::shared_ptr<TransformComponent> parent)
+	void SetDepth(float d) { m_Position.z = d; };
+	float GetDepth() { return m_Position.z; }
+	void SetParent(TransformComponent* parent)
 	{
 		m_pParent = parent;
 	}
 
 protected:
-	std::shared_ptr<TransformComponent> m_pParent = nullptr;
+	TransformComponent* m_pParent = nullptr;
 
 	float m_Rotation = 0;
 	glm::vec3 m_LocalPosition{};

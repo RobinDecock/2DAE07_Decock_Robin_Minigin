@@ -3,7 +3,6 @@
 #include "GameObject.h"
 #include "BoxCollider.h"
 #include "BoxTrigger.h"
-#include "Box2D/Dynamics/Contacts/b2Contact.h"
 #include "RigidbodyComponent.h"
 
 void EffectorContactCallback::BeginContact(b2Contact* contact)
@@ -14,15 +13,15 @@ void EffectorContactCallback::EndContact(b2Contact* contact)
 {
 }
 
-EffectorComponent::EffectorComponent(PTR(BoxCollider) boxCollider,glm::vec2 localCenter, glm::vec2 size):m_pBoxCollider(boxCollider)
+EffectorComponent::EffectorComponent(BoxCollider* boxCollider,glm::vec2 localCenter, glm::vec2 size):m_pBoxCollider(boxCollider)
 {
-	m_pTrigger = NEW(BoxTrigger)(glm::vec2(size.x, size.y), localCenter);
+	m_pTrigger = new BoxTrigger(glm::vec2(size.x, size.y), localCenter);
 
 }
 
 void EffectorComponent::AddIgnore(b2Fixture* fix)
 {
-	for(int i = 0;i<m_ToIgnore.size();i++)
+	for(unsigned int i = 0;i<m_ToIgnore.size();i++)
 	{
 		if(m_ToIgnore[i]==fix)
 		{
@@ -31,11 +30,6 @@ void EffectorComponent::AddIgnore(b2Fixture* fix)
 	}
 	m_ToIgnore.push_back(fix);
 }
-
-EffectorComponent::~EffectorComponent()
-{
-}
-
 
 void EffectorComponent::Initialize()
 {
@@ -73,7 +67,7 @@ void EffectorComponent::Initialize()
 						uint16 cat = other->GetFilterData().categoryBits;
 						if ((m_AffectedCat & cat) == cat)
 						{
-							for (int i = 0; i < m_ToIgnore.size(); i++)
+							for (unsigned int i = 0; i < m_ToIgnore.size(); i++)
 							{
 								if (m_ToIgnore[i] == other)
 								{
@@ -82,7 +76,7 @@ void EffectorComponent::Initialize()
 								}
 							}
 
-							for (int i = 0; i < m_ToBlock.size(); i++)
+							for (unsigned int i = 0; i < m_ToBlock.size(); i++)
 							{
 								if (m_ToBlock[i] == other)
 								{
@@ -95,7 +89,7 @@ void EffectorComponent::Initialize()
 					}
 					else if (type == ContactType::EndContact)
 					{
-						for (int i = 0; i < m_ToIgnore.size(); i++)
+						for (unsigned int i = 0; i < m_ToIgnore.size(); i++)
 						{
 							if (m_ToIgnore[i] == other)
 							{
@@ -111,23 +105,3 @@ void EffectorComponent::Initialize()
 	
 }
 
-
-void EffectorComponent::Update(float elapsedSec)
-{
-}
-
-void EffectorComponent::LateUpdate(float elapsedSec)
-{
-}
-
-void EffectorComponent::Draw()
-{
-}
-
-void EffectorComponent::PreDraw()
-{
-}
-
-void EffectorComponent::Release()
-{
-}

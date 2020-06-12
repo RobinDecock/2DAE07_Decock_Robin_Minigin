@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -19,136 +11,162 @@
     <Filter Include="Prefabs">
       <UniqueIdentifier>{321ae2cd-1da0-46cf-91b1-a569dc3c67fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{57e3b21d-3752-4364-bc2c-2547ac3d9321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Prefabs\Enemies">
+      <UniqueIdentifier>{f9ffd071-5a49-473a-8e89-ab1e1e3b83ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Prefabs\Blocks">
+      <UniqueIdentifier>{3463fb46-e69d-4ba0-9e55-13ce79fc191b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Commands">
+      <UniqueIdentifier>{907f46ef-867f-4081-b9c8-8316d05219af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Prefabs\UI">
+      <UniqueIdentifier>{e3ba169b-2505-433a-a7d8-c1406b05fe99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="General">
+      <UniqueIdentifier>{861f59f8-5e34-48ab-817c-404c4bb80bf9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BubbleBobble.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ColBlock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bub.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Bubble.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="BubbleBobble.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ProjectPCH.cpp" />
     <ClCompile Include="AutoDestroyComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Maita.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Zen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectPCH.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LevelSegment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseEnemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hud.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorBlock.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="BaseItem.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Prefabs</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerCommands.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="BaseEnemy.cpp">
+      <Filter>Prefabs\Enemies</Filter>
     </ClCompile>
-    <ClCompile Include="MainMenu.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ColBlock.cpp">
+      <Filter>Prefabs\Blocks</Filter>
     </ClCompile>
-    <ClCompile Include="GameSettings.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ColorBlock.cpp">
+      <Filter>Prefabs\Blocks</Filter>
     </ClCompile>
-    <ClCompile Include="SingleScene.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Zen.cpp">
+      <Filter>Prefabs\Enemies</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyCommands.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Bub.cpp">
+      <Filter>Prefabs</Filter>
     </ClCompile>
-    <ClCompile Include="ScoreAnnouncer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Hud.cpp">
+      <Filter>Prefabs\UI</Filter>
     </ClCompile>
     <ClCompile Include="LifeCounter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Prefabs\UI</Filter>
     </ClCompile>
+    <ClCompile Include="ControllerVisual.cpp">
+      <Filter>Prefabs\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>Prefabs\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreAnnouncer.cpp">
+      <Filter>Prefabs\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Tunnel.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Maita.cpp">
+      <Filter>Prefabs\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCommands.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyCommands.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelSegment.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSettings.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="Bubble.cpp">
+      <Filter>Prefabs</Filter>
+    </ClCompile>
+    <ClCompile Include="BlinkComponent.cpp" />
+    <ClCompile Include="MaitaBullet.cpp" />
+    <ClCompile Include="ItemManager.cpp" />
+    <ClCompile Include="EnemyStates.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BubbleBobble.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectPCH.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ColBlock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bub.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Bubble.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="BubbleBobble.h" />
+    <ClInclude Include="ProjectPCH.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="AutoDestroyComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Maita.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Zen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelSegment.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseEnemy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hud.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorBlock.h">
-      <Filter>Header Files</Filter>
+      <Filter>Components</Filter>
     </ClInclude>
     <ClInclude Include="BaseItem.h">
-      <Filter>Header Files</Filter>
+      <Filter>Prefabs</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerCommands.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="BaseEnemy.h">
+      <Filter>Prefabs\Enemies</Filter>
     </ClInclude>
-    <ClInclude Include="MainMenu.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ColorBlock.h">
+      <Filter>Prefabs\Blocks</Filter>
     </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="ColBlock.h">
+      <Filter>Prefabs\Blocks</Filter>
     </ClInclude>
-    <ClInclude Include="SingleScene.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Zen.h">
+      <Filter>Prefabs\Enemies</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyCommands.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Bub.h">
+      <Filter>Prefabs</Filter>
     </ClInclude>
-    <ClInclude Include="ScoreAnnouncer.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Hud.h">
+      <Filter>Prefabs\UI</Filter>
     </ClInclude>
     <ClInclude Include="LifeCounter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Prefabs\UI</Filter>
     </ClInclude>
+    <ClInclude Include="ControllerVisual.h">
+      <Filter>Prefabs\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>Prefabs\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreAnnouncer.h">
+      <Filter>Prefabs\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Tunnel.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="Maita.h">
+      <Filter>Prefabs\Enemies</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyCommands.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleScene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Bubble.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelSegment.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="GameSettings.h">
+      <Filter>Prefabs</Filter>
+    </ClInclude>
+    <ClInclude Include="BlinkComponent.h" />
+    <ClInclude Include="MaitaBullet.h" />
+    <ClInclude Include="ItemManager.h" />
+    <ClInclude Include="EnemyStates.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BubbleBobble.rc">

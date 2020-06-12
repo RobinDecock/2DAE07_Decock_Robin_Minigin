@@ -18,7 +18,6 @@ public:
 	BoxCollider& operator=(BoxCollider&& other) noexcept = delete;
 	BoxCollider(glm::vec2 widthHeight, glm::vec2 localCenter=glm::vec2(0,0));
 	~BoxCollider();
-	void SetCenter(glm::vec2 vec);
 protected:
 	void Initialize() override;
 	void Update(float elapsedSec) override;

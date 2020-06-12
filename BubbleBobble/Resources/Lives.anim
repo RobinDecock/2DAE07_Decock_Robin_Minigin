@@ -1,0 +1,12 @@
+<L0>
+RC="1,1"
+SRC="2,35,16,16"
+<L1>
+RC="1,1"
+SRC="103,35,16,16"
+
+GENERATED ENUM:
+enum AnimType
+{
+L0,L1
+}

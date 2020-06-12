@@ -15,11 +15,6 @@ TransformComponent::TransformComponent()
 	compName = "Transform";
 }
 
-
-TransformComponent::~TransformComponent()
-{
-}
-
 glm::vec3 TransformComponent::GetPosition() const
 {
 	if (m_pParent != nullptr)

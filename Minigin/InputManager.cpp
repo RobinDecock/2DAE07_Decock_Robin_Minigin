@@ -2,7 +2,6 @@
 #include "InputManager.h"
 
 #include "InputHandler.h"
-#include <iostream>
 Uint8 InputManager::m_CurrKeyboardState[SDL_NUM_SCANCODES];
 Uint8 InputManager::m_PrevKeyboardState[SDL_NUM_SCANCODES];
 
@@ -31,7 +30,7 @@ void InputManager::Update()
 	m_CurrMouseState = SDL_GetMouseState(&m_MousePos.x, &m_MousePos.y);
 
 
-	for(int i =0;i<4;i++)
+	for(unsigned int i =0;i<4;i++)
 	{
 		XINPUT_STATE state;
 		ZeroMemory(&state, sizeof(XINPUT_STATE));
@@ -62,7 +61,7 @@ bool InputManager::IsKeyboardKeyPressed(int key)
 #if DEBUG
 	CheckKeyboardKey((int)key);
 #endif
-	return m_CurrKeyboardState[key] && !m_PrevKeyboardState[key];
+	return m_CurrKeyboardState[key]==1 && m_PrevKeyboardState[key]==0;
 }
 
 bool InputManager::IsGamePadKeyDown(int key, int playerId)
@@ -82,19 +81,21 @@ bool InputManager::IsGamePadKeyPressed(int key, int playerId)
 
 float InputManager::GetGamePadJoyStick(int key,const int playerId)
 {
-
+	JoyStick enumValue = JoyStick(key);
+	
 	float StickMax = 32767.0f;
-	switch(key)
+	switch(enumValue)
 	{
-	case LX:
+	case JoyStick::LX:
 		return m_pCurGamepadStates[playerId].Gamepad.sThumbLX/ StickMax;
-	case LY:
+	case JoyStick::LY:
 		return m_pCurGamepadStates[playerId].Gamepad.sThumbLY/ StickMax;
-	case RX:
+	case JoyStick::RX:
 		return m_pCurGamepadStates[playerId].Gamepad.sThumbRX/ StickMax;
-	case RY:
+	case JoyStick::RY:
 		return m_pCurGamepadStates[playerId].Gamepad.sThumbRY/ StickMax;
 	}
+	return 0.0f;
 }
 
 bool InputManager::CheckButton(const ButtonInput input,const int playerId)
@@ -104,11 +105,11 @@ bool InputManager::CheckButton(const ButtonInput input,const int playerId)
 	{
 		switch (input.buttonType)
 		{
-		case Pressed:
+		case ButtonType::Pressed:
 			return IsGamePadKeyPressed(input.buttonKey, playerId);
-		case Down:
+		case ButtonType::Down:
 			return IsGamePadKeyDown(input.buttonKey, playerId);
-		case Up:
+		case ButtonType::Up:
 			return IsGamePadKeyUp(input.buttonKey, playerId);
 		default:;
 		}
@@ -117,15 +118,16 @@ bool InputManager::CheckButton(const ButtonInput input,const int playerId)
 	{
 		switch (input.buttonType)
 		{
-		case Pressed:
+		case ButtonType::Pressed:
 			return IsKeyboardKeyPressed(input.buttonKey);
-		case Down:
+		case ButtonType::Down:
 			return IsKeyboardKeyDown(input.buttonKey);
-		case Up:
+		case ButtonType::Up:
 			return IsKeyboardKeyUp(input.buttonKey);
 		default:;
 		}
 	}
+	return false;
 }
 
 bool InputManager::CheckAxis(AxisInput &input,const int playerId)
@@ -140,7 +142,7 @@ bool InputManager::CheckAxis(AxisInput &input,const int playerId)
 		{
 			if (IsGamePadKeyDown(input.PositiveKey,playerId))
 			{
-				input.currValue += 0.1;
+				input.currValue += input.speedChangeAxis;
 				if (input.currValue > 1)
 				{
 					input.currValue = 1;
@@ -148,7 +150,7 @@ bool InputManager::CheckAxis(AxisInput &input,const int playerId)
 			}
 			else if (IsGamePadKeyDown(input.negativeKey, playerId))
 			{
-				input.currValue -= 0.1;
+				input.currValue -= input.speedChangeAxis;
 				if (input.currValue < -1)
 				{
 					input.currValue = -1;
@@ -158,7 +160,7 @@ bool InputManager::CheckAxis(AxisInput &input,const int playerId)
 			{
 				if (input.currValue != 0)
 				{
-					input.currValue += input.currValue > 0 ? -0.1 : 0.1;
+					input.currValue += (input.currValue > 0 ? -1.0f : 1.0f) * input.speedChangeAxis;
 					if (abs(input.currValue) < 0.05f)
 					{
 						input.currValue = 0.0f;
@@ -171,7 +173,7 @@ bool InputManager::CheckAxis(AxisInput &input,const int playerId)
 	{
 		if (IsKeyboardKeyDown(input.PositiveKey))
 		{
-			input.currValue += 0.1;
+			input.currValue += input.speedChangeAxis;
 			if (input.currValue > 1)
 			{
 				input.currValue = 1;
@@ -179,7 +181,7 @@ bool InputManager::CheckAxis(AxisInput &input,const int playerId)
 		}
 		else if (IsKeyboardKeyDown(input.negativeKey))
 		{
-			input.currValue -= 0.1;
+			input.currValue -= input.speedChangeAxis;
 			if (input.currValue < -1)
 			{
 				input.currValue = -1;
@@ -189,7 +191,7 @@ bool InputManager::CheckAxis(AxisInput &input,const int playerId)
 		{
 			if (input.currValue != 0)
 			{
-				input.currValue += input.currValue > 0 ? -0.1 : 0.1;
+				input.currValue += (input.currValue > 0 ? -1.0f : 1.0f) * input.speedChangeAxis;
 				if(abs(input.currValue)<0.05f)
 				{
 					input.currValue = 0.0f;
@@ -209,6 +211,10 @@ bool InputManager::CheckAxis(AxisInput &input,const int playerId)
 	case Logic::EQUAL:
 		return abs(input.currValue) == input.treshholdValue;
 	}
+
+	//TODO FIX THIS MESS
+	
+	return false;
 }
 
 
@@ -229,22 +235,22 @@ bool InputManager::IsMouseDown(MouseButton button)
 	if (button >= MouseButton::MOUSE_MAX)
 		return false;
 
-	return m_CurrMouseState & button;
+	return m_CurrMouseState & int(button);
 }
 bool InputManager::IsMouseUp(MouseButton button)
 {
 	if (button >= MouseButton::MOUSE_MAX)
 		return false;
 
-	return !m_CurrMouseState & button;
+	return !(m_CurrMouseState & int(button));
 }
 bool InputManager::IsMousePressed(MouseButton button)
 {
 	if (button >= MouseButton::MOUSE_MAX)
 		return false;
 
-	return m_CurrMouseState& button &&
-		   !m_PrevMouseState&button;
+	return m_CurrMouseState& int(button) &&
+		   !(m_PrevMouseState&int(button));
 }
 int InputManager::GetMouseX()
 {

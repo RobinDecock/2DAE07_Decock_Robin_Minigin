@@ -18,4 +18,5 @@ Font::Font(const std::string& fullPath, unsigned size) : mFont(nullptr), mSize(s
 Font::~Font()
 {
 	TTF_CloseFont(mFont);
+	
 }

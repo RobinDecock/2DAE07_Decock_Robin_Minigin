@@ -1,6 +1,5 @@
 #include "MiniginPCH.h"
 #include "Renderer.h"
-#include <SDL.h>
 #include "Texture2D.h"
 SDL_Renderer * Renderer::m_Renderer = nullptr;
 void Renderer::Init(SDL_Window* window)
@@ -34,20 +33,22 @@ void Renderer::Destroy()
 
 void Renderer::RenderTexture(const Texture2D& texture)
 {
-	SDL_Rect dstRect = texture.GetDestRect();
-	SDL_Rect srcRect = texture.GetSrcRect();
+	SDL_Rect dest = texture.GetDestRect();
+	const SDL_Rect& src = texture.GetSrcRect();
+
 	glm::vec2 pivot = texture.GetPivot();
 	SDL_Point pivotOffset;
-	//TODO MOVE THIS CRAP TO THE COMP ITSELF
 
-	pivotOffset.x = int(pivot.x * dstRect.w);
-	pivotOffset.y = int(pivot.y * dstRect.h);
+	const float& angle = texture.GetAngle();
+	const SDL_RendererFlip& flip = texture.GetFlipped() ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 
-	dstRect.x -= pivotOffset.x;
-	dstRect.y -= pivotOffset.y;
+	pivotOffset.x = int(pivot.x * dest.w);
+	pivotOffset.y = int(pivot.y * dest.h);
 
-	SDL_RenderCopyEx(m_Renderer, texture.GetSDLTexture(), &srcRect, &dstRect, texture.GetAngle(), &pivotOffset,
-	                 texture.GetFlipped()?SDL_FLIP_HORIZONTAL:SDL_FLIP_NONE);
+	dest.x -= pivotOffset.x;
+	dest.y -= pivotOffset.y;
+
+	SDL_RenderCopyEx(m_Renderer, texture.GetSDLTexture(), &src, &dest, angle, &pivotOffset, flip);
 }
 
 void Renderer::RenderTexture(const Texture2D& texture, const float x, const float y)

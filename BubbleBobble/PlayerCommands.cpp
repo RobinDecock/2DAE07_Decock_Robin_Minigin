@@ -25,26 +25,22 @@ void PC::Jump::execute(float elapsedSec)
 {
 	if (m_pBub->m_IsOnGround)
 	{
-		std::shared_ptr<RigidbodyComponent> rigid = m_pBub->m_pRigid;
+		RigidbodyComponent* rigid = m_pBub->m_pRigid;
 		float impulse = rigid->GetBody()->GetMass() * -90;
+		rigid->GetBody()->SetLinearVelocity(b2Vec2(0, 0));
 		rigid->GetBody()->ApplyLinearImpulse(b2Vec2(0, impulse), rigid->GetBody()->GetWorldCenter(), true);
 	}
 }
 
 void PC::MoveHorizontal::execute(float elapsedSec, float axisValue)
 {
-	std::shared_ptr<RigidbodyComponent> rigid = m_pBub->m_pRigid;
+	RigidbodyComponent* rigid = m_pBub->m_pRigid;
 	b2Vec2 vel = rigid->GetBody()->GetLinearVelocity();
-	vel.x += axisValue * m_pBub->maxXVel * elapsedSec;
+	vel.x += ((axisValue>0)?1:-1 )* m_pBub->maxXVel ;
 
 
 	m_pBub->isRight = axisValue > 0;
 
-
-	if (abs(vel.x) > m_pBub->maxXVel)
-	{
-		vel.x = (axisValue > 0) ? m_pBub->maxXVel : -m_pBub->maxXVel;
-	}
 
 	rigid->GetBody()->SetLinearVelocity(vel);
 }

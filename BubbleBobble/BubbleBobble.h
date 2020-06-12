@@ -9,7 +9,8 @@ enum LayerMask :unsigned short
 	Platform = 1<<2,
 	Enemies = 1 << 3,
 	Player = 1 << 4,
-	Bubbles = 1<<5
+	Bubbles = 1<<5,
+	Roof = 1<<6
 };
 
 class BubbleBobble :public Project
@@ -21,7 +22,6 @@ public:
 
 	void Draw() override;
 
-	void CleanUp() override;
 	~BubbleBobble() override;
 private:
 	SceneManager* sceneManager = nullptr;

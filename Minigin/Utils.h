@@ -35,10 +35,10 @@ inline SDL_Rect make_SDL_Rect(int4 var)
 inline SDL_Rect make_SDL_Rect(Rectf var)
 {
 	SDL_Rect rect;
-	rect.x = var.x;
-	rect.y = var.y;
-	rect.w = var.w;
-	rect.h = var.h;
+	rect.x = (int)var.x;
+	rect.y = (int)var.y;
+	rect.w = (int)var.w;
+	rect.h = (int)var.h;
 	return rect;
 }
 

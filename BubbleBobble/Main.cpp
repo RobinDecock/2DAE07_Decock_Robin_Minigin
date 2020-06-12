@@ -2,20 +2,19 @@
 //
 //
 #pragma comment(lib,"xinput.lib")
-
+#include <iostream>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <vld.h>
+
 #include "BubbleBobble.h"
 #include "Minigin.h"
 
-#pragma warning( push )  
-#pragma warning( disable : 4100 )  
-int main(int argc, char* argv[])
+int main(int argc, char* args[])
 {
-#pragma warning( pop )
-
 	Minigin engine;
+
 	engine.m_pProject = new BubbleBobble();
 	engine.Run();
+
 	return 0;
 }

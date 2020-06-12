@@ -16,9 +16,12 @@ SRC="144,248,16,13"
 <Fries>
 RC="1,1"
 SRC="166,246,12,16"
+<Fire>
+RC="1,1"
+SRC="5,155,16,11"
 
 GENERATED ENUM:
 enum AnimType
 {
-ZenChan,Maita,MaitaBubble,ZenChanBubble,Melon,Fries
+ZenChan,Maita,MaitaBubble,ZenChanBubble,Melon,Fries,Fire
 }

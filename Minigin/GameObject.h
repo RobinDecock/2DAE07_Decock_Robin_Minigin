@@ -1,16 +1,14 @@
 #pragma once
 #include <functional>
-#include <memory>
 #include <vector>
 #include <string>
+#include "BOX2DS.h"
 class TransformComponent;
 class BaseComponent;
 class BoxCollider;
 class GameScene;
-#include "vec2.hpp"
-#include "vec3.hpp"
 
-enum ContactType
+enum class ContactType
 {
 	BeginContact,EndContact,PreSolve,PostSolve
 };
@@ -28,7 +26,7 @@ public:
 	void SetScale(glm::vec2 scale);
 	void SetRotationDegree(float rot);
 	void SetRotationRad(float rot);
-	void AddComponent(std::shared_ptr<BaseComponent> comp);
+	void AddComponent(BaseComponent * comp);
 	void SetScene(GameScene* scene);
 	GameScene* GetScene();
 	void AddChild(GameObject* child);
@@ -39,24 +37,22 @@ public:
 	void SetTag(std::string t);
 	std::string GetTag();
 	void Contact(b2Fixture* thisfix ,b2Fixture* other, b2Contact* contact,ContactType contactType);
-	bool GetIsInitialized();
-	void SetIsInitialized(bool b);
-	int GetId();
-	void SetId(int i);
+	unsigned int GetId();
+	void SetId(unsigned int i);
 	bool GetVisibility();
-
+	bool IsInitialized() { return m_IsInitialized; }
 	void SetVisibility(bool b);
 	GameObject* GetParent();
 
-	template <class T>
-	std::shared_ptr<T> GetComponent()
+	template <typename T>
+	T* GetComponent()
 	{
 		const type_info& ti = typeid(T);
-		for (const std::shared_ptr<BaseComponent> component : m_pComponents)
+		for (BaseComponent * component : m_pComponents)
 		{
 			if (component && typeid(*component) == ti)
 			{
-				return std::dynamic_pointer_cast<T>(component);
+				return  dynamic_cast<T*>(component);
 			}
 		}
 
@@ -71,18 +67,19 @@ protected:
 
 	void RootInitialize();
 	void RootUpdate(float elapsedSec);
-	void RootLateUpdate(float elapsedSec);
-	void RootDraw();
 
-
+	void RootPhysicsUpdate(float elapsedSec);
 	
-	std::vector<std::shared_ptr<BaseComponent>> m_pComponents;
+	void RootLateUpdate(float elapsedSec);
+	void RootDraw()const ;
+	
+	std::vector<BaseComponent*> m_pComponents{};
 	GameScene* m_ParentScene = nullptr;
 	GameObject* m_ParentObj = nullptr;
 	std::vector<GameObject*> m_pChildren;
-	std::shared_ptr<TransformComponent> m_Transform = nullptr;
+	TransformComponent* m_Transform = nullptr;
 	std::string m_Tag = "Default";
-	int id = 0;
+	unsigned int id = 0;
 	bool m_Visibility = true;
 	bool m_IsInitialized = false;
 
@@ -90,9 +87,10 @@ private:
 	//* Virtual Function *//
 	virtual void Initialize() {}
 	virtual void LateInitialize() {}
-	virtual void Update(float elapsedSec);
-	virtual void LateUpdate(float elapsedSec);
-	virtual void Draw(){}
+	virtual void Update(float elapsedSec){}
+	virtual void PhysicsUpdate(float elapsedSec){}
+	virtual void LateUpdate(float elapsedSec){}
+	virtual void Draw()const {}
 	//*                  *//
 	std::vector<ContactCallback> m_ContactCallbacks;
 	

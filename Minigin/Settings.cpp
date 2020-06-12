@@ -1,6 +1,5 @@
 #include "MiniginPCH.h"
 #include "Settings.h"
-#include <SDL.h>
 
 SDL_Window* Settings::m_pWindow = nullptr;
 int2 Settings::m_WindowSize = int2(0, 0);

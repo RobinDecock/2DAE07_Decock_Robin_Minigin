@@ -1,6 +1,7 @@
 #include "ProjectPCH.h"
 #include "MainMenu.h"
 #include "GameObject.h"
+#include "GameSettings.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
 #include "SingleScene.h"
@@ -19,13 +20,13 @@ MainMenu::~MainMenu()
 
 void MainMenu::Initialize()
 {
-	auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
+	const auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
 
-	float middleX = Settings::GetWindowSize().x / 2.0f;
-	float middleY = Settings::GetWindowSize().y / 2.0f;
+	int middleX = Settings::GetWindowSize().x / 2;
+	int middleY = Settings::GetWindowSize().y / 2;
 
 	GameObject* title = new GameObject();
-	title->AddComponent(NEW(TextureComponent)("Title.png"));
+	title->AddComponent(new TextureComponent("Title.png"));
 	title->GetComponent<TextureComponent>()->SetPivot({ 0.5f,0.5f });
 	title->GetComponent<TextureComponent>()->SetUseCam(false);
 	title->SetScale({ 2.0f,2.0f });
@@ -34,7 +35,7 @@ void MainMenu::Initialize()
 
 	
 	GameObject* single = new GameObject();
-	auto textC = NEW(TextComponent)(font);
+	auto textC = new TextComponent(font);
 	textC->SetText("SinglePlayer");
 	single->AddComponent(textC);
 	single->SetPosition({ middleX,middleY +75.0f});
@@ -43,7 +44,7 @@ void MainMenu::Initialize()
 
 	
 	GameObject* coop = new GameObject();
-	textC = NEW(TextComponent)(font);
+	textC = new TextComponent(font);
 	textC->SetText("Coop");
 	coop->AddComponent(textC);
 	coop->SetPosition({ middleX,middleY+125.0f});
@@ -51,59 +52,52 @@ void MainMenu::Initialize()
 	items.push_back(textC);
 
 	GameObject* versus = new GameObject();
-	textC = NEW(TextComponent)(font);
+	textC = new TextComponent(font);
 	textC->SetText("Versus");
 	versus->AddComponent(textC);
 	versus->SetPosition({ middleX,middleY+175.0f });
 	Add(versus);
 	items.push_back(textC);
 
-	items[selectedOption]->SetColor(selectedColor);
+	items[int(GameMode::Single)]->SetColor(selectedColor);
 
-	inputHandler.AddInputAxis(AxisInput(KEY_UP, KEY_DOWN,false,0.1f),new MenuVertical(this));
-	inputHandler.AddInputAxis(AxisInput(JoyStick::LY,0.1f), new MenuVertical(this));
-	inputHandler.AddInputButton(ButtonInput(XINPUT_GAMEPAD_A,true), new Confirm(this));
-	inputHandler.AddInputButton(ButtonInput(KEY_SPACE), new Confirm(this));
+	inputHandler.AddInputAxis(AxisInput(KEY_UP, KEY_DOWN,false,1.0f,0.0f), m_pMenuVertical);
+	inputHandler.AddInputAxis(AxisInput(JoyStick::LY,1.0f,0.0f), m_pMenuVertical);
+	inputHandler.AddInputButton(ButtonInput(XINPUT_GAMEPAD_A,true), m_pConfirm);
+	inputHandler.AddInputButton(ButtonInput(KEY_SPACE),m_pConfirm);
 }
 
 void MainMenu::Update(float elapsedSec)
 {
 	inputHandler.HandleInput(elapsedSec);
-	
-}
-
-void MainMenu::Draw() const
-{
 }
 
 void MenuVertical::execute(float elapsedSec, float axisValue)
 {
-
-
 	if (timer < delay)
 	{
 		timer += elapsedSec;
 		return;
 	}
-
-	
-	GameSettings::Gamemode& selectedItem = m_pMainMenu->selectedOption;
-	std::vector<std::shared_ptr<TextComponent>>& items = m_pMainMenu->items;
+	GameMode& selectedItem = GameSettings::m_Gamemode;
+	std::vector<TextComponent*>& items = m_pMainMenu->items;
 	const SDL_Color &selectedColor = m_pMainMenu->selectedColor;
 	const SDL_Color& normalColor = m_pMainMenu->normalColor;
+
+	int gameValue = (int)(selectedItem);
 	
-	if(axisValue > 0.2f&& selectedItem>0)
+	if(axisValue > 0.2f&& gameValue >0)
 	{
-		items[selectedItem]->SetColor(normalColor);
-		selectedItem = GameSettings::Gamemode(selectedItem-1);
-		items[selectedItem]->SetColor(selectedColor);
+		items[gameValue]->SetColor(normalColor);
+		selectedItem = GameMode(gameValue -1);
+		items[gameValue]->SetColor(selectedColor);
 		timer = 0.0f;
 	}
-	else if (axisValue < -0.2f && selectedItem <2)
+	else if (axisValue < -0.2f && gameValue <2)
 	{
-		items[selectedItem]->SetColor(normalColor);
-		selectedItem = GameSettings::Gamemode(selectedItem + 1);
-		items[selectedItem]->SetColor(selectedColor);
+		items[gameValue]->SetColor(normalColor);
+		selectedItem = GameMode(gameValue + 1);
+		items[gameValue]->SetColor(selectedColor);
 		timer = 0.0f;
 	}
 
@@ -111,21 +105,6 @@ void MenuVertical::execute(float elapsedSec, float axisValue)
 
 void Confirm::execute(float elapsedSec)
 {
-
-	switch(m_pMainMenu->selectedOption)
-	{
-	case GameSettings::Single: 
-		SceneManager::GetInstance()->AddScene(new SingleScene());
-		break;
-	case GameSettings::Coop:
-		
-		//ADD Coop Scene
-		break;
-	case GameSettings::Versus:
-		
-		//Add Versus Scene
-		break;
-	default: ;
-	}
+	SceneManager::GetInstance()->AddScene(new SingleScene());
 	SceneManager::GetInstance()->RemoveScene(m_pMainMenu);
 }
