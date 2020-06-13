@@ -17,7 +17,7 @@
 
 Zen::Zen(LevelSegment* segment) :BaseEnemy(segment)
 {
-	
+	m_EnemyType = EnemyType::ZenChan;
 }
 
 Zen::~Zen()
@@ -70,50 +70,9 @@ void Zen::Initialize()
 void Zen::Update(float elapsedSec)
 {
 	BaseEnemy::Update(elapsedSec);
-	
-	m_pSprite->SetFlip(m_IsRight);
-
-	glm::vec2 pos = m_Transform->Get2DPosition();
-	
-	auto groundRaycast = RaycastCallback(LayerMask::Platform | LayerMask::Ground);
-	m_ParentScene->RayCast(&groundRaycast, make_b2Vec2(pos), make_b2Vec2(pos + glm::vec2(-8, 10)));
-
-	if(!groundRaycast.hasHit())
-	{
-		m_ParentScene->RayCast(&groundRaycast, make_b2Vec2(pos), make_b2Vec2(pos + glm::vec2(8, 10)));
-	}
-
-	m_IsOnGround = groundRaycast.hasHit();
-
-	auto wallRaycast = RaycastCallback(LayerMask::Ground | LayerMask::Platform);
-	glm::vec2 beginPoint = pos + glm::vec2(0, -5);
-	m_ParentScene->RayCast(&wallRaycast, make_b2Vec2(beginPoint), make_b2Vec2(beginPoint + glm::vec2((m_IsRight ? 1 : -1) * (viewDist / 3.0f), 0)));
-	foundWall = wallRaycast.hasHit();
-
-
-	
-	if (groundRaycast.m_CategoryHit == LayerMask::Platform)
-	{
-		GameObject* platform = static_cast<GameObject*>(groundRaycast.GetFixHit()->GetUserData());
-		m_OnPlatform = platform;
-	}
-	else
-	{
-		m_OnPlatform = nullptr;
-	}
 
 
 
-
-	auto roofRaycast = RaycastCallback(LayerMask::Platform);
-	m_ParentScene->RayCast(&roofRaycast, make_b2Vec2(pos), make_b2Vec2(pos + glm::vec2(0, -40)));
-
-	if(roofRaycast.hasHit())
-	{
-		m_pRoof = static_cast<GameObject*>(roofRaycast.GetFixHit()->GetUserData());
-	}
-
-	m_IsRight = m_pRigid->GetVelocity().x > 0.0f;
 }
 
 

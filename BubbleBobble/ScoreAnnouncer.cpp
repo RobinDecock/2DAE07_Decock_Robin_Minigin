@@ -10,14 +10,12 @@
 #include "Utils.h"
 ScoreAnnouncer::ScoreAnnouncer(int score)
 {
-	score -= 500;
-	score /= 100;
 	m_pScore = score;
 }
 
 void ScoreAnnouncer::Initialize()
 {
-	AnimData animData = Anim::Loader::Load("../BubbleBobble/Resources/ScoreFont.anim")[m_pScore];
+	AnimData animData = Anim::Loader::Load("../BubbleBobble/Resources/ScoreFont.anim")[(m_pScore-100)/100];
 	AddComponent(new AutoDestroyComponent(2.0f));
 	TextureComponent* pTexComp = new TextureComponent("Sprite.png");
 	pTexComp->SetSourceRectangle(make_SDL_Rect(animData.Src));

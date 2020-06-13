@@ -6,6 +6,8 @@
 #include "Minigin.h"
 #include "TransformComponent.h"
 #include "GLMS.h"
+
+
 Camera::Camera()
 {
 	m_Tag = "Camera";
@@ -38,8 +40,13 @@ void Camera::MoveToLocation(float elapsedSec, glm::vec2 goPos)
 
 glm::mat4 Camera::GetViewMatrix()
 {
+	glm::vec2 ratioScale = glm::vec2( (640.0f / 512.0f),(480.0f / 448.0f) );
 	glm::vec2 scale = m_Transform->GetScale();
 	glm::vec2 middoffset = glm::vec2(ortho.x , ortho.y);
+
+	middoffset.x *= ratioScale.x;
+	middoffset.y *= ratioScale.y;
+
 	glm::vec3 position = glm::vec3(-m_Transform->GetPosition().x+middoffset.x, -m_Transform->GetPosition().y+ middoffset.y, m_Transform->GetPosition().z);
 	camPos = glm::vec2(position.x,position.y);
 	glm::mat4 view = glm::mat4(1);
@@ -48,7 +55,7 @@ glm::mat4 Camera::GetViewMatrix()
 	view = glm::translate(view, (glm::vec3(middoffset, 0)));
 
 	view = glm::rotate(view, this->m_Transform->GetRotation(), glm::vec3(0.0, 0.0, 1.0f));
-	view = glm::scale(view, glm::vec3(scale.x, scale.y, 1.0f));
+	view = glm::scale(view, glm::vec3(scale.x* ratioScale.x, scale.y* ratioScale.y, 1.0f));
 
 	view = glm::translate(view, (position));
 	view = glm::translate(view, (glm::vec3(-middoffset, 0)));
@@ -95,3 +102,4 @@ glm::vec2 Camera::ConvertToScreenSpace(glm::vec2 pos)
 
 	return glm::vec2(x, y);
 }
+

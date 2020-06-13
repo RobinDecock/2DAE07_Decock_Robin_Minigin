@@ -16,7 +16,7 @@ void MaitaBullet::Initialize()
 	auto pTexC = new TextureComponent("Enemies.png");
 	AddComponent(pTexC);
 	pTexC->SetSourceRectangle(Anim::Loader::Load("../BubbleBobble/Resources/Enemies.anim")[6].Src);
-
+	pTexC->SetFlip(m_IsRight);
 	AddComponent(new AutoDestroyComponent(4.0f));
 	
 	m_pRigid = new RigidbodyComponent(false);

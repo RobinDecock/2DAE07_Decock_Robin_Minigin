@@ -55,7 +55,7 @@ void SingleScene::CreateNewSegment()
 	{
 		for (unsigned int j = 0; j < m_pPlayers.size(); j++)
 		{
-			m_pPlayers[j]->playerR = false;
+			m_pPlayers[j]->m_PlayerReady = false;
 			m_pPlayers[j]->SetRespawningPoint(spawnLocations[0]);
 			m_pPlayers[j]->SetRespawning(true);
 			spawnLocations.erase(spawnLocations.begin());
@@ -125,9 +125,8 @@ void SingleScene::Initialize()
 	{
 		searchingControllers.push_back(1);
 	}
+	
 	CreateNewSegment();
-
-
 }
 
 void SingleScene::Draw() const
@@ -197,7 +196,7 @@ void SingleScene::Update(float elapsedSec)
 
 				for (unsigned int j = 0; j < m_pPlayers.size(); j++)
 				{
-					if(!m_pPlayers[j]->playerR)
+					if(!m_pPlayers[j]->m_PlayerReady)
 					{
 						rdy = false;
 					}
@@ -246,8 +245,7 @@ void SingleScene::onNotify( int event,GameObject * obj)
 	{
 	case LevelSegmentComplete:
 		{
-		levelDone = true;
-			
+			levelDone = true;	
 		}
 		break;
 	case LostControl:

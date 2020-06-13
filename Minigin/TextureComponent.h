@@ -6,6 +6,7 @@
 struct int4;
 struct SDL_Texture;
 
+
 class TextureComponent final : public BaseComponent
 {
 public:
@@ -22,6 +23,7 @@ public:
 	void SetSourceRectangle(int4 rect);
 	void SetDestinationRectangle(SDL_Rect rect);
 	int GetWidth() const;
+	void SetFlip(bool flip) { m_Texture->SetFlip(flip); }
 	int GetHeight() const;
 	Texture2D* GetSDLTexture();
 	SDL_Rect GetDestinationRectangle() const { return m_Texture->GetDestRect(); }
@@ -36,5 +38,5 @@ public:
 protected:
 	Texture2D* m_Texture = nullptr;
 	bool useCam = true;
-	
+
 };

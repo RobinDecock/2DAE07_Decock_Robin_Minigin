@@ -3,13 +3,14 @@
 #include "Components.h"
 #include "GameObject.h"
 #include "AnimatorState.h"
-
+#include "SpriteComponent.h"
 
 Animator::Animator(SpriteComponent* spriteComp,AnimatorState* StartNode, AnimatorBlackboard& status) :m_pCurrentAnimatorState(StartNode),
                                                                          m_pAnimatorBlackboard{status}, m_pSpriteComp{spriteComp}
 {
 	m_pStates.push_back(StartNode);
 }
+
 
 Animator::~Animator()
 {
@@ -52,18 +53,19 @@ void Animator::Update(float elapsedSec)
 }
 
 
-void Animator::LinkStates(BaseState *prevAnimatorState, BaseState*nextAnimatorState)
+
+void Animator::LinkStates(::BaseState *prevAnimatorState, ::BaseState*nextAnimatorState)
 {
 	prevAnimatorState->AddNextAnimatorState(nextAnimatorState);
 }
 
-void Animator::LinkStates(BaseState*prevAnimatorState, BaseState* nextAnimatorState,
+void Animator::LinkStates(::BaseState*prevAnimatorState, ::BaseState* nextAnimatorState,
                           std::vector<Req> requirements)
 {
 	prevAnimatorState->AddNextAnimatorState(nextAnimatorState, requirements);
 }
 
-void Animator::LinkStates(BaseState* prevAnimatorState, BaseState* nextAnimatorState, Req requirement)
+void Animator::LinkStates(::BaseState* prevAnimatorState, ::BaseState* nextAnimatorState, Req requirement)
 {
 	prevAnimatorState->AddNextAnimatorState(nextAnimatorState, requirement);
 }

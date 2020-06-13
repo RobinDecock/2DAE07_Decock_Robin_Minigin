@@ -10,7 +10,10 @@
 #include "Bub.h"
 Maita::Maita(LevelSegment* segment):BaseEnemy(segment)
 {
-	
+	m_MaxXVelocity = 30;
+	m_MaxWalkDelay = 12.0f;
+	viewDist = 80.0f;
+	m_EnemyType = EnemyType::Maita;
 }
 
 Maita::~Maita()
@@ -61,9 +64,6 @@ void Maita::Initialize()
 	////LINKS
 	m_pAnimator->LinkStates(pRoot, pBubbled, Req((int)BlackboardKey::InBubble, true));
 	m_pAnimator->LinkStates(pBubbled, pRoot, Req((int)BlackboardKey::InBubble, false));
-
-
-
 }
 
 

@@ -44,6 +44,7 @@ public:
 	}
 	void DropItem();
 	
+	
 	void SetBubbled(bool b);
 protected:
 	void Initialize() override;
@@ -52,7 +53,7 @@ protected:
 
 	virtual void HandleAI(float elapsedSec) = 0;
 	bool m_IsOnGround = false;
-	const float m_MaxXVelocity = 40.0f;
+	float m_MaxXVelocity = 40.0f;
 
 	InputHandler* m_pInputHandler = nullptr;
 	LevelSegment* m_pLevelSegment = nullptr;
@@ -83,9 +84,15 @@ protected:
 	EC::Jump m_pJumpC = EC::Jump(this);
 	EC::MoveHorizontal m_pMoveHC = EC::MoveHorizontal(this);
 
+	enum class EnemyType
+	{
+		Maita,ZenChan
+	};
+
+	EnemyType m_EnemyType;
 	State *m_pCurrentState =new WanderState(this);
 	
-	enum AnimType
+	enum class AnimType
 	{
 		ZenChan, Maita, MaitaBubble, ZenChanBubble
 	};

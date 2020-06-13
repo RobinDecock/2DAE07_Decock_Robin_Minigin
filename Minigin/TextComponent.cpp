@@ -5,13 +5,11 @@
 #include "TransformComponent.h"
 #include "Font.h"
 #include "Texture2D.h"
-TextComponent::TextComponent(Font* font) :
-	m_NeedsUpdate(false), m_Font(font), m_Color({ 255,255,255 })
-{
-}
 
-void TextComponent::Initialize()
+TextComponent::TextComponent(Font* font, std::string textString) :
+	m_Font(font), m_Color({ 255,255,255 }), m_Text(textString)
 {
+		CreateNewTexture();
 }
 
 void TextComponent::Draw()
@@ -23,44 +21,40 @@ void TextComponent::Draw()
 	}
 }
 
-void TextComponent::Update(float elapsedSec)
-{
-	UNREF(elapsedSec);
-	if (m_NeedsUpdate)
-	{
-		const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Color);
-		if (surf == nullptr)
-		{
-			throw std::runtime_error(std::string("Draw text failed: ") + SDL_GetError());
-		}
-		const auto texture = SDL_CreateTextureFromSurface(Renderer::GetSDLRenderer(), surf);
-
-
-
-		SafeDelete(m_Texture);
-		
-
-		m_Texture = new Texture2D(texture);
-		if (texture == nullptr)
-		{
-			throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
-		}
-		
-		SDL_FreeSurface(surf);
-		m_NeedsUpdate = false;
-	}
-}
-
 void TextComponent::SetText(const std::string& text)
 {
 	m_Text = text;
-	m_NeedsUpdate = true;
+	CreateNewTexture();
 }
 
 void TextComponent::SetColor(SDL_Color color)
 {
 	m_Color = color;
-	m_NeedsUpdate = true;
+	CreateNewTexture();
+}
+
+void TextComponent::CreateNewTexture()
+{
+	if (m_Text.size() <= 0)return;
+	const auto surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Color);
+	if (surf == nullptr)
+	{
+		throw std::runtime_error(std::string("Draw text failed: ") + SDL_GetError());
+	}
+	const auto texture = SDL_CreateTextureFromSurface(Renderer::GetSDLRenderer(), surf);
+
+
+
+	SafeDelete(m_Texture);
+
+
+	m_Texture = new Texture2D(texture);
+	if (texture == nullptr)
+	{
+		throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
+	}
+
+	SDL_FreeSurface(surf);
 }
 
 

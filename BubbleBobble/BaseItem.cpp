@@ -16,7 +16,7 @@
 
 void BaseItem::PickUp()
 {
-	ScoreAnnouncer* announcer = new ScoreAnnouncer(500);
+	ScoreAnnouncer* announcer = new ScoreAnnouncer(scoreValue);
 	announcer->SetPosition(m_Transform->Get2DPosition());
 
 	m_ParentScene->Add(announcer);
@@ -28,10 +28,11 @@ void BaseItem::Initialize()
 {
 	ItemManager::GetInstance().AddItem(this);
 	AddComponent(new RigidbodyComponent(false));
-	BoxCollider *pBoxC = new BoxCollider(glm::vec2(4, 8));
+	BoxCollider *pBoxC = new BoxCollider(glm::vec2(8, 4),glm::vec2(0,7));
+	
 	pBoxC->SetIgnoreMask(LayerMask::Player|LayerMask::Bubbles|LayerMask::Enemies);
 	AddComponent(pBoxC);
-	BoxTrigger* pBoxT = new BoxTrigger(glm::vec2(8, 8));
+	BoxTrigger* pBoxT = new BoxTrigger(glm::vec2(4, 4));
 	AddComponent(pBoxT);
 	m_Tag = "Item";
 	
@@ -40,7 +41,8 @@ void BaseItem::Initialize()
 			if(type==ContactType::BeginContact&& (otherFix->GetFilterData().categoryBits&LayerMask::Player)==LayerMask::Player)
 			{
 				SingleScene*scene = static_cast<SingleScene*>(m_ParentScene);
-				scene->GetHud()->AddScore(scoreValue);
+				Bub* bubRef = static_cast<Bub*>(otherFix->GetUserData());
+				bubRef->AddScore(scoreValue);
 				PickUp();
 			}
 		}

@@ -2,43 +2,44 @@
 #include "SoundManager.h"
 #include <SDL_mixer.h>
 
-Mix_Music* SoundManager::m_pMusic  =nullptr;
 
-void SoundManager::Update()
-{
-	if (m_pMusic!=nullptr&&!Mix_PlayingMusic())
+	Mix_Music* SoundManager::m_pMusic = nullptr;
+
+	void SoundManager::Update()
 	{
-		Mix_PlayMusic(m_pMusic,1);
+		if (m_pMusic != nullptr && !Mix_PlayingMusic())
+		{
+			Mix_PlayMusic(m_pMusic, 1);
+		}
 	}
-}
 
 
-void SoundManager::PlayMusic(std::string path)
-{
-	if(m_pMusic!=nullptr)
+	void SoundManager::PlayMusic(std::string path)
 	{
-		//delete m_pMusic;
+		if (m_pMusic != nullptr)
+		{
+			//delete m_pMusic;
+		}
+		m_pMusic = Mix_LoadMUS(path.c_str());
+		if (m_pMusic == nullptr)
+		{
+			std::cout << "Error:" << Mix_GetError() << std::endl;
+		}
+
 	}
-	m_pMusic = Mix_LoadMUS(path.c_str());
-	if(m_pMusic==nullptr)
+	void SoundManager::PlaySound(std::string path)
 	{
-		std::cout << "Error:" << Mix_GetError() << std::endl;
+		Mix_Chunk* sound = Mix_LoadWAV(path.c_str());
+		UNREF(sound);
 	}
-	
-}
-void SoundManager::PlaySound(std::string path)
-{
-	Mix_Chunk* sound = Mix_LoadWAV(path.c_str());
-	UNREF(sound);
-}
 
-void SoundManager::Cleanup()
-{
-	//bgm = nullptr;
-	
-}
+	void SoundManager::Cleanup()
+	{
+		//bgm = nullptr;
+
+	}
 
 
-SoundManager::~SoundManager()
-{
-}
+	SoundManager::~SoundManager()
+	{
+	}

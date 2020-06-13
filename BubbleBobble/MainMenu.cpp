@@ -62,7 +62,7 @@ void MainMenu::Initialize()
 	items[int(GameMode::Single)]->SetColor(selectedColor);
 
 	inputHandler.AddInputAxis(AxisInput(KEY_UP, KEY_DOWN,false,1.0f,0.0f), m_pMenuVertical);
-	inputHandler.AddInputAxis(AxisInput(JoyStick::LY,1.0f,0.0f), m_pMenuVertical);
+	inputHandler.AddInputAxis(AxisInput(JoyStick::LY,0.5f), m_pMenuVertical);
 	inputHandler.AddInputButton(ButtonInput(XINPUT_GAMEPAD_A,true), m_pConfirm);
 	inputHandler.AddInputButton(ButtonInput(KEY_SPACE),m_pConfirm);
 }
@@ -90,14 +90,14 @@ void MenuVertical::execute(float elapsedSec, float axisValue)
 	{
 		items[gameValue]->SetColor(normalColor);
 		selectedItem = GameMode(gameValue -1);
-		items[gameValue]->SetColor(selectedColor);
+		items[gameValue - 1]->SetColor(selectedColor);
 		timer = 0.0f;
 	}
 	else if (axisValue < -0.2f && gameValue <2)
 	{
 		items[gameValue]->SetColor(normalColor);
 		selectedItem = GameMode(gameValue + 1);
-		items[gameValue]->SetColor(selectedColor);
+		items[gameValue + 1]->SetColor(selectedColor);
 		timer = 0.0f;
 	}
 

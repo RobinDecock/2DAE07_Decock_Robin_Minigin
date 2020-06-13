@@ -115,7 +115,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>DEBUG;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\Minigin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>ProjectPCH.h</PrecompiledHeaderFile>
@@ -138,9 +138,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>RELEASE;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\DAE\Programming C++\MiniginFinal\fromrar\2DAE06_Decock_Robin_pengo\Minigin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Minigin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>ProjectPCH.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -188,6 +188,7 @@
     <ClCompile Include="Bub.cpp" />
     <ClCompile Include="Bubble.cpp" />
     <ClCompile Include="BubbleBobble.cpp" />
+    <ClCompile Include="BubStates.cpp" />
     <ClCompile Include="ColBlock.cpp" />
     <ClCompile Include="ColorBlock.cpp" />
     <ClCompile Include="ControllerVisual.cpp" />
@@ -197,7 +198,7 @@
     <ClCompile Include="Hud.cpp" />
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="LevelSegment.cpp" />
-    <ClCompile Include="LifeCounter.cpp" />
+    <ClCompile Include="PlayerHud.cpp" />
     <ClCompile Include="Main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -232,6 +233,7 @@
     <ClInclude Include="Bub.h" />
     <ClInclude Include="Bubble.h" />
     <ClInclude Include="BubbleBobble.h" />
+    <ClInclude Include="BubStates.h" />
     <ClInclude Include="ColBlock.h" />
     <ClInclude Include="ColorBlock.h" />
     <ClInclude Include="ControllerVisual.h" />
@@ -241,7 +243,7 @@
     <ClInclude Include="Hud.h" />
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="LevelSegment.h" />
-    <ClInclude Include="LifeCounter.h" />
+    <ClInclude Include="PlayerHud.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Maita.h" />
     <ClInclude Include="MaitaBullet.h" />

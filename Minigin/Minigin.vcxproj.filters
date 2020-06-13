@@ -254,9 +254,6 @@
     <ClInclude Include="Project.h">
       <Filter>Others</Filter>
     </ClInclude>
-    <ClInclude Include="Scene1.h">
-      <Filter>Others</Filter>
-    </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Others</Filter>
     </ClInclude>

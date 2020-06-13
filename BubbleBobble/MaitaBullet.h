@@ -12,6 +12,6 @@ private:
 
 	bool m_IsRight = false;
 	RigidbodyComponent* m_pRigid = nullptr;
-	float maxVelX = 10;
+	const float maxVelX = 70;
 };
 

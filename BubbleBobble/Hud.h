@@ -1,7 +1,7 @@
 #pragma once
 #include "Singleton.h"
 #include <GameObject.h>
-class LifeCounter;
+class PlayerHud;
 class Font;
 
 class Hud final: public Singleton<Hud>,public GameObject
@@ -10,8 +10,7 @@ class Hud final: public Singleton<Hud>,public GameObject
 public:
 	Hud();
 	~Hud() override;
-	void AddScore(int score) { m_Score += score; }
-	void AddLifeCounter(LifeCounter* counter);
+	void AddLifeCounter(PlayerHud* counter);
 private:
 	void Initialize() override;
 	
@@ -20,6 +19,7 @@ private:
 	void Draw()const override;
 private:
 	int m_Score = 0;
-	std::vector<LifeCounter*> counters;
+	std::vector<PlayerHud*> counters;
+
 };
 

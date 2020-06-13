@@ -1,9 +1,11 @@
 #pragma once
 #include "AnimatorBlackboard.h"
-#include "GameObject.h"
-#include "InputHandler.h"
-#include "Observer.h"
 #include "PlayerCommands.h"
+#include "BubStates.h"
+#include "GameObject.h"
+#include "Observer.h"
+#include "PlayerHud.h"
+
 class Bub;
 class RigidbodyComponent;
 class Animator;
@@ -21,20 +23,28 @@ public:
 	friend class PC::Jump;
 	friend class PC::ShootBubble;
 	friend class PC::MoveHorizontal;
+	friend class RespawnState;
+	friend class NormalState;
+	friend class HitState;
+	friend class AerialState;
 	Bub(int playerId);
 	~Bub() override;
 	void Attack();
 	void MoveToLocation(float elapsedSec, glm::vec2 goPos);
 	void SetRespawning(bool b);
-	void SetRespawningPoint(glm::vec2 pos) { spawnPoint = pos; }
-	bool playerR = false;
+	void SetRespawningPoint(glm::vec2 pos) { m_SpawnPoint = pos; }
+	bool IsRespawned() { return m_DoneRespawning; }
+	bool m_PlayerReady = false;
 	int GetPlayerId()const { return m_PlayerId; }
 	int GetHealth()const { return m_Health; }
-	bool IsRespawning()const { return m_Respawning; }
+	void AddScore(int amount) { m_Score += amount; Notify(New_Score,this); }
+	int GetScore()const  { return m_Score; }
 private:
+	void SetCurrentState(BubState* state);
 	void Initialize() override;
 	void Update(float elapsedSec) override;
 	void PhysicsUpdate(float elapsedSec) override;
+	void LateInitialize() override;
 	enum AnimType
 	{
 		BubRespawn, BubWalk, BubJump, BubBurb, BubHit, BubIdle = 5, BubFall = 8
@@ -46,8 +56,7 @@ private:
 	SpriteComponent* m_pSprite = nullptr;
 	BoxCollider * m_pBoxCol = nullptr;
 	bool m_IsOnGround = false;
-
-	const float maxXVel = 75.0f;
+	const float m_MaxXVel = 75.0f;
 
 	enum BKey
 	{
@@ -59,20 +68,19 @@ private:
 		IsHit
 	};
 	bool m_IsInvincible = false;
-	float invincibleTimer = 0.0f;
-	float invincibleDelay = 2.0f;
-	float invisibleCounter = 0.0f;
-
-	float maxT = 0.1f;
-
+	float m_InvincibleTimer = 0.0f;
+	float m_InvincibleDelay = 2.0f;
+	float m_InvisibleTimer = 0.0f;
+	bool m_DoneRespawning = false;
 	int m_Health = 3;
-	bool isRight = true;
-	bool m_Respawning = true;
+	bool m_IsRight = true;
 
 	int m_PlayerId = 0;
-	glm::vec2 spawnPoint = { 0,0 };
-	InputHandler inputHandler;
-	EffectorComponent * platformEff = nullptr;
+	int m_Score = 0;
+	
+	glm::vec2 m_SpawnPoint = { 0,0 };
+
+	EffectorComponent * m_pPlatformEff = nullptr;
 	
 
 	//COMMANDS
@@ -80,6 +88,7 @@ private:
 	PC::Jump m_JumpC = PC::Jump(this);
 	PC::MoveHorizontal m_MoveHC = PC::MoveHorizontal(this);
 	PC::GoDown m_GoDownC = PC::GoDown(this);
-	
+
+	BubState* m_pCurrentState = nullptr;
 };
 

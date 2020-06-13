@@ -45,7 +45,6 @@ void EC::GoDown::execute(float elapsedSec, float axisValue)
 	{
 		if (m_pEnemy->m_OnPlatform != nullptr)
 		{
-			std::cout << "Added Ignore" << std::endl;
 			m_pEnemy->m_OnPlatform->GetComponent<EffectorComponent>()->AddIgnore(m_pEnemy->m_pBoxCol->GetFixture());
 		}
 	}

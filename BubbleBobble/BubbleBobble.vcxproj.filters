@@ -58,9 +58,6 @@
     <ClCompile Include="Hud.cpp">
       <Filter>Prefabs\UI</Filter>
     </ClCompile>
-    <ClCompile Include="LifeCounter.cpp">
-      <Filter>Prefabs\UI</Filter>
-    </ClCompile>
     <ClCompile Include="ControllerVisual.cpp">
       <Filter>Prefabs\Enemies</Filter>
     </ClCompile>
@@ -98,6 +95,10 @@
     <ClCompile Include="MaitaBullet.cpp" />
     <ClCompile Include="ItemManager.cpp" />
     <ClCompile Include="EnemyStates.cpp" />
+    <ClCompile Include="BubStates.cpp" />
+    <ClCompile Include="PlayerHud.cpp">
+      <Filter>Prefabs\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BubbleBobble.h" />
@@ -125,9 +126,6 @@
       <Filter>Prefabs</Filter>
     </ClInclude>
     <ClInclude Include="Hud.h">
-      <Filter>Prefabs\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="LifeCounter.h">
       <Filter>Prefabs\UI</Filter>
     </ClInclude>
     <ClInclude Include="ControllerVisual.h">
@@ -167,6 +165,10 @@
     <ClInclude Include="MaitaBullet.h" />
     <ClInclude Include="ItemManager.h" />
     <ClInclude Include="EnemyStates.h" />
+    <ClInclude Include="BubStates.h" />
+    <ClInclude Include="PlayerHud.h">
+      <Filter>Prefabs\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BubbleBobble.rc">

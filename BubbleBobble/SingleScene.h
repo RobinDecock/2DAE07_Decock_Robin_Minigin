@@ -32,10 +32,11 @@ public:
 
 	void CreateNewSegment();
 
-	
+	bool IsSegmentReady() {return m_SegmentReady;}
 	void SetPaused(bool b);
 protected:
 
+	
 	void Initialize() override;
 	void Draw() const override;
 	void Update(float elapsedSec) override;
@@ -46,7 +47,7 @@ private:
 
 	std::vector<Bub*> m_pPlayers;
 	std::vector<int> searchingControllers;
-	
+	bool m_SegmentReady = false;
 	bool isInitializing = true;
 	LevelSegment* currSegment = nullptr;
 	LevelSegment* prevSegment = nullptr;

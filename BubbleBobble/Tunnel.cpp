@@ -22,7 +22,7 @@ void Tunnel::Initialize()
 				if(other->GetFilterData().categoryBits == LayerMask::Player)
 				{
 					Bub* ref = static_cast<Bub*>(other->GetUserData());
-					if (!ref->IsRespawning())
+					if (ref->IsRespawned())
 					{
 						hitObjects.push_back(ref);
 					}

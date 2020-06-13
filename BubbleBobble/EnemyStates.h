@@ -30,7 +30,7 @@ class PursuePlayer :public State
 public:
 	PursuePlayer(BaseEnemy* pEnemy,Bub* lockedPlayer) :m_pEnemy(pEnemy), m_pLockedPlayer(lockedPlayer){}
 	State *Execute(float elapsedSec) override;
-private:
+protected:
 	BaseEnemy* m_pEnemy = nullptr;
 	Bub* m_pLockedPlayer = nullptr;
 
@@ -38,3 +38,14 @@ private:
 
 };
 
+class PursuePlayerAndShoot :public PursuePlayer
+{
+public:
+	PursuePlayerAndShoot(BaseEnemy* pEnemy, Bub* lockedPlayer);
+	State* Execute(float elapsedSec) override;
+protected:
+
+	
+	float m_ShootTimer = 0.0f;
+	
+};

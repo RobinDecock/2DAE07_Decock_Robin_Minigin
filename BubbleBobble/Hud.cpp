@@ -1,11 +1,12 @@
 #include "ProjectPCH.h"
 #include "Hud.h"
 #include "ResourceManager.h"
-#include "LifeCounter.h"
+#include "PlayerHud.h"
 #include "Settings.h"
 #include "SingleScene.h"
 #include "TransformComponent.h"
 #include "Renderer.h"
+#include "TextComponent.h"
 
 Hud::Hud()
 {
@@ -18,19 +19,13 @@ Hud::~Hud()
 
 void Hud::Initialize()
 {
-	
-	//scoreObject = new GameObject();
-	//Font> pFont = ResourceManager::GetInstance().LoadFont("Lingua.otf",18);
-	//scoreObject->AddComponent(NEW(TextComponent)(pFont));
-	//AddChild(scoreObject);
-	//scoreObject->SetPosition(glm::vec2(Settings::GetWindowSize().x / 2.0f, 0));
 }
 
 
 
 void Hud::Update(float elapsedSec)
 {
-	//scoreObject->GetComponent<TextComponent>()->SetText(std::to_string(m_Score));
+	
 }
 
 
@@ -51,7 +46,7 @@ void Hud::Draw()const
 	SDL_RenderFillRect(Renderer::GetSDLRenderer(),& rect);
 }
 
-void Hud::AddLifeCounter(LifeCounter* counter)
+void Hud::AddLifeCounter(PlayerHud* counter)
 {
 	counters.push_back(counter);
 	this->AddChild(counter);

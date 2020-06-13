@@ -91,7 +91,7 @@ void RigidbodyComponent::SetGravityScale(float scale)
 
 void RigidbodyComponent::CheckLock()
 {
-	if(m_pGameObject->IsInitialized()&&m_pGameObject->GetScene()->GetPhysicsProxy().isLocked)
+	if((m_pGameObject->IsInitialized()&&m_pGameObject->GetScene()->IsInitialized())&&m_pGameObject->GetScene()->GetPhysicsProxy().isLocked)
 	{
 		__debugbreak();
 		std::cout<<"[ERROR: physics changes should be applied in the PhysicsUpdate(...)]";

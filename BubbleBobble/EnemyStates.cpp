@@ -7,6 +7,7 @@
 #include "TransformComponent.h"
 #include "BoxCollider.h"
 #include "EffectorComponent.h"
+#include "Maita.h"
 State *WanderState::Execute(float elapsedSec)
 {
 	glm::vec2 pos = m_pEnemy->GetTransform()->Get2DPosition();
@@ -19,14 +20,22 @@ State *WanderState::Execute(float elapsedSec)
 	if (playerRaycast.hasHit())
 	{
 		auto lockedPlayer = static_cast<Bub*>(playerRaycast.GetFixHit()->GetUserData());
-		return new PursuePlayer(m_pEnemy,lockedPlayer);
+
+		switch(m_pEnemy->m_EnemyType)
+		{
+		case BaseEnemy::EnemyType::Maita:
+			return new PursuePlayerAndShoot(m_pEnemy, lockedPlayer);
+		case BaseEnemy::EnemyType::ZenChan:
+			return new PursuePlayer(m_pEnemy, lockedPlayer);
+		}
+		
 	}
 
 #pragma region WalkLogic
 	RigidbodyComponent* m_pRigid = m_pEnemy->m_pRigid;
 	const float & velY = m_pRigid->GetBody()->GetLinearVelocity().y;
 	
-	const bool& foundWall = m_pEnemy->foundWall;
+	const bool& foundWall = m_pEnemy->foundWall&m_pEnemy->m_IsOnGround;
 
 	bool& goingRight = m_pEnemy->m_GoingRight;
 	
@@ -108,7 +117,7 @@ State *WanderState::Execute(float elapsedSec)
 		jumpTimer += elapsedSec;
 	}
 #pragma endregion
-	return this;
+	return nullptr;
 }
 
 State *PursuePlayer::Execute(float elapsedSec)
@@ -133,22 +142,40 @@ State *PursuePlayer::Execute(float elapsedSec)
 
 
 
+	auto playerRaycast = RaycastCallback(LayerMask::Player);
+	const float& viewDist = m_pEnemy->viewDist;
+
+	const bool& isRight = m_pEnemy->m_IsRight;
+	m_pEnemy->GetScene()->RayCast(&playerRaycast, make_b2Vec2(pos), make_b2Vec2(pos + glm::vec2((isRight ? 1 : -1) * viewDist, 0)));
+	if (playerRaycast.hasHit())
+	{
+		Bub * detectedPlayer= static_cast<Bub*>(playerRaycast.GetFixHit()->GetUserData());
+		if(detectedPlayer==m_pEnemy->lockedPlayer)
+		{
+			m_LockedTimer = 0.0f;
+		}
+	}
+
+	
+
 	const bool& onGround = m_pEnemy->GetIsOnGround();
 	GameObject* pOnPlatform = m_pEnemy->m_OnPlatform;
 	if (onGround)
 	{
 		if (diff.y < -10 && jumpTimer>jumpDelay)
 		{
-			EC::Jump JumpC = m_pEnemy->m_pJumpC;
+			EC::Jump& JumpC = m_pEnemy->m_pJumpC;
 			JumpC.execute(elapsedSec);
+			jumpTimer = 0.0f;
 			
 		}
 		else if (diff.y > 10&& pOnPlatform !=nullptr)
 		{
-			EC::GoDown GoDownC = m_pEnemy->m_pGoDownC;
+			EC::GoDown& GoDownC = m_pEnemy->m_pGoDownC;
 			GoDownC.execute(elapsedSec, -1.0f);
+			jumpTimer = 0.0f;
 		}
-		jumpTimer = 0.0f;
+		
 	}
 	
 	if (jumpTimer < jumpDelay)
@@ -164,9 +191,38 @@ State *PursuePlayer::Execute(float elapsedSec)
 	{
 		return new WanderState(m_pEnemy);
 	}
-
 	
+	return nullptr;
+}
 
+PursuePlayerAndShoot::PursuePlayerAndShoot(BaseEnemy* pEnemy, Bub* lockedPlayer) : PursuePlayer(pEnemy, lockedPlayer)
+{
+	Maita* mp = static_cast<Maita*>(m_pEnemy);
+	m_ShootTimer = mp->m_ShootDelay;
+}
+
+State* PursuePlayerAndShoot::Execute(float elapsedSec)
+{
+	State* state = PursuePlayer::Execute(elapsedSec);
+	if(state!=nullptr)
+	{
+		return state;
+	}
+
+	Maita* mp = static_cast<Maita*>(m_pEnemy);
+	const float& shootDelay = mp->m_ShootDelay;
+
+	std::cout << "ShootTimer" << m_ShootTimer << std::endl;
+	if(m_ShootTimer>shootDelay)
+	{
+		ButtonCommand& ShootC = mp->m_pShootC;
+		ShootC.execute(elapsedSec);
+		m_ShootTimer = 0.0f;
+	}
+	else
+	{
+		m_ShootTimer += elapsedSec;
+	}
+	return nullptr;
 	
-	return this;
 }

@@ -2,70 +2,71 @@
 #include <thread>
 #include <vector>
 
-class b2World;
-
-struct Rectf;
-class Camera;
-class GameObject;
-class Renderer;
-class b2DebugDraw;
-class b2CContactListener;
-
-struct b2World_ext
-{
-	b2World *world = nullptr;
-	bool isLocked = true;
-};
 
 
-class GameScene
-{
-public:
-	GameScene();
+	class b2World;
 
-	void RootInitialize();
-	void RootDraw()const ;
+	struct Rectf;
+	class Camera;
+	class GameObject;
+	class Renderer;
+	class b2DebugDraw;
+	class b2CContactListener;
+	struct b2World_ext
+	{
+		b2World* world = nullptr;
+		bool isLocked = true;
+	};
 
-	void ThreadUpdate(float elapsedSec);
-	void ThreadUpdatePhysics(float elapsedSec);
-	
-	void RootUpdate(float elapsedSec);
 
-	void Add(GameObject* obj);
-	void Remove(GameObject* gameObject);
-	
+	class GameScene
+	{
+	public:
+		GameScene();
 
-	virtual ~GameScene();
-	Camera* GetCamera() { return m_pActiveCam; }
-	void SetCamera(Camera * cam);
-	b2World_ext GetPhysicsProxy() { return m_pPhysicsProxy; }
-	b2DebugDraw *GetDebugDraw() const{ return m_B2DebugDraw; }
+		void RootInitialize();
+		void RootDraw()const;
 
-	void RayCast(b2RayCastCallback* callback, const b2Vec2& point1, const b2Vec2& point2);
-	//CollisionManager& GetCollisionManager() { return collisionManager; }
-	//TextureManager* GetTextureManager() { return textureManager; }
-protected:
+		void ThreadUpdate(float elapsedSec);
+		void ThreadUpdatePhysics(float elapsedSec);
 
-	//* Virtual Functions *//
-	virtual void Initialize() = 0;
-	virtual void Update(float elapsedSec) {}
-	virtual void PhysicsUpdate(float elapsedSec) {}
-	virtual void Draw()const {}
-	//*                   *//
+		void RootUpdate(float elapsedSec);
 
-	bool m_IsInitialized = false;
-	b2DebugDraw *m_B2DebugDraw;
-	b2CContactListener *m_pContactListener;
-	b2World_ext m_pPhysicsProxy;
-	int idCount = 0;
-	std::vector<GameObject*> m_pGameObjects{};
+		void Add(GameObject* obj);
+		void Remove(GameObject* gameObject);
 
-	std::vector<GameObject*> m_pToAdd{};
-	std::vector<GameObject*> m_pToDelete{};
-	Camera* m_pActiveCam = nullptr;
 
-	GameObject* FPSMonitor = nullptr;
+		virtual ~GameScene();
+		Camera* GetCamera() { return m_pActiveCam; }
+		void SetCamera(Camera* cam);
+		b2World_ext GetPhysicsProxy() { return m_pPhysicsProxy; }
+		b2DebugDraw* GetDebugDraw() const { return m_B2DebugDraw; }
+		bool IsInitialized() { return m_IsInitialized; }
+		void RayCast(b2RayCastCallback* callback, const b2Vec2& point1, const b2Vec2& point2);
+		//CollisionManager& GetCollisionManager() { return collisionManager; }
+		//TextureManager* GetTextureManager() { return textureManager; }
+	protected:
 
-	std::thread physicsThread;
-	std::thread updateThread;
-};
+		//* Virtual Functions *//
+		virtual void Initialize() = 0;
+		virtual void Update(float elapsedSec) {}
+		virtual void PhysicsUpdate(float elapsedSec) {}
+		virtual void Draw()const {}
+		//*                   *//
+
+		bool m_IsInitialized = false;
+		b2DebugDraw* m_B2DebugDraw;
+		b2CContactListener* m_pContactListener;
+		b2World_ext m_pPhysicsProxy;
+		int idCount = 0;
+		std::vector<GameObject*> m_pGameObjects{};
+
+		std::vector<GameObject*> m_pToAdd{};
+		std::vector<GameObject*> m_pToDelete{};
+		Camera* m_pActiveCam = nullptr;
+
+		GameObject* FPSMonitor = nullptr;
+
+		std::thread physicsThread;
+		std::thread updateThread;
+	};

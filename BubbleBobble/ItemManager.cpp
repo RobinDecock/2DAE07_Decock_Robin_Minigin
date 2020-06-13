@@ -19,7 +19,7 @@ void ItemManager::RemoveItem(BaseItem* item)
 	{
 		if (m_pItems[i] == item)
 		{
-			m_pItems.erase(m_pItems.begin());
+			m_pItems.erase(m_pItems.begin()+i);
 			m_pGameScene->Remove(item);
 			return;
 		}

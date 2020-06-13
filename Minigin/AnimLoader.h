@@ -29,6 +29,7 @@
 
 namespace Anim
 {
+	
 	class Loader
 	{
 	public:

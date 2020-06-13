@@ -3,6 +3,7 @@
 
 #include "InputManager.h"
 #include "TransformComponent.h"
+
 void FreeCamera::Initialize()
 {
 }

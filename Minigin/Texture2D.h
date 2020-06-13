@@ -1,6 +1,8 @@
 #pragma once
 #include "SDLS.h"
 #include "GLMS.h"
+
+
 class Texture2D
 {
 public:
@@ -34,7 +36,7 @@ public:
 	glm::vec2 GetPivot() const { return m_Pivot; }
 	float GetAngle() const { return m_Angle; }
 	void SetFlip(bool b) { isFlipped = b; }
-	bool GetFlipped() const{ return isFlipped; }
+	bool GetFlipped() const { return isFlipped; }
 private:
 	bool isFlipped = false;
 	SDL_Rect m_sourceRectangle{};

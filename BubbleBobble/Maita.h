@@ -7,17 +7,16 @@ class LevelSegment;
 class Maita : public BaseEnemy
 {
 public:
+	friend class PursuePlayerAndShoot;
 	Maita(LevelSegment* segment);
 	~Maita()override;
-private:
-	void Initialize() override;
-	EC::Shoot m_pShootC = nullptr;
-	
+	void SetControlled(int PlayerId) override;
 protected:
 	void HandleAI(float elapsedSec) override;
-public:
-	void SetControlled(int PlayerId) override;
-
 	
+private:
+	void Initialize() override;
+	EC::Shoot m_pShootC = EC::Shoot(this);
+	float m_ShootDelay = 2.0f;
 };
 

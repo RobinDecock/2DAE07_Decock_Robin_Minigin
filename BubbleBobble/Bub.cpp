@@ -8,7 +8,7 @@
 #include "Components.h"
 #include "EffectorComponent.h"
 #include "Hud.h"
-#include "LifeCounter.h"
+#include "PlayerHud.h"
 #include "PlayerCommands.h"
 #include "GameObject.h"
 #include "SingleScene.h"
@@ -25,17 +25,31 @@ Bub::Bub(int playerId)
 	m_Blackboard.AddKey((int)BKey::Respawning, ValueType::boolValue);
 	m_Blackboard.AddKey((int)BKey::IsHit, ValueType::boolValue);
 	m_Blackboard.SetKeyValue((int)Respawning, true);
+
+
 }
 
 Bub::~Bub()
 {
-	
+	delete m_pCurrentState;
+}
+
+void Bub::SetCurrentState(BubState* state)
+{
+	if(m_pCurrentState!=nullptr)
+	{
+		m_pCurrentState->EndState();
+		delete m_pCurrentState;
+	}
+
+	m_pCurrentState = state;
+	m_pCurrentState->StartState();
 }
 
 void Bub::Initialize()
 {
 	m_Transform->SetDepth(0.1f);
-	Hud::GetInstance().AddLifeCounter(new LifeCounter(this));
+	Hud::GetInstance().AddLifeCounter(new PlayerHud(this));
 	
 	m_pRigid = new RigidbodyComponent();
 	AddComponent(m_pRigid);
@@ -103,29 +117,13 @@ void Bub::Initialize()
 	auto RespawnParent = new ParentState(pRespawn, "RespawnParent");
 	m_pAnimator->AddState(RespawnParent);
 
-
-
-
-
-
-	
 	//ParentLinks
 	m_pAnimator->LinkStates(NormalParent, HitParent, Req(BKey::IsHit, true));
 	m_pAnimator->LinkStates(HitParent,NormalParent , Req(BKey::IsHit, false));
 
 	m_pAnimator->LinkStates(NormalParent, RespawnParent, Req(BKey::Respawning, true));
 	m_pAnimator->LinkStates(RespawnParent, NormalParent, Req(BKey::Respawning, false));
-	
-	
-
-	
-
-
-
-	//LINKS
-	
-
-	
+		
 	//Root
 	m_pAnimator->LinkStates(pRoot, pWalk, Req(BKey::AbsVelocityX, 2.0f, Logic::BIGGER));
 	m_pAnimator->LinkStates(pRoot, pBurp, Req(BKey::IsBurping,  true ));
@@ -151,23 +149,7 @@ void Bub::Initialize()
 	m_pAnimator->LinkStates(pFall, pWalk, { Req(BKey::OnGround, true) , Req(BKey::AbsVelocityX, {2.0f}, Logic::BIGGER) });
 	m_pAnimator->LinkStates(pFall, pBurp, Req(BKey::IsBurping, true ));
 	
-
-
-	//SET INPUTS
-	const std::map<KeyAction, ButtonInput> keyMap = S_ButtonMap.at(m_PlayerId);
-	const std::map<AxisAction, AxisInput> axisMap = S_AxisMap.at(m_PlayerId);
-	
-
-	//Only use one command instance
-	inputHandler.AddInputButton(keyMap.at(KeyAction::K_Key2), m_ShootC);
-	inputHandler.AddInputButton(keyMap.at(KeyAction::K_Key1), m_JumpC);
-	inputHandler.AddInputAxis(axisMap.at(AxisAction::K_StickH),  m_MoveHC);
-	inputHandler.AddInputAxis(axisMap.at(AxisAction::K_StickV),  m_GoDownC);
-
-	//inputHandler.AddInputButton(keyMap.at(C_Key2), new PC::ShootBubble(this));
-	//inputHandler.AddInputButton(keyMap.at(C_Key1), new PC::Jump(this));
-	//inputHandler.AddInputAxis(axisMap.at(aC_StickH), new PC::MoveHorizontal(this));
-	//inputHandler.AddInputAxis(axisMap.at(C_StickV), new PC::GoDown(this));
+	SetCurrentState(new RespawnState(this));
 }
 
 
@@ -179,102 +161,47 @@ void Bub::Update(float elapsedSec)
 
 	if(m_IsInvincible)
 	{
-		if(invincibleTimer>invincibleDelay)
+		if(m_InvincibleTimer>m_InvincibleDelay)
 		{
-			invincibleTimer = 0.0f;
+			m_InvincibleTimer = 0.0f;
 			m_IsInvincible = false;
 			m_Visibility = true;
-			invisibleCounter = false;
+			m_InvisibleTimer = false;
 		}
 		else
 		{
-			invincibleTimer += elapsedSec;
+			m_InvincibleTimer += elapsedSec;
 			
-			invisibleCounter += elapsedSec;
-			if (invisibleCounter / 0.2f >= 1)
+			m_InvisibleTimer += elapsedSec;
+			if (m_InvisibleTimer / 0.2f >= 1)
 			{
 				m_Visibility = !m_Visibility;
-				invisibleCounter = 0.0f;
+				m_InvisibleTimer = 0.0f;
 			}
 		}
 		
 	}
 	m_Blackboard.SetKeyValue((int)BKey::OnGround, m_IsOnGround);
 
-	GetComponent<SpriteComponent>()->SetFlip(!isRight);	
+	GetComponent<SpriteComponent>()->SetFlip(!m_IsRight);	
 }
 
 void Bub::PhysicsUpdate(float elapsedSec)
 {
-
-	if (m_pAnimator->GetCurrenState()->GetName() == "BubHit" && m_pSprite->GetCycle() > 2)
+	BubState * state =m_pCurrentState->Execute(elapsedSec);
+	if(state!=nullptr)
 	{
-		m_Blackboard.SetKeyValue(IsHit, false);
-		m_IsInvincible = true;
-		SetPosition(spawnPoint);
-		if(m_Health <=0)
-		{
-			SingleScene* singleScene = static_cast<SingleScene*>(m_ParentScene);
-			singleScene->RemovePlayer(this);
-		}
+		SetCurrentState(state);
 	}
-
 
 	
-	m_pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, m_pRigid->GetBody()->GetLinearVelocity().y));
-	if (m_Respawning)
-	{
-		if (m_pAnimator->GetCurrenState()->GetValue() != BubRespawn)
-		{
-			m_Blackboard.SetKeyValue(Respawning, true);
-			//m_pAnimator->SetCurrentState(pRespawn);
-		}
-		if (glm::distance(spawnPoint, m_Transform->Get2DPosition()) < 1.0f)
-		{
-			playerR = true;
-		}
-		else if (!playerR)
-		{
-			glm::vec2 dir = glm::normalize(spawnPoint - m_Transform->Get2DPosition());
-			m_pBoxCol->SetSensor(true);
-			m_pRigid->GetBody()->SetLinearVelocity(make_b2Vec2(dir * 100.0f));
-		}
-		else
-		{
-			m_pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, 0));
-		}
-
-		return;
-	}
-
-
-	if (!m_Respawning)
-	{
-		m_pBoxCol->SetSensor(false);
-		m_pRigid->SetGravityScale(9.81f);
-
-	}
-	else
-	{
-		m_pRigid->SetGravityScale(0.0f);
-		m_pBoxCol->SetSensor(true);
-	}
-	
-	
-	if (!m_Blackboard.GetBoolProperty(BKey::IsHit) && !m_Blackboard.GetBoolProperty(BKey::Respawning))
-	{
-		inputHandler.HandleInput(elapsedSec);
-	}
-
-
-
 	auto raycastCallback = RaycastCallback(LayerMask::Ground | LayerMask::Platform | LayerMask::Bubbles);
 
 	glm::vec2 startPos = m_Transform->Get2DPosition() + glm::vec2(4, 7);
 	m_ParentScene->RayCast(&raycastCallback, make_b2Vec2(startPos), make_b2Vec2(startPos + glm::vec2(0, 4)));
 	if (!raycastCallback.hasHit())
 	{
-		startPos = m_Transform->Get2DPosition() + glm::vec2(-4, 0);
+		startPos = m_Transform->Get2DPosition() + glm::vec2(-4, 7);
 		m_ParentScene->RayCast(&raycastCallback, make_b2Vec2(startPos), make_b2Vec2(startPos + glm::vec2(0, 4)));
 	}
 
@@ -288,21 +215,26 @@ void Bub::PhysicsUpdate(float elapsedSec)
 	if (raycastCallback.hasHit() && raycastCallback.m_CategoryHit == LayerMask::Platform)
 	{
 		GameObject* obj = static_cast<GameObject*>(raycastCallback.GetFixHit()->GetUserData());
-		platformEff = obj->GetComponent<EffectorComponent>();
+		m_pPlatformEff = obj->GetComponent<EffectorComponent>();
 	}
 	else
 	{
-		platformEff = nullptr;
+		m_pPlatformEff = nullptr;
 	}
+}
+
+void Bub::LateInitialize()
+{
 }
 
 void Bub::Attack()
 {
-	Notify(Event::Player_Damaged,this);
-	//FIX IS HIT LOGIC
-	if (m_IsInvincible&&m_pAnimator->GetCurrenState()->GetValue()!=AnimType::BubHit)
-		return;
 	
+	//FIX IS HIT LOGIC
+	if (m_IsInvincible|| m_Blackboard.GetBoolProperty(IsHit))
+		return;
+
+	Notify(Event::Player_Damaged, this);
 	std::cout << "Took damage" << std::endl;
 	m_Health -= 1;
 	m_Blackboard.SetKeyValue(IsHit, true);
@@ -319,6 +251,5 @@ void Bub::MoveToLocation(float elapsedSec, glm::vec2 goPos)
 
 void Bub::SetRespawning(bool b)
 {
-	m_Respawning = b;
-	m_Blackboard.SetKeyValue((int)BKey::Respawning, b);
+	m_DoneRespawning = !b;
 }

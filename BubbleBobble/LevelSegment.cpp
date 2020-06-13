@@ -68,7 +68,8 @@ void LevelSegment::LoadMap(std::string mapPath, std::string blockPath)
 {
 	std::map<int, AnimData> blockData = Anim::Loader::Load(blockPath);
 
-	GameObject* tileMap = new GameObject();;
+	GameObject* tileMap = new GameObject();
+	m_pCurrScene->Add(tileMap);
 	tileMap->SetPosition({ 0,(Settings::GetWindowSize().y / 2) * (m_LevelId-1) });
 	std::ifstream binFile(mapPath, std::ios::in | std::ios::binary);
 
@@ -95,7 +96,7 @@ void LevelSegment::LoadMap(std::string mapPath, std::string blockPath)
 			TextureComponent* texComp = new TextureComponent("Blocks.png");
 			texComp->SetSourceRectangle(blockData.at(id).Src);
 			newObj->AddComponent(texComp);
-
+			newObj->SetTag("Block");
 			newObj->GetComponent<TextureComponent>()->SetPivot(glm::vec2(0.5f, 0.5f));
 			tileMap->AddChild(newObj);
 			newObj->SetPosition({ halfTex + texDim * posX, halfTex + posY * texDim });
@@ -149,12 +150,13 @@ void LevelSegment::LoadMap(std::string mapPath, std::string blockPath)
 
 		Tunnel* tunnel = new Tunnel();
 		tunnel->SetPosition(CalculatePos(glm::vec2(16, 25), m_LevelId));
+		tunnel->SetTag("Tunnel");
 		m_pCurrScene->Add(tunnel);
 		m_pSegObjects.push_back(tunnel);
 		
 #pragma endregion LoadCollisions
 
-		m_pCurrScene->Add(tileMap);
+
 		m_pSegObjects.push_back(tileMap);
 		
 #pragma region LoadPrefabs
@@ -190,6 +192,7 @@ void LevelSegment::LoadMap(std::string mapPath, std::string blockPath)
 			
 			if(pEnemy!=nullptr)
 			{
+				pEnemy->SetTag("Enemy");
 				pEnemy->SetPosition(CalculatePos({posX,posY},m_LevelId));
 				pEnemy->SetPaused(true);
 				this->AddEnemy(pEnemy);

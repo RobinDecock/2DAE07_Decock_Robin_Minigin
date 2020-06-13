@@ -8,8 +8,8 @@
 
 #include "BubbleBobble.h"
 #include "Minigin.h"
-
-int main(int argc, char* args[])
+#define SDL_MAIN_HANDLED
+int main(int argc, char* argv[])
 {
 	Minigin engine;
 

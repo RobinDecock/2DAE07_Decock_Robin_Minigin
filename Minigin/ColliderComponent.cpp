@@ -3,6 +3,7 @@
 #include "ColliderComponent.h"
 
 #include "GameObject.h"
+
 void ColliderComponent::Initialize()
 {
 	m_FixtureDef.shape = &m_Shape;

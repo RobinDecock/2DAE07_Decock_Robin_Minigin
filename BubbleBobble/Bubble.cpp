@@ -38,7 +38,7 @@ void Bubble::Initialize()
 
 
 	//TEST
-	auto pEffect = new EffectorComponent(pBoxCol, glm::vec2(0, -14), glm::vec2(7, 7));
+	auto pEffect = new EffectorComponent(pBoxCol, glm::vec2(0, -9), glm::vec2(4, 4));
 	AddComponent(pEffect);
 	pEffect->SetCategoryToAffect(LayerMask::Player);
 	

@@ -1,25 +1,26 @@
 #include "MiniginPCH.h"
 #include "Settings.h"
 
-SDL_Window* Settings::m_pWindow = nullptr;
-int2 Settings::m_WindowSize = int2(0, 0);
 
-SDL_Window* Settings::GetWindow()
-{
-	return m_pWindow;
-}
+	SDL_Window* Settings::m_pWindow = nullptr;
+	int2 Settings::m_WindowSize = int2(0, 0);
 
-int2 Settings::GetWindowSize()
-{
-	return m_WindowSize;
-}
+	SDL_Window* Settings::GetWindow()
+	{
+		return m_pWindow;
+	}
 
-void Settings::SetWindowSize(int2 windSize)
-{
-	m_WindowSize = windSize;
-}
+	int2 Settings::GetWindowSize()
+	{
+		return m_WindowSize;
+	}
 
-void Settings::SetWindow(SDL_Window* window)
-{
-	m_pWindow = window;
-}
+	void Settings::SetWindowSize(int2 windSize)
+	{
+		m_WindowSize = windSize;
+	}
+
+	void Settings::SetWindow(SDL_Window* window)
+	{
+		m_pWindow = window;
+	}
