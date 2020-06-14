@@ -1,7 +1,7 @@
 #pragma once
 
 #pragma warning( push)
-#pragma warning(disable:26495 26812 26495)
+#pragma warning(disable:26495 26812 26495 4099)
 #include "Box2D/Dynamics/b2Fixture.h"
 #include "Box2D/Dynamics/b2World.h"
 #include "Box2D/Common/b2Draw.h"

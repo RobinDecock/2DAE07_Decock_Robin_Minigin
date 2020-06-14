@@ -12,8 +12,3 @@ void ControllerVisual::Initialize()
 	AddComponent(new BlinkComponent(0.5f));
 	AddComponent(new AutoDestroyComponent(4.0f));
 }
-
-void ControllerVisual::Update(float elapsedSec)
-{
-	
-}

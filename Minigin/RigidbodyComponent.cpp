@@ -16,8 +16,12 @@ RigidbodyComponent::RigidbodyComponent(bool isStatic)
 RigidbodyComponent::~RigidbodyComponent()
 {
 	b2World* pWorld = m_pGameObject->GetScene()->GetPhysicsProxy().world;
-	if(pWorld !=nullptr)
+	if (pWorld != nullptr)
 	{
+		if(pWorld->IsLocked())
+		{
+			std::cout<<("Bad Practice, removal in physics step");
+		}
 		pWorld->DestroyBody(m_Body);
 	}
 
@@ -91,9 +95,11 @@ void RigidbodyComponent::SetGravityScale(float scale)
 
 void RigidbodyComponent::CheckLock()
 {
+
+#if _NDEBUG
 	if((m_pGameObject->IsInitialized()&&m_pGameObject->GetScene()->IsInitialized())&&m_pGameObject->GetScene()->GetPhysicsProxy().isLocked)
 	{
-		__debugbreak();
-		std::cout<<"[ERROR: physics changes should be applied in the PhysicsUpdate(...)]";
+		std::cout<<"[Warning: for Performance Reason, make physics changes in the PhysicsUpdate]";
 	}
+#endif
 }

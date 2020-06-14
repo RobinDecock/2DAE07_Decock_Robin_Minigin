@@ -16,9 +16,9 @@ void ColliderComponent::SetCategory(uint16 i)
 {
 	if(m_IsInitialized)
 	{
-		b2Filter filter = m_pFixture->GetFilterData();
-		filter.categoryBits = i;
-		m_pFixture->SetFilterData(filter);
+		b2Filter fl = m_pFixture->GetFilterData();
+		fl.categoryBits = i;
+		m_pFixture->SetFilterData(fl);
 	}
 	else
 	{
@@ -31,9 +31,9 @@ void ColliderComponent::SetIgnoreMask(uint16 i)
 {
 	if (m_IsInitialized)
 	{
-		b2Filter filter = m_pFixture->GetFilterData();
-		filter.maskBits = ~i;
-		m_pFixture->SetFilterData(filter);
+		b2Filter fl = m_pFixture->GetFilterData();
+		fl.maskBits = ~i;
+		m_pFixture->SetFilterData(fl);
 	}
 	else
 	{

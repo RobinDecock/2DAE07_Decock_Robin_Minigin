@@ -32,8 +32,16 @@ class AnimatorState;
 		void AddNextAnimatorState(::BaseState* AnimatorState, std::vector<::Req> requirements);
 		void AddNextAnimatorState(::BaseState* AnimatorState, ::Req requirement);
 		std::vector<Connection> GetNextConnections() { return m_NextConnections; };
-		AnimatorState* GetNextState(::BaseState* currentState, ::AnimatorBlackboard& pBlackboard);
+		AnimatorState* GetNextState( ::AnimatorBlackboard& pBlackboard);
 		void SetParent(::ParentState* st) { m_pParent = st; }
+
+		void StartState()
+		{
+			if (hasStartFunction)
+			{
+				startFunction();
+			}
+		}
 		void EndState()
 		{
 			if (hasEndFunction)
@@ -41,8 +49,14 @@ class AnimatorState;
 				endFunction();
 			}
 		}
-		void SetEndFunction(std::function<void()> f) {
+		void SetEndFunction(std::function<void()> f)
+		{
 			endFunction = f; hasEndFunction
+				= true;
+		}
+		void SetStartFunction(std::function<void()> f)
+		{
+			startFunction = f; hasStartFunction
 				= true;
 		}
 	protected:
@@ -50,7 +64,9 @@ class AnimatorState;
 		::ParentState* m_pParent = nullptr;
 
 		std::function<void()> endFunction;
+		std::function<void()> startFunction;
 		bool hasEndFunction = false;
+		bool hasStartFunction = false;
 		std::vector<Connection> m_NextConnections{};
 
 	};
@@ -68,6 +84,7 @@ class AnimatorState;
 		void LeaveState();
 
 		//SET
+		void SetValue(int v) { m_EnumValue = v; m_ValueChanged = true; }
 		void SetSpeed(float speed);
 		void SetLooping(bool b);
 		void SetWaitUntilAnimDone(bool b) { m_WaitUntilAnimDone = b; }
@@ -80,23 +97,31 @@ class AnimatorState;
 		bool GetLooping()const;
 		bool GetWaitUntilAnimDone() const { return m_WaitUntilAnimDone; }
 		//*****
-
+		bool GetValueChanged()
+		{
+			if(m_ValueChanged)
+			{
+				m_ValueChanged = false;
+				return true;
+			}
+			return false;
+		}
 
 
 
 	protected:
 		ParentState* parentState = nullptr;
-		unsigned int m_EnumValue = 0;
+		int m_EnumValue = 0;
 
 		float m_Speed = 1.0f;
 		bool m_isLooping = true;
 		bool m_hasRun = false;
 		bool m_WaitUntilAnimDone = false;
-
+		bool m_ValueChanged = false;
 		float runTime = 0.f;
 		std::string m_Name = "";
 
-		virtual void Execute(float elapsedSec) {}
+		virtual void Execute(float elapsedSec) { UNREF(elapsedSec); }
 	};
 
 	class ParentState final : public BaseState

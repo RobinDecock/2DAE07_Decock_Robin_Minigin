@@ -10,7 +10,7 @@
 #include "BubbleBobble.h"
 #include "RigidbodyComponent.h"
 #include "TextureComponent.h"
-
+#include "GameScene.h"
 void MaitaBullet::Initialize()
 {
 	auto pTexC = new TextureComponent("Enemies.png");
@@ -25,6 +25,8 @@ void MaitaBullet::Initialize()
 
 	this->AddContactCallback([this](b2Fixture* thisFix, b2Fixture* other, b2Contact* contact, ContactType type)
 		{
+			UNREF(thisFix);
+			UNREF(contact);
 			if (type == ContactType::BeginContact)
 			{
 
@@ -32,6 +34,7 @@ void MaitaBullet::Initialize()
 				{
 					Bub* pBub = static_cast<Bub*>(other->GetUserData());
 					pBub->Attack();
+					m_ParentScene->Remove(this);
 				}
 			}
 		});
@@ -40,5 +43,6 @@ void MaitaBullet::Initialize()
 
 void MaitaBullet::PhysicsUpdate(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	m_pRigid->GetBody()->SetLinearVelocity(b2Vec2((m_IsRight ? 1.0f : -1.0f) * maxVelX,0));
 }

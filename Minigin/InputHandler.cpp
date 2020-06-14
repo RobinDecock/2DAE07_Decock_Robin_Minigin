@@ -3,7 +3,6 @@
 
 #include "InputManager.h"
 #include "Command.h"
-#include "Input.h"
 
 	void InputHandler::AddInputButton(::ButtonInput input, ::ButtonCommand& command)
 	{
@@ -17,20 +16,20 @@
 
 	void InputHandler::HandleInput(float elapsedSec)
 	{
+		for (auto& element : axisVector)
+		{
+			if (InputManager::CheckAxis(element.first, playerId))
+			{
+				element.second.Execute(elapsedSec, element.first.currValue);
+			}
+		}
+		
 		for (const auto element : buttonVector)
 		{
 			bool done = InputManager::CheckButton(element.first, playerId);
 			if (done)
 			{
-				element.second.execute(elapsedSec);
-			}
-		}
-
-		for (auto& element : axisVector)
-		{
-			if (InputManager::CheckAxis(element.first, playerId))
-			{
-				element.second.execute(elapsedSec, element.first.currValue);
+				element.second.Execute(elapsedSec);
 			}
 		}
 	}

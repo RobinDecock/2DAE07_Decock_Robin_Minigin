@@ -12,7 +12,7 @@ class MenuVertical :public AxisCommand
 {
 public:
 	MenuVertical(MainMenu* mainMenu) :m_pMainMenu(mainMenu) {}
-	void execute(float elapsedSec, float axisValue) override;
+	void Execute(float elapsedSec, float axisValue) override;
 private:
 	MainMenu* m_pMainMenu = nullptr;
 	float delay = 0.2f;
@@ -23,7 +23,7 @@ class Confirm :public ButtonCommand
 {
 public:
 	Confirm(MainMenu* mainMenu) :m_pMainMenu(mainMenu) {}
-	void execute(float elapsedSec) override;
+	void Execute(float elapsedSec) override;
 private:
 	MainMenu* m_pMainMenu = nullptr;
 

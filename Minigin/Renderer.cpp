@@ -1,7 +1,7 @@
 #include "MiniginPCH.h"
 #include "Renderer.h"
-#include "Texture2D.h"
-
+//#include "Texture2D.h"
+#include <iostream>
 
 	SDL_Renderer* Renderer::m_Renderer = nullptr;
 	void Renderer::Init(SDL_Window* window)
@@ -18,12 +18,10 @@
 		SDL_SetRenderDrawColor(m_Renderer, 0, 0, 2, SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(m_Renderer);
 	}
-
 	void Renderer::Render()
 	{
 		SDL_RenderPresent(m_Renderer);
 	}
-
 	void Renderer::Destroy()
 	{
 		if (m_Renderer != nullptr)
@@ -42,15 +40,26 @@
 		SDL_Point pivotOffset;
 
 		const float& angle = texture.GetAngle();
-		const SDL_RendererFlip& flip = texture.GetFlipped() ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+		SDL_RendererFlip flip = SDL_FLIP_NONE;
+		if(texture.GetFlipped())
+		{
+			flip = SDL_FLIP_HORIZONTAL;
+		}
 
 		pivotOffset.x = int(pivot.x * dest.w);
 		pivotOffset.y = int(pivot.y * dest.h);
 
 		dest.x -= pivotOffset.x;
 		dest.y -= pivotOffset.y;
+		
+		int success = SDL_RenderCopyEx(m_Renderer, texture.GetSDLTexture(), &src, &dest, angle, &pivotOffset, flip);
 
-		SDL_RenderCopyEx(m_Renderer, texture.GetSDLTexture(), &src, &dest, angle, &pivotOffset, flip);
+
+		
+		if(success!=0)
+		{
+			std::cout << "SDL_RenderCopyEx failed" << std::endl;
+		}
 	}
 
 	void Renderer::RenderTexture(const Texture2D& texture, const float x, const float y)
@@ -59,5 +68,14 @@
 		dst.x = static_cast<int>(x);
 		dst.y = static_cast<int>(y);
 		SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
-		SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+
+
+		
+		int success = SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+
+		
+		if (success != 0)
+		{
+			std::cout << "SDL_RenderCopy failed" << std::endl;
+		}
 	}

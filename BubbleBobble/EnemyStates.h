@@ -6,7 +6,7 @@ class State;
 class State
 {
 public:
-	virtual State* Execute(float elapsedSec) { return nullptr; };
+	virtual State* Execute(float elapsedSec) { UNREF(elapsedSec); return nullptr; };
 	
 };
 
@@ -43,9 +43,20 @@ class PursuePlayerAndShoot :public PursuePlayer
 public:
 	PursuePlayerAndShoot(BaseEnemy* pEnemy, Bub* lockedPlayer);
 	State* Execute(float elapsedSec) override;
-protected:
+};
 
-	
-	float m_ShootTimer = 0.0f;
-	
+
+class PursuePlayerAndRush :public PursuePlayer
+{
+public:
+	PursuePlayerAndRush(BaseEnemy* pEnemy, Bub* lockedPlayer): PursuePlayer(pEnemy,lockedPlayer)
+	{}
+	State* Execute(float elapsedSec) override;
+private:
+	bool rushActive = false;
+	float rushTimer = 0.0f;
+	float rushDelay = 1.0f;
+
+	float rushActiveTimer = 0.0f;
+	float rushActiveDelay = 2.0f;
 };

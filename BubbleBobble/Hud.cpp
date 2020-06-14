@@ -17,24 +17,6 @@ Hud::~Hud()
 {
 }
 
-void Hud::Initialize()
-{
-}
-
-
-
-void Hud::Update(float elapsedSec)
-{
-	
-}
-
-
-
-
-void Hud::LateUpdate(float elapsedSec)
-{
-}
-
 void Hud::Draw()const
 {
 	SDL_Rect rect;

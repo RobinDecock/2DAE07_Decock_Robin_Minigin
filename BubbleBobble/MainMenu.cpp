@@ -72,7 +72,7 @@ void MainMenu::Update(float elapsedSec)
 	inputHandler.HandleInput(elapsedSec);
 }
 
-void MenuVertical::execute(float elapsedSec, float axisValue)
+void MenuVertical::Execute(float elapsedSec, float axisValue)
 {
 	if (timer < delay)
 	{
@@ -103,8 +103,9 @@ void MenuVertical::execute(float elapsedSec, float axisValue)
 
 }
 
-void Confirm::execute(float elapsedSec)
+void Confirm::Execute(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	SceneManager::GetInstance()->AddScene(new SingleScene());
 	SceneManager::GetInstance()->RemoveScene(m_pMainMenu);
 }

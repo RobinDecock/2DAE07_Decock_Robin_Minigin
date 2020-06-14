@@ -29,6 +29,7 @@ void b2CContactListener::EndContact(b2Contact* contact)
 
 void b2CContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
 {
+	UNREF(oldManifold);
 	GameObject* obj1 = static_cast<GameObject*>(contact->GetFixtureA()->GetUserData());
 	GameObject* obj2 = static_cast<GameObject*>(contact->GetFixtureB()->GetUserData());
 
@@ -41,6 +42,7 @@ void b2CContactListener::PreSolve(b2Contact* contact, const b2Manifold* oldManif
 
 void b2CContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
 {
+	UNREF(impulse);
 	GameObject* obj1 = static_cast<GameObject*>(contact->GetFixtureA()->GetUserData());
 	GameObject* obj2 = static_cast<GameObject*>(contact->GetFixtureB()->GetUserData());
 

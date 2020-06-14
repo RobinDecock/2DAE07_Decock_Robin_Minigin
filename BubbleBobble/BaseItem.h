@@ -10,13 +10,13 @@ class BaseItem: public GameObject
 {
 public:
 	BaseItem(){}
-	void PickUp();
+	~BaseItem();
 protected:
 	void Initialize() override;
 
 	LevelSegment* m_pLevelSegment = nullptr;
 	int scoreValue = 10;
-	
+	bool pickedup = false;
 };
 
 class Fries: public BaseItem

@@ -33,9 +33,14 @@ void Animator::Initialize()
 void Animator::Update(float elapsedSec)
 {
 	BaseComponent::Update(elapsedSec);
-	AnimatorState* state = m_pCurrentAnimatorState->GetNextState(m_pCurrentAnimatorState,m_pAnimatorBlackboard);
+	AnimatorState* state = m_pCurrentAnimatorState->GetNextState(m_pAnimatorBlackboard);
 	if (state == nullptr)
 	{
+		if(m_pCurrentAnimatorState->GetValueChanged())
+		{
+			m_pSpriteComp->SetSpriteData(m_AnimData[m_pCurrentAnimatorState->GetValue()]);
+		}
+		m_pSpriteComp->SetSpeed(m_pCurrentAnimatorState->GetSpeed());
 		m_pCurrentAnimatorState->RootExecute(elapsedSec);
 	}
 	else if (state != m_pCurrentAnimatorState&&
@@ -45,6 +50,7 @@ void Animator::Update(float elapsedSec)
 		m_pCurrentAnimatorState->EndState();
 		
 		m_pCurrentAnimatorState = state;
+		m_pCurrentAnimatorState->StartState();
 		m_pSpriteComp->SetSpriteData(m_AnimData[m_pCurrentAnimatorState->GetValue()]);
 		m_pSpriteComp->SetSpeed(m_pCurrentAnimatorState->GetSpeed());
 		m_pSpriteComp->SetLooping(m_pCurrentAnimatorState->GetLooping());

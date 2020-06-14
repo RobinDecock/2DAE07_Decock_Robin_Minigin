@@ -13,7 +13,8 @@ class GameObject;
             : next_(nullptr)
         {}
         virtual ~Observer() = default;
-        virtual void onNotify(int event, GameObject* obj = nullptr) = 0;
+        virtual void onNotify(int event, GameObject* obj = nullptr) { UNREF(event); UNREF(obj);
+        };
     private:
         Observer* next_;
 

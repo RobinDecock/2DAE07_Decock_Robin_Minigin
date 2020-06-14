@@ -8,18 +8,23 @@
 #include "MaitaBullet.h"
 #include "Maita.h"
 #include "TransformComponent.h"
-void EC::MoveHorizontal::execute(float elapsedSec, float axisValue)
+void EC::MoveHorizontal::Execute(float elapsedSec, float axisValue)
 {
+	UNREF(elapsedSec);
 	RigidbodyComponent* rigid = m_pEnemy->GetComponent<RigidbodyComponent>();
 	float maxVelX = m_pEnemy->GetMaxVelX();
 	b2Vec2 vel = rigid->GetBody()->GetLinearVelocity();
 	vel.x += ((axisValue > 0) ? 1.0f : -1.0f) * maxVelX;
 	
 	rigid->GetBody()->SetLinearVelocity(vel);
+
+	m_pEnemy->m_IsRight = rigid->GetBody()->GetLinearVelocity().x > 0;
+
 }
 
-void EC::Jump::execute(float elapsedSec)
+void EC::Jump::Execute(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	if (m_pEnemy->GetIsOnGround())
 	{
 		RigidbodyComponent* rigid = m_pEnemy->GetComponent<RigidbodyComponent>();
@@ -32,15 +37,20 @@ void EC::Jump::execute(float elapsedSec)
 
 
 
-void EC::Shoot::execute(float elapsedSec)
+void EC::Shoot::Execute(float elapsedSec)
 {
-	MaitaBullet* bubble = new MaitaBullet(m_pEnemy->IsRight());
-	bubble->SetPosition(m_pEnemy->GetTransform()->GetPosition());
-	m_pEnemy->GetScene()->Add(bubble);
+	UNREF(elapsedSec);
+	if(m_pEnemy->m_ShootTimer>m_pEnemy->m_ShootDelay)
+	{
+		MaitaBullet* bubble = new MaitaBullet(m_pEnemy->IsRight());
+		bubble->SetPosition(m_pEnemy->GetTransform()->GetPosition());
+		m_pEnemy->GetScene()->Add(bubble);
+	}
 }
 
-void EC::GoDown::execute(float elapsedSec, float axisValue)
+void EC::GoDown::Execute(float elapsedSec, float axisValue)
 {
+	UNREF(elapsedSec);
 	if (axisValue < -0.1f)
 	{
 		if (m_pEnemy->m_OnPlatform != nullptr)

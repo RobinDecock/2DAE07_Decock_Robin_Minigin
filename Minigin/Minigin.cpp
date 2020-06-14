@@ -38,11 +38,8 @@
 			throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 		}
 
-		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-		{
-			std::cout << "Error: " << Mix_GetError() << std::endl;
-		}
 		Renderer::Init(window);
+		SoundManager::Initialize();
 		srand(static_cast<unsigned int>(time(nullptr)));
 	}
 
@@ -61,7 +58,6 @@
 
 				auto loopStart = std::chrono::high_resolution_clock::now();
 				InputManager::Update();
-				SoundManager::Update();
 				Renderer::Clear();
 
 				m_pProject->Draw();
@@ -92,7 +88,6 @@
 
 		ResourceManager::GetInstance().DestroyInstance();
 
-		SoundManager::Cleanup();
 		Renderer::Destroy();
 
 		SDL_DestroyWindow(window);

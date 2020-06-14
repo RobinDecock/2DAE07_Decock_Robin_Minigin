@@ -99,6 +99,7 @@
     <ClCompile Include="PlayerHud.cpp">
       <Filter>Prefabs\UI</Filter>
     </ClCompile>
+    <ClCompile Include="SceneStates.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BubbleBobble.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="PlayerHud.h">
       <Filter>Prefabs\UI</Filter>
     </ClInclude>
+    <ClInclude Include="SceneStates.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BubbleBobble.rc">

@@ -5,6 +5,7 @@
 #include "RigidbodyComponent.h"
 #include "TransformComponent.h"
 #include "Bub.h"
+#include "GameScene.h"
 Tunnel::Tunnel()
 {
 	AddComponent(new RigidbodyComponent(true));
@@ -17,6 +18,8 @@ void Tunnel::Initialize()
 
 	this->AddContactCallback([this](b2Fixture* thisFix, b2Fixture* other, b2Contact* contact, ContactType type)
 		{
+			UNREF(thisFix);
+			UNREF(contact);
 			if (type==ContactType::EndContact)
 			{
 				if(other->GetFilterData().categoryBits == LayerMask::Player)
@@ -27,6 +30,10 @@ void Tunnel::Initialize()
 						hitObjects.push_back(ref);
 					}
 				}
+				else if (other->GetFilterData().categoryBits == LayerMask::Items)
+				{
+					m_ParentScene->Remove(static_cast<GameObject*>(other->GetUserData()));
+				}
 				else
 				{
 					hitObjects.push_back(static_cast<GameObject*>(other->GetUserData()));
@@ -34,17 +41,18 @@ void Tunnel::Initialize()
 				
 			}
 		});
+	
 }
 
 void Tunnel::PhysicsUpdate(float elapsedSec)
 {
-	for(unsigned int i = 0;i< hitObjects.size();i++)
+	UNREF(elapsedSec);
+	for (unsigned int i = 0; i < hitObjects.size(); i++)
 	{
-		
+
 		glm::vec2 pos = m_Transform->Get2DPosition();
-		hitObjects[i]->SetPosition(glm::vec2(hitObjects[i]->GetTransform()->Get2DPosition().x, pos.y - 28 * 8));
+		hitObjects[i]->SetPosition(glm::vec2(hitObjects[i]->GetTransform()->Get2DPosition().x, pos.y - 26 * 8));
 		hitObjects[i]->GetComponent<RigidbodyComponent>()->GetBody()->SetLinearVelocity(b2Vec2(0, 0));
-		std::cout << "******MOVED********" << std::endl;
 	}
 	hitObjects.clear();
 }

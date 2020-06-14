@@ -14,16 +14,6 @@ void FixedCamera::Update(float elapsedSec)
 	m_Transform->SetPosition(glm::vec3(pos.x,-pos.y,pos.z)-glm::vec3(ortho.x / 2.0f, -ortho.y / 2.0f, 1));
 }
 
-void FixedCamera::LateUpdate(float elapsedSec)
-{
-	UNREF(elapsedSec);
-}
-
-void FixedCamera::Initialize()
-{
-	Camera::Initialize();
-}
-
 FixedCamera::~FixedCamera()
 {
 }

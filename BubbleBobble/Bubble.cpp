@@ -13,6 +13,8 @@
 #include "BoxCollider.h"
 #include "BubbleBobble.h"
 #include "EffectorComponent.h"
+#include "SoundManager.h"
+
 Bubble::Bubble(bool isRight,int playerId): m_PlayerId(playerId), m_IsRight(isRight)
 {
 	m_Tag = "Bubble";
@@ -34,7 +36,7 @@ void Bubble::Initialize()
 	pBoxCol = new BoxCollider(glm::vec2(16, 16));
 	AddComponent(pBoxCol);
 	pBoxCol->SetCategory(LayerMask::Bubbles);
-	pBoxCol->SetIgnoreMask(LayerMask::Enemies);
+	pBoxCol->SetIgnoreMask(LayerMask::Enemies|LayerMask::Platform | LayerMask::Bubbles|LayerMask::Player);
 
 
 	//TEST
@@ -42,7 +44,7 @@ void Bubble::Initialize()
 	AddComponent(pEffect);
 	pEffect->SetCategoryToAffect(LayerMask::Player);
 	
-	m_pBoxTrigger = new BoxTrigger(glm::vec2(14, 14));
+	m_pBoxTrigger = new BoxTrigger(glm::vec2(5, 5));
 	AddComponent(m_pBoxTrigger);
 	m_pBoxTrigger->SetCategory(LayerMask::Bubbles);
 	m_pBoxTrigger->SetActive(false);
@@ -50,6 +52,8 @@ void Bubble::Initialize()
 
 	this->AddContactCallback([this](b2Fixture* thisFix, b2Fixture* other, b2Contact* contact, ContactType type)
 		{
+			UNREF(thisFix);
+			UNREF(contact);
 			if(type == ContactType::BeginContact &&((other->GetFilterData().categoryBits&LayerMask::Enemies)==LayerMask::Enemies))
 			{
 				auto pEnemy = static_cast<BaseEnemy*>(other->GetUserData());
@@ -69,7 +73,7 @@ void Bubble::Initialize()
 	AddComponent(m_pSprite);
 
 	auto pBubble = new AnimatorState(6, "BubbleV1");
-
+	//pBubble->SetEndFunction([this]() {pBoxCol->SetIgnoreMask(LayerMask::Enemies | LayerMask::Platform|LayerMask::Bubbles); });
 	m_pAnimator = new Animator(m_pSprite, pBubble, m_Blackboard);
 	AddComponent(m_pAnimator);
 	//STATES
@@ -80,8 +84,7 @@ void Bubble::Initialize()
 	m_pAnimator->AddState(pBubbleExplode);
 	pBubbleExplode->SetLooping(false);
 	pBubbleExplode->SetSpeed(10.0f);
-
-
+	
 	std::map<int, AnimData> animData = Anim::Loader::Load("../BubbleBobble/Resources/Bub"+ std::to_string(m_PlayerId)+".anim");
 	m_pAnimator->SetAnimData(animData);
 
@@ -90,21 +93,34 @@ void Bubble::Initialize()
 
 	//LINKS
 	m_pAnimator->LinkStates(pBubble, pBubbleExplode, Req(int(BKey::IsExploding), true));
-
-	m_pRigid->SetGravityScale(-2.0f);
-
+	m_pRigid->SetGravityScale(0.0f);
+	
+	SoundManager::PlayFX("../BubbleBobble/Resources/Audio/ShootSound.wav");
 }
 
 void Bubble::LateInitialize()
 {
-	float impulse = m_pRigid->GetBody()->GetMass() * 500.0f * (m_IsRight ? 1.0f : -1.0f);
-	m_pRigid->GetBody()->ApplyLinearImpulse(b2Vec2(impulse, 0), m_pRigid->GetBody()->GetWorldCenter() + b2Vec2(impulse, 0), true);
+	//float impulse = m_pRigid->GetBody()->GetMass() * 50.0f * (m_IsRight ? 1.0f : -1.0f);
+	//m_pRigid->GetBody()->ApplyLinearImpulse(b2Vec2(impulse, 0), m_pRigid->GetBody()->GetWorldCenter() + b2Vec2(impulse, 0), true);
 }
 
 void Bubble::Update(float elapsedSec)
-{	
-	if(GetComponent<AutoDestroyComponent>()->timer>4.5f)
+{
+	UNREF(elapsedSec);
+	AutoDestroyComponent* destroyComp = GetComponent<AutoDestroyComponent>();
+	if(destroyComp->timer>4.5f)
 	{
 		m_Blackboard.SetKeyValue((int)BKey::IsExploding, true);
+	}
+	if(destroyComp->timer< forceDelay)
+	{
+		float vel = m_pRigid->GetBody()->GetMass() * 150.0f * (m_IsRight ? 1.0f : -1.0f);
+		m_pRigid->GetBody()->SetLinearVelocity(b2Vec2(vel, 0));
+	}
+	else
+	{
+		m_pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, m_pRigid->GetBody()->GetLinearVelocity().y));
+		m_pRigid->SetGravityScale(-2.0f);
+		pBoxCol->SetIgnoreMask(LayerMask::Enemies | LayerMask::Platform | LayerMask::Bubbles);
 	}
 }

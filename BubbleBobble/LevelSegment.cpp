@@ -2,6 +2,7 @@
 #include "LevelSegment.h"
 #include "GameScene.h"
 #include "AnimLoader.h"
+#include "BaseItem.h"
 #include "Zen.h"
 #include "TransformComponent.h"
 #include "BoxCollider.h"
@@ -21,10 +22,30 @@ LevelSegment::LevelSegment(int levelId,SingleScene* pScene)
 	m_pCurrScene = pScene;
 
 	int hudOffset = 24;
-	m_pCurrScene->SetCamLocation({ Settings::GetWindowSize().x / 4.0f ,(Settings::GetWindowSize().y / 4.0f) + (Settings::GetWindowSize().y / 2.0f) * (m_LevelId - 1) - hudOffset });
+
+	glm::vec2 middlePoint = { Settings::GetWindowSize().x / 4.0f ,(Settings::GetWindowSize().y / 4.0f) + (Settings::GetWindowSize().y / 2.0f) * (m_LevelId - 1) - hudOffset };
+	camLocation = middlePoint;
 	std::map<int, AnimData> blockData = Anim::Loader::Load("../BubbleBobble/Resources/Blocks.anim");
 
 	LoadMap("../BubbleBobble/Resources/Map" + std::to_string(levelId) + ".map", "../BubbleBobble/Resources/Blocks.anim");
+
+	//BOUNDARIES
+	GameObject* boundLeft = new GameObject();
+	boundLeft->AddComponent(new RigidbodyComponent(true));
+	boundLeft->AddComponent(new BoxCollider(glm::vec2(16,500)));
+	boundLeft->SetPosition(glm::vec2(8, middlePoint.y));
+	m_pSegObjects.push_back(boundLeft);
+	m_pCurrScene->Add(boundLeft);
+	
+	GameObject* boundRight = new GameObject();
+	boundRight->AddComponent(new RigidbodyComponent(true));
+	boundRight->AddComponent(new BoxCollider(glm::vec2(16, 500)));
+	boundRight->SetPosition(glm::vec2(8*31, middlePoint.y));
+	m_pSegObjects.push_back(boundRight);
+	m_pCurrScene->Add(boundRight);
+
+
+	
 }
 
 LevelSegment::~LevelSegment()
@@ -54,6 +75,8 @@ void LevelSegment::EnemyUnlockPlayer(Bub* player)
 			m_pEnemies[i]->SetLockedPlayer(nullptr);
 		}
 	}
+
+	std::cout << "UNLOCKED PLAYER" << player->GetPlayerId() << std::endl;
 }
 
 
@@ -186,7 +209,7 @@ void LevelSegment::LoadMap(std::string mapPath, std::string blockPath)
 					}
 					break;
 				case 2:
-					m_pCurrScene->AddSpawnLocation(CalculatePos({ posX,posY }, m_LevelId));
+					spawnLocations.push_back (CalculatePos({ posX,posY }, m_LevelId));
 					break;
 			}
 			

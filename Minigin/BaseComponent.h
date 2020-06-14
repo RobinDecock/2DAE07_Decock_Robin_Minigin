@@ -35,9 +35,9 @@
 
 		virtual void LateInitialize() {}
 
-		virtual void Update(float elapsedSec) {}
-		virtual void PhysicsUpdate(float elapsedSec) {}
-		virtual void LateUpdate(float elapsedSec) {}
+		virtual void Update(float elapsedSec) { UNREF(elapsedSec); }
+		virtual void PhysicsUpdate(float elapsedSec) { UNREF(elapsedSec); }
+		virtual void LateUpdate(float elapsedSec) { UNREF(elapsedSec); }
 
 		virtual void Draw() {}
 

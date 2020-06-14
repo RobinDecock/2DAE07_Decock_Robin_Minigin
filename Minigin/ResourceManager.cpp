@@ -1,6 +1,6 @@
 #include "MiniginPCH.h"
 #include "ResourceManager.h"
-#include "SDL_image.h"
+#include <SDL_image.h>
 #include "Font.h"
 
 #include "Renderer.h"

@@ -30,9 +30,9 @@ public:
 	bool IsRight()const { return m_IsRight; }
 	bool IsBubbled() const { return m_IsBubbled; }
 	float GetJumpStrength()const {return m_JumpStength;}
-	Bub* GetLockedPlayer() const { return lockedPlayer; }
+	Bub* GetLockedPlayer() const { return m_pLockedPlayer; }
 	void SetLockedPlayer(Bub* p)
-	{	lockedPlayer = p; }
+	{	m_pLockedPlayer = p; }
 	
 	virtual void SetControlled(int PlayerId)
 	{
@@ -51,9 +51,10 @@ protected:
 	void Update(float elapsedSec) override;
 	void Draw()const override {};
 
-	virtual void HandleAI(float elapsedSec) = 0;
 	bool m_IsOnGround = false;
-	float m_MaxXVelocity = 40.0f;
+	float m_NormalVelocity = 25.0f;
+	
+	float m_MaxXVelocity = 25.0f;
 
 	InputHandler* m_pInputHandler = nullptr;
 	LevelSegment* m_pLevelSegment = nullptr;
@@ -84,12 +85,14 @@ protected:
 	EC::Jump m_pJumpC = EC::Jump(this);
 	EC::MoveHorizontal m_pMoveHC = EC::MoveHorizontal(this);
 
+	AnimatorState* m_pBubbledAnim = nullptr;
+	
 	enum class EnemyType
 	{
 		Maita,ZenChan
 	};
 
-	EnemyType m_EnemyType;
+	EnemyType m_EnemyType = EnemyType::Maita;
 	State *m_pCurrentState =new WanderState(this);
 	
 	enum class AnimType
@@ -102,7 +105,7 @@ protected:
 	};
 
 
-	Bub* lockedPlayer = nullptr;
+	Bub* m_pLockedPlayer = nullptr;
 
 
 

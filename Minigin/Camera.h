@@ -8,8 +8,6 @@
 	{
 	public:
 		Camera();
-		void  Initialize()override;
-		void Update(float elapsedSec) override;
 		void Draw()const override;
 		void MoveToLocation(float elapsedSec, glm::vec2 goPos);
 		glm::mat4 GetViewMatrix();

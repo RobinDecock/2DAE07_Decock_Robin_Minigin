@@ -25,6 +25,9 @@ private:
 
 	int m_PlayerId = 0;
 	bool m_IsRight = false;
+
+	float forceDelay = 0.5f;
+	
 	enum AnimType
 	{
 		BubbleV1 = 6,BubbleV2 = 7

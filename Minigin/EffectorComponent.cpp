@@ -5,14 +5,6 @@
 #include "BoxTrigger.h"
 #include "RigidbodyComponent.h"
 
-void EffectorContactCallback::BeginContact(b2Contact* contact)
-{
-}
-
-void EffectorContactCallback::EndContact(b2Contact* contact)
-{
-}
-
 EffectorComponent::EffectorComponent(BoxCollider* boxCollider,glm::vec2 localCenter, glm::vec2 size):m_pBoxCollider(boxCollider)
 {
 	m_pTrigger = new BoxTrigger(glm::vec2(size.x, size.y), localCenter);
@@ -39,6 +31,7 @@ void EffectorComponent::Initialize()
 	
 	m_pGameObject->AddContactCallback([this](b2Fixture* thisFix ,b2Fixture* other,b2Contact* contact, ContactType type)
 		{
+			UNREF(thisFix);
 			//IF TRIGGER IS HIT OR ENDED
 			{
 				uint16 cat = other->GetFilterData().categoryBits;
@@ -64,8 +57,8 @@ void EffectorComponent::Initialize()
 				{
 					if (type == ContactType::PreSolve)
 					{
-						uint16 cat = other->GetFilterData().categoryBits;
-						if ((m_AffectedCat & cat) == cat)
+						uint16 ct = other->GetFilterData().categoryBits;
+						if ((m_AffectedCat & ct) == ct)
 						{
 							for (unsigned int i = 0; i < m_ToIgnore.size(); i++)
 							{

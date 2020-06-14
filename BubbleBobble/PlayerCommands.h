@@ -8,7 +8,7 @@ namespace PC
 	{
 	public:
 		GoDown(Bub* bub) :m_pBub(bub) {}
-		void execute(float elapsedSec,float axisValue) override;
+		void Execute(float elapsedSec,float axisValue) override;
 	private:
 		Bub* m_pBub = nullptr;
 	};
@@ -17,7 +17,7 @@ namespace PC
 	{
 	public:
 		Jump(Bub* bub) :m_pBub(bub) {}
-		void execute(float elapsedSec) override;
+		void Execute(float elapsedSec) override;
 	private:
 		Bub* m_pBub = nullptr;
 	};
@@ -28,7 +28,7 @@ namespace PC
 	{
 	public:
 		MoveHorizontal(Bub* bub) :m_pBub(bub) {}
-		void execute(float elapsedSec, float axisValue) override;
+		void Execute(float elapsedSec, float axisValue) override;
 
 	private:
 		Bub* m_pBub = nullptr;
@@ -38,7 +38,7 @@ namespace PC
 	{
 	public:
 		ShootBubble(Bub* bub) :m_pBub(bub) {}
-		void execute(float elapsedSec) override;
+		void Execute(float elapsedSec) override;
 
 	private:
 		Bub* m_pBub = nullptr;

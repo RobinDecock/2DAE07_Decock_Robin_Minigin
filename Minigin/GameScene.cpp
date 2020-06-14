@@ -6,28 +6,23 @@
 #include "DebugRenderer.h"
 #include "ResourceManager.h"
 #include "Settings.h"
+#include "TextComponent.h"
 #include "Utils.h"
 #include "TransformComponent.h"
 
 
-	GameScene::GameScene()
-	{
-
-	}
-
 	void GameScene::RootInitialize()
 	{
 		//FPS Monitor
-#if DEBUG
+#if _DEBUG
 		auto font = ResourceManager::GetInstance().LoadFont("Lingua.otf", 18);
 		FPSMonitor = new GameObject();
 		FPSMonitor->AddComponent(new TextComponent(font));
-		FPSMonitor->GetTransform()->SetPosition({ Settings::GetWindowSize().x / 2.0f,4 });
+		FPSMonitor->GetTransform()->SetPosition({ Settings::GetWindowSize().x - 50,4 ,50.0f});
 		Add(FPSMonitor);
 #endif
 		//
-
-
+		
 		Initialize();
 		std::sort(m_pGameObjects.begin(), m_pGameObjects.end(), [](GameObject* a, GameObject* b) {return a->GetTransform()->GetDepth() < b->GetTransform()->GetDepth(); });
 		if (m_pActiveCam == nullptr)
@@ -35,13 +30,17 @@
 			m_pActiveCam = new Camera();
 		}
 		m_IsInitialized = true;
+
+		
 	}
 
 	void GameScene::RootDraw()const
 	{
 		//DRAW ORIGIN
+#if _DEBUG
 		DebugRenderer::DrawLine({ 0,0 }, { 1000,0 }, { 0xFF,0x0,0x00,0x0 });
 		DebugRenderer::DrawLine({ 0,0 }, { 0,1000 }, { 0x0,0xFF	,0x0,0x0 });
+#endif
 
 		Draw();
 
@@ -59,7 +58,7 @@
 
 	void GameScene::ThreadUpdate(float elapsedSec)
 	{
-#if DEBUG
+#if _DEBUG
 		FPSMonitor->GetComponent<TextComponent>()->SetText(std::to_string(int(1.0f / elapsedSec)));
 #endif
 		if (m_pActiveCam != nullptr)
@@ -97,7 +96,7 @@
 
 		if (m_pPhysicsProxy.world != nullptr)
 		{
-			m_pPhysicsProxy.world->Step(elapsedSec, 8, 3);
+			m_pPhysicsProxy.world->Step(1/50.0f, 8, 3);
 		}
 
 		m_pPhysicsProxy.isLocked = true;
@@ -112,12 +111,12 @@
 		physicsThread.join();
 		while ((updateThread.joinable() || physicsThread.joinable()))
 		{
-			std::cout << "**Thread Overshoot**" << std::endl;
+			
 		}
-
+		LateUpdate(elapsedSec);
+		
 		while (m_pToDelete.size() >= 1)
 		{
-
 			for (unsigned int i = 0; i < m_pGameObjects.size(); i++)
 			{
 				if (m_pGameObjects[i] == m_pToDelete[0])
@@ -126,8 +125,9 @@
 					break;
 				}
 			}
-
+			std::cout << "Removes GameObject, Tag(" << m_pToDelete[0]->GetTag() << ") Id(" << m_pToDelete[0]->GetId() << ")" << std::endl;
 			SafeDelete(m_pToDelete.at(0));
+			
 			m_pToDelete.erase(m_pToDelete.begin());
 		}
 
@@ -179,8 +179,9 @@
 
 	void GameScene::RayCast(b2RayCastCallback* callback, const b2Vec2& point1, const b2Vec2& point2)
 	{
+#if _DEBUG
 		DebugRenderer::DrawLine(make_glmVec2(point1), make_glmVec2(point2), Color(255, 0, 0, 255));
-
+#endif
 		m_pPhysicsProxy.world->RayCast(callback, point1, point2);
 	}
 
@@ -197,5 +198,14 @@
 
 	void GameScene::Remove(GameObject* obj)
 	{
+		std::cout << "Added GameObject For Removal, Tag(" << obj->GetTag() << ") Id(" << obj->GetId() << ")" << std::endl;
+
+		for(int i = 0;i<m_pToDelete.size();i++)
+		{
+			if(m_pToDelete[i]==obj)
+			{
+				return;
+			}
+		}
 		m_pToDelete.push_back(obj);
 	}

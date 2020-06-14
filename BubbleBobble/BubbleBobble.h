@@ -10,7 +10,8 @@ enum LayerMask :unsigned short
 	Enemies = 1 << 3,
 	Player = 1 << 4,
 	Bubbles = 1<<5,
-	Roof = 1<<6
+	Roof = 1<<6,
+	Items = 1 << 7
 };
 
 class BubbleBobble :public Project

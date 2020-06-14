@@ -9,7 +9,7 @@ public:
 	{}
 
 	virtual ~BubState(){}
-	virtual BubState* Execute(float elapsedSec) { return nullptr; }
+	virtual BubState* Execute(float elapsedSec) { UNREF(elapsedSec); return nullptr; }
 	virtual void StartState() {}
 	virtual void EndState() {}
 protected:
@@ -33,7 +33,6 @@ public:
 	NormalState(Bub* pBub) :BubState(pBub) {}
 	void StartState() override;
 	BubState* Execute(float elapsedSec) override;
-	void EndState() override;
 	~NormalState() override = default;
 private:
 	InputHandler m_InputHandler;

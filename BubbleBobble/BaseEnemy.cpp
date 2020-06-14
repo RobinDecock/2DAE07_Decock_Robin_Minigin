@@ -7,8 +7,10 @@
 #include "Bub.h"
 #include "BubbleBobble.h"
 #include "BoxCollider.h"
+#include "SoundManager.h"
 #include "Utils.h"
 #include "SpriteComponent.h"
+#include "AnimatorState.h"
 BaseEnemy::BaseEnemy(LevelSegment* segment)
 {
 	m_pLevelSegment = segment;
@@ -16,8 +18,9 @@ BaseEnemy::BaseEnemy(LevelSegment* segment)
 
 BaseEnemy::~BaseEnemy()
 {
-	SafeDelete(m_pCurrentState);
 
+	DropItem();
+	SafeDelete(m_pCurrentState);
 }
 
 void BaseEnemy::SetBubbled(bool b)
@@ -28,14 +31,18 @@ void BaseEnemy::SetBubbled(bool b)
 		m_pRigid->SetGravityScale(-1.0f);
 		m_pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, 0));
 		m_IsBubbled = true;
+		m_pLockedPlayer = nullptr;
 		m_pBoxCol->SetIgnoreMask(LayerMask::Player | LayerMask::Enemies);
+		m_pBubbledAnim->SetSpeed(1.0f);
 	}
 	else
 	{
+		m_pLockedPlayer = nullptr;
 		m_pRigid->SetGravityScale(6.0f);
 		m_pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, 0));
 		m_IsBubbled = false;
 		m_pBoxCol->SetIgnoreMask(LayerMask::Player | LayerMask::Enemies|LayerMask::Roof);
+		m_pBubbledAnim->SetSpeed(1.0f);
 	}
 }
 
@@ -43,6 +50,8 @@ void BaseEnemy::Initialize()
 {
 	this->AddContactCallback([this](b2Fixture* thisFix, b2Fixture* otherFix, b2Contact* contact, ContactType type)
 		{
+			UNREF(contact);
+			UNREF(thisFix);
 			GameObject* other = static_cast<GameObject*>(otherFix->GetUserData());
 			if (type != ContactType::BeginContact||isPaused)return;
 			if (other->GetTag() == "PC")
@@ -53,18 +62,14 @@ void BaseEnemy::Initialize()
 					if (m_IsBubbled)
 					{
 						singleScene = static_cast<SingleScene*>(m_ParentScene);
-						DropItem();
 						m_pLevelSegment->RemoveEnemy(this);
+						SoundManager::PlayFX("../BubbleBobble/Resources/Audio/EnemyDeadSound.wav");
 					}
 					else
 					{
 						bub->Attack();
-						lockedPlayer = nullptr;
+						m_pLockedPlayer = nullptr;
 					}
-				}
-				else if (type == ContactType::EndContact)
-				{
-					lockedPlayer = nullptr;
 				}
 			}
 
@@ -75,6 +80,7 @@ void BaseEnemy::Initialize()
 
 void BaseEnemy::Update(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	if (isPaused||m_IsBubbled)return;
 
 }
@@ -83,6 +89,7 @@ void BaseEnemy::Update(float elapsedSec)
 
 void BaseEnemy::PhysicsUpdate(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	if (m_IsBubbled)
 	{
 		m_BubbledTimer += elapsedSec;
@@ -90,6 +97,10 @@ void BaseEnemy::PhysicsUpdate(float elapsedSec)
 		{
 			SetBubbled(false);
 			m_BubbledTimer = 0.0f;
+		}
+		if(m_BubbledTimer>=(m_BubbledDelay-m_BubbledDelay/3.0f))
+		{
+			m_pBubbledAnim->SetSpeed(5.0f);
 		}
 		return;
 	}
@@ -141,13 +152,9 @@ void BaseEnemy::PhysicsUpdate(float elapsedSec)
 	
 	m_pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, m_pRigid->GetBody()->GetLinearVelocity().y));
 	
-	State * state = m_pCurrentState->Execute(elapsedSec);
 
-	if(state!=nullptr)
-	{
-		delete m_pCurrentState;
-		m_pCurrentState = state;
-	}
+
+
 	
 
 	if (m_IsControlled&& m_pInputHandler!=nullptr)
@@ -156,9 +163,13 @@ void BaseEnemy::PhysicsUpdate(float elapsedSec)
 	}
 	else
 	{
-		HandleAI(elapsedSec);
+		State* state = m_pCurrentState->Execute(elapsedSec);
+		if (state != nullptr)
+		{
+			delete m_pCurrentState;
+			m_pCurrentState = state;
+		}
 	}
-	m_IsRight = m_pRigid->GetVelocity().x > 0.0f;
 }
 
 

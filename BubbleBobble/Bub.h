@@ -37,7 +37,11 @@ public:
 	bool m_PlayerReady = false;
 	int GetPlayerId()const { return m_PlayerId; }
 	int GetHealth()const { return m_Health; }
-	void AddScore(int amount) { m_Score += amount; Notify(New_Score,this); }
+	bool IsInvincible()const { return m_IsInvincible; }
+	void AddScore(int amount)
+	{
+		m_Score += amount; Notify(New_Score,this);
+	}
 	int GetScore()const  { return m_Score; }
 private:
 	void SetCurrentState(BubState* state);
@@ -74,7 +78,7 @@ private:
 	bool m_DoneRespawning = false;
 	int m_Health = 3;
 	bool m_IsRight = true;
-
+	bool m_JumpedOnBubble = false;
 	int m_PlayerId = 0;
 	int m_Score = 0;
 	

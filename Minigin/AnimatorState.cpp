@@ -23,7 +23,7 @@
 		hasRequirement = true;
 	}
 	
-	::AnimatorState* ::BaseState::GetNextState(::BaseState* currentState, ::AnimatorBlackboard& pBlackboard)
+	::AnimatorState* ::BaseState::GetNextState( ::AnimatorBlackboard& pBlackboard)
 	{
 		if (m_pParent != nullptr)
 		{
@@ -63,7 +63,6 @@
 
 			if (amountOfRequirements == amountOfRequirementsMet)
 			{
-				std::cout << std::endl;
 #pragma region DEBUGOUTPUT
 #if defined DEBUGDRAW
 				for (size_t j = 0; j < pNextConnections[i].requirements.size(); j++)

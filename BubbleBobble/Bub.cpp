@@ -12,6 +12,7 @@
 #include "PlayerCommands.h"
 #include "GameObject.h"
 #include "SingleScene.h"
+#include "SoundManager.h"
 
 Bub::Bub(int playerId)
 {
@@ -57,7 +58,7 @@ void Bub::Initialize()
 	
 	m_pBoxCol =  new BoxCollider(glm::vec2(15, 16));
 	m_pBoxCol->SetCategory(LayerMask::Player);
-	m_pBoxCol->SetIgnoreMask(LayerMask::Roof);
+	m_pBoxCol->SetIgnoreMask(LayerMask::Roof|LayerMask::Player);
 	AddComponent(m_pBoxCol);
 	m_pBoxCol->SetFriction(0);
 
@@ -188,13 +189,6 @@ void Bub::Update(float elapsedSec)
 
 void Bub::PhysicsUpdate(float elapsedSec)
 {
-	BubState * state =m_pCurrentState->Execute(elapsedSec);
-	if(state!=nullptr)
-	{
-		SetCurrentState(state);
-	}
-
-	
 	auto raycastCallback = RaycastCallback(LayerMask::Ground | LayerMask::Platform | LayerMask::Bubbles);
 
 	glm::vec2 startPos = m_Transform->Get2DPosition() + glm::vec2(4, 7);
@@ -205,12 +199,21 @@ void Bub::PhysicsUpdate(float elapsedSec)
 		m_ParentScene->RayCast(&raycastCallback, make_b2Vec2(startPos), make_b2Vec2(startPos + glm::vec2(0, 4)));
 	}
 
-	if (raycastCallback.hasHit() && (raycastCallback.GetFixHit()->GetFilterData().categoryBits & LayerMask::Bubbles) == LayerMask::Bubbles)
+	if (!m_JumpedOnBubble &&raycastCallback.hasHit() && (raycastCallback.GetFixHit()->GetFilterData().categoryBits & LayerMask::Bubbles) == LayerMask::Bubbles)
 	{
-		m_pRigid->GetBody()->ApplyLinearImpulse(b2Vec2(0, -50), m_pRigid->GetBody()->GetWorldCenter(), true);
+		//m_pRigid->GetBody()->ApplyLinearImpulseToCenter(b2Vec2(0, -10), true);
+		SoundManager::PlayFX("../BubbleBobble/Resources/Audio/BubJumpSound.wav");
+		b2Vec2 currVel = m_pRigid->GetBody()->GetLinearVelocity();
+		currVel.y -= 100.0f;
+		
+		m_pRigid->GetBody()->SetLinearVelocity(currVel);
+		m_JumpedOnBubble = true;
+	}
+	else
+	{
+		m_JumpedOnBubble = false;
 	}
 	m_IsOnGround = raycastCallback.hasHit();
-
 
 	if (raycastCallback.hasHit() && raycastCallback.m_CategoryHit == LayerMask::Platform)
 	{
@@ -220,6 +223,12 @@ void Bub::PhysicsUpdate(float elapsedSec)
 	else
 	{
 		m_pPlatformEff = nullptr;
+	}
+
+	BubState* state = m_pCurrentState->Execute(elapsedSec);
+	if (state != nullptr)
+	{
+		SetCurrentState(state);
 	}
 }
 
@@ -235,9 +244,17 @@ void Bub::Attack()
 		return;
 
 	Notify(Event::Player_Damaged, this);
+#if _DEBUG
 	std::cout << "Took damage" << std::endl;
+#endif
 	m_Health -= 1;
 	m_Blackboard.SetKeyValue(IsHit, true);
+	SingleScene* pScene = static_cast<SingleScene*>(m_ParentScene);
+	if(m_Health == 0)
+	{
+		pScene->RemovePlayer(this);
+	}
+	pScene->AddLostPlayer(this);
 }
 
 

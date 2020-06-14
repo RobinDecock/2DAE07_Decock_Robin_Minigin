@@ -10,7 +10,6 @@
 #include "Bub.h"
 Maita::Maita(LevelSegment* segment):BaseEnemy(segment)
 {
-	m_MaxXVelocity = 30;
 	m_MaxWalkDelay = 12.0f;
 	viewDist = 80.0f;
 	m_EnemyType = EnemyType::Maita;
@@ -21,6 +20,14 @@ Maita::~Maita()
 	SafeDelete(m_pInputHandler);
 }
 
+void Maita::Update(float elapsedSec)
+{
+	if(m_ShootTimer<m_ShootDelay)
+	{
+		m_ShootTimer += elapsedSec;
+	}
+}
+
 void Maita::Initialize()
 {
 	BaseEnemy::Initialize();
@@ -28,10 +35,10 @@ void Maita::Initialize()
 	m_pRigid = new RigidbodyComponent();
 	AddComponent(m_pRigid);
 	m_pRigid->SetGravityScale(6.0f);
-
+	
 	m_pBoxCol = new BoxCollider(glm::vec2(14, 14));
 	m_pBoxCol->SetCategory(LayerMask::Enemies);
-	m_pBoxCol->SetIgnoreMask(LayerMask::Player);
+	m_pBoxCol->SetIgnoreMask(LayerMask::Player | LayerMask::Enemies | LayerMask::Roof);
 	AddComponent(m_pBoxCol);
 	m_pBoxCol->SetFriction(0);
 
@@ -50,8 +57,8 @@ void Maita::Initialize()
 	AddComponent(m_pAnimator);
 
 	
-	auto pBubbled = new AnimatorState(2, "MaitaBubble");
-	m_pAnimator->AddState(pBubbled);
+	m_pBubbledAnim = new AnimatorState(2, "MaitaBubble");
+	m_pAnimator->AddState(m_pBubbledAnim);
 
 
 
@@ -62,24 +69,23 @@ void Maita::Initialize()
 	////BLACKBOARD KEYS
 	m_Blackboard.AddKey((int)BlackboardKey::InBubble, ValueType::boolValue);
 	////LINKS
-	m_pAnimator->LinkStates(pRoot, pBubbled, Req((int)BlackboardKey::InBubble, true));
-	m_pAnimator->LinkStates(pBubbled, pRoot, Req((int)BlackboardKey::InBubble, false));
+	m_pAnimator->LinkStates(pRoot, m_pBubbledAnim, Req((int)BlackboardKey::InBubble, true));
+	m_pAnimator->LinkStates(m_pBubbledAnim, pRoot, Req((int)BlackboardKey::InBubble, false));
 }
 
 
-void Maita::HandleAI(float elapsedSec)
-{
-}
 
 void Maita::SetControlled(int PlayerId)
 {
 	BaseEnemy::SetControlled(PlayerId);
 
-	m_pInputHandler = new InputHandler();
+ 	m_pInputHandler = new InputHandler();
 
+	const int playerId = 1;
 	//SET INPUTS
-	const std::map<KeyAction, ButtonInput>& keyMap = S_ButtonMap.at(PlayerId);
-	const std::map<AxisAction, AxisInput>& axisMap = S_AxisMap.at(PlayerId);
+	const std::map<KeyAction, ButtonInput> keyMap = S_ButtonMap.at(playerId);
+	const std::map<AxisAction, AxisInput> axisMap = S_AxisMap.at(playerId);
+	m_pInputHandler->SetPlayerId(playerId);
 
 
 	//KEYBOARD

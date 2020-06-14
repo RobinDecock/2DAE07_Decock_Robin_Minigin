@@ -5,17 +5,6 @@
 class BoxTrigger;
 class BoxCollider;
 
-	class EffectorContactCallback : public b2ContactListener
-	{
-	public:
-		void BeginContact(b2Contact* contact) override;
-		void EndContact(b2Contact* contact) override;
-	};
-
-
-
-
-
 	class EffectorComponent :public BaseComponent
 	{
 	public:

@@ -5,7 +5,6 @@
 #include "BOX2DS.h"
 #include "GameObject.h"
 
-
 	class TransformComponent;
 	class BaseComponent;
 	class BoxCollider;
@@ -33,7 +32,7 @@
 		GameScene* GetScene();
 		void AddChild(GameObject* child);
 		void RemoveChild(GameObject* child, bool deleteObj = false);
-		int GetChildCount() { return m_pChildren.size(); }
+		size_t GetChildCount() { return m_pChildren.size(); }
 		TransformComponent* GetTransform();
 		void SetParent(GameObject* obj);
 		void SetTag(std::string t);
@@ -89,9 +88,9 @@
 		//* Virtual Function *//
 		virtual void Initialize() {}
 		virtual void LateInitialize() {}
-		virtual void Update(float elapsedSec) {}
-		virtual void PhysicsUpdate(float elapsedSec) {}
-		virtual void LateUpdate(float elapsedSec) {}
+		virtual void Update(float elapsedSec) { UNREF(elapsedSec); }
+		virtual void PhysicsUpdate(float elapsedSec) { UNREF(elapsedSec); }
+		virtual void LateUpdate(float elapsedSec) { UNREF(elapsedSec); }
 		virtual void Draw()const {}
 		//*                  *//
 		std::vector<ContactCallback> m_ContactCallbacks;

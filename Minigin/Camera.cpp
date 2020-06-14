@@ -19,14 +19,6 @@ Camera::Camera()
 	DebugRenderer::SetCamera(this);
 }
 
-void Camera::Initialize()
-{
-}
-
-void Camera::Update(float elapsedSec)
-{
-}
-
 void Camera::Draw()const
 {
 	DebugRenderer::DrawPoint(camPos);

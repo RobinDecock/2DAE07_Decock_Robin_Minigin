@@ -19,71 +19,51 @@
 #include "MainMenu.h"
 #include "SceneManager.h"
 #include "Settings.h"
-
-void SingleScene::RemovePlayer(Bub* player)
-{
-	for (unsigned int i = 0; i < m_pPlayers.size(); i++)
-	{
-		if (m_pPlayers[i] == player)
-		{
-			m_pPlayers.erase(m_pPlayers.begin() + i);
-			break;
-		}
-	}
-	//TODO observer?
-	currSegment->EnemyUnlockPlayer(player);
-
-	Remove(player);
-
-	if(m_pPlayers.size() ==0)
-	{
-		m_GameOver = true;
-	}
-}
-
-void SingleScene::CreateNewSegment()
-{
-	isInitializing = true;
-	prevSegment = currSegment;
-	playersRdy = false;
-	currSegment = new LevelSegment(currentLevel, this);
-	if (spawnLocations.size() < m_pPlayers.size())
-	{
-		std::cout << "Level doesn't have enough spawnPoints" << std::endl;
-	}
-	else
-	{
-		for (unsigned int j = 0; j < m_pPlayers.size(); j++)
-		{
-			m_pPlayers[j]->m_PlayerReady = false;
-			m_pPlayers[j]->SetRespawningPoint(spawnLocations[0]);
-			m_pPlayers[j]->SetRespawning(true);
-			spawnLocations.erase(spawnLocations.begin());
-		}
-	}
-}
-
-void SingleScene::SetPaused(bool b)
-{
-	currSegment->SetPaused(b);
-}
-
+#include "SoundManager.h"
+#include "ResourceManager.h"
 void SingleScene::Initialize()
 {
 	m_pItemManager = new ItemManager(this);
 	ItemManager::SetInstance(m_pItemManager);
 	
 	ResourceManager::GetInstance().Init("../BubbleBobble/Resources/");
+
+
+
+
+
+
+	ResourceManager::GetInstance().LoadTexture("Bub.png");
+	ResourceManager::GetInstance().LoadTexture("Blocks.png");
+	ResourceManager::GetInstance().LoadTexture("CVisual.png");
+	ResourceManager::GetInstance().LoadTexture("Enemies.png");
+	ResourceManager::GetInstance().LoadTexture("Sprite.png");
+
+	ResourceManager::GetInstance().LoadTexture("Title.png");
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 	SetCamera(new FreeCamera());
 	
 	m_pActiveCam->SetPosition(glm::vec2(Settings::GetWindowSize().x/4.0f, -Settings::GetWindowSize().y / 4.0f - 3 * 8));
 	m_pActiveCam->SetScale({ 2.0f,2.0f });
 	m_pPhysicsProxy.world = new b2World(b2Vec2(0,9.81f));
 	m_pPhysicsProxy.world->SetAllowSleeping(false);
-
 	m_pContactListener =new  b2CContactListener();
 
-#if DEBUG
+#if _DEBUG
+	
 	m_B2DebugDraw = new b2DebugDraw();
 	uint32 flags = 0;
 	flags += b2Draw::e_shapeBit;
@@ -97,6 +77,12 @@ void SingleScene::Initialize()
 	m_pPhysicsProxy.world->SetDebugDraw(m_B2DebugDraw);
 	m_B2DebugDraw->SetScene(this);
 #endif
+
+#if NDEBUG
+	SoundManager::PlayMusic("../BubbleBobble/Resources/Audio/MainTheme.mp3");
+#endif
+	
+	
 	
 	m_pPhysicsProxy.world->SetContactListener(m_pContactListener);
 
@@ -123,148 +109,92 @@ void SingleScene::Initialize()
 	}
 	if(GameSettings::m_Gamemode == GameMode::Versus)
 	{
-		searchingControllers.push_back(1);
+		m_SearchingControllers.push_back(1);
 	}
-	
-	CreateNewSegment();
-}
 
-void SingleScene::Draw() const
-{
+
+	m_pSceneState = new BobbleScene::RespawnState(this);
+	m_pSceneState->StartState();
+
+	
 }
 
 void SingleScene::Update(float elapsedSec)
 {
-	if(m_GameOver)
+	BobbleScene::SceneState* state = m_pSceneState->Execute(elapsedSec);
+
+	if(state!=nullptr)
 	{
-		if(InputManager::IsKeyboardKeyPressed(SDL_SCANCODE_R))
-		{
-			SceneManager::GetInstance()->AddScene(new MainMenu());
-			SceneManager::GetInstance()->RemoveScene(this);
-		}
-
-		
-		return;
-	}
-
-	if (levelDone)
-	{
-		if (doneTimer>doneDelay)
-		{
-			CreateNewSegment();
-			doneTimer = 0.0f;
-			levelDone = false;
-		}
-		else
-		{
-			doneTimer += elapsedSec;
-		}
-	}
-
-	
-	if(currSegment!=nullptr)
-	{
-		if (searchingControllers.size() != 0&&currSegment->GetEnemyCount()>0)
-		{
-			bool assignementComplete = true;
-			while(searchingControllers.size()>0&&assignementComplete)
-			{
-				assignementComplete = currSegment->MakeNewController(searchingControllers[0]);
-				if (assignementComplete)
-				{
-					searchingControllers.erase(searchingControllers.begin());
-				}
-			}
-
-		}
+		m_pSceneState->EndState();
+		SafeDelete(m_pSceneState);
+		m_pSceneState = state;
+		m_pSceneState->StartState();
 	}
 	
-		if (isInitializing)
-		{
-			if (!camRdy)
-			{
-				if (glm::distance(m_pActiveCam->GetTransform()->Get2DPosition(),camLocation)<2.0f)
-				{
-					camRdy = true;
-				}
-				m_pActiveCam->MoveToLocation(elapsedSec, camLocation);
-			}
+}
 
-			if (!playersRdy)
-			{
-				bool rdy = true;
-
-				for (unsigned int j = 0; j < m_pPlayers.size(); j++)
-				{
-					if(!m_pPlayers[j]->m_PlayerReady)
-					{
-						rdy = false;
-					}
-				}
-				if (rdy)
-				{
-					playersRdy = true;
-				}
-			}
-
-			if (playersRdy && camRdy)
-			{
-				spawnLocations.clear();
-				camRdy = false;
-				isInitializing = false;
-				if(prevSegment!=nullptr)
-				{
-					prevSegment->Release();
-					SafeDelete(prevSegment);
-				}
-			
-				SetPaused(false);
-				currSegment->IsDoneIni = true;
-				for (unsigned int j = 0; j < m_pPlayers.size(); j++)
-				{
-					m_pPlayers[j]->SetRespawning(false);
-				}
-				currentLevel += 1;
-			}
-		}
-
-	if(currSegment!=nullptr)
+void SingleScene::LateUpdate(float elapsedSec)
+{
+	UNREF(elapsedSec);
+	for(int i= 0;i<LostPlayers.size();i++)
 	{
-		for(unsigned int i = 0;i< spawnLocations.size();i++)
-		{
-			DebugRenderer::DrawPoint(spawnLocations[i]);
-		}
+		currSegment->EnemyUnlockPlayer(LostPlayers[i]);
 	}
-	
+	LostPlayers.clear();
 }
 
 void SingleScene::onNotify( int event,GameObject * obj)
 {
 	SceneEvent sceneEvent = SceneEvent(event);
-	switch(sceneEvent)
+	m_pSceneState->onNotify(event, obj);
+	switch (sceneEvent)
 	{
-	case LevelSegmentComplete:
-		{
-			levelDone = true;	
-		}
-		break;
-	case LostControl:
-		{
-			BaseEnemy* pEnemy = static_cast<BaseEnemy*>(obj);
-			searchingControllers.push_back(pEnemy->GetController());
-		}
-
-		break;
-	default: ;
+	case SceneEvent::LostControl:
+	{
+		BaseEnemy* pEnemy = static_cast<BaseEnemy*>(obj);
+		m_SearchingControllers.push_back(pEnemy->GetController());
+	}
+	break;
+	default:;
 	}
 }
 
+void SingleScene::RemovePlayer(Bub* player)
+{
+	for (unsigned int i = 0; i < m_pPlayers.size(); i++)
+	{
+		if (m_pPlayers[i] == player)
+		{
+			m_pPlayers.erase(m_pPlayers.begin() + i);
+			break;
+		}
+	}
+	//TODO observer?
+	LostPlayers.push_back(player);
+	if (m_pPlayers.size() == 0)
+	{
+		onNotify(int(SceneEvent::GameOver),nullptr);
+		if(currSegment!=nullptr)
+		{
+			currSegment->SetPaused(true);
+		}
+	}
+}
+
+void SingleScene::SetPaused(bool b)
+{
+	currSegment->SetPaused(b);
+}
+
+
 SingleScene::~SingleScene()
 {
+	SafeDelete(m_pSceneState);
 	SafeDelete(currSegment);
 	SafeDelete(m_B2DebugDraw);
 
 	SafeDelete(m_pContactListener);
+	SoundManager::StopMusic();
 	ItemManager::DestroyInstance();
 }
 

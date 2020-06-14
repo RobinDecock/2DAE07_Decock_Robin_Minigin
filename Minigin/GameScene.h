@@ -22,11 +22,11 @@
 	class GameScene
 	{
 	public:
-		GameScene();
+		GameScene() = default;
 
 		void RootInitialize();
 		void RootDraw()const;
-
+		
 		void ThreadUpdate(float elapsedSec);
 		void ThreadUpdatePhysics(float elapsedSec);
 
@@ -49,14 +49,15 @@
 
 		//* Virtual Functions *//
 		virtual void Initialize() = 0;
-		virtual void Update(float elapsedSec) {}
-		virtual void PhysicsUpdate(float elapsedSec) {}
+		virtual void Update(float elapsedSec) { UNREF(elapsedSec); }
+		virtual void LateUpdate(float elapsedSec) { UNREF(elapsedSec); }
+		virtual void PhysicsUpdate(float elapsedSec) { UNREF(elapsedSec); }
 		virtual void Draw()const {}
 		//*                   *//
 
 		bool m_IsInitialized = false;
-		b2DebugDraw* m_B2DebugDraw;
-		b2CContactListener* m_pContactListener;
+		b2DebugDraw* m_B2DebugDraw = nullptr;
+		b2CContactListener* m_pContactListener = nullptr;
 		b2World_ext m_pPhysicsProxy;
 		int idCount = 0;
 		std::vector<GameObject*> m_pGameObjects{};

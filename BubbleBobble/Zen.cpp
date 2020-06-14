@@ -47,12 +47,12 @@ void Zen::Initialize()
 	AddComponent(m_pSprite);
 	
 	//STATES
-	auto pRoot =  new AnimatorState(0,"ZenChan");
+	m_pRoot =  new AnimatorState(0,"ZenChan");
 
-	m_pAnimator = new Animator(m_pSprite, pRoot, m_Blackboard);
+	m_pAnimator = new Animator(m_pSprite, m_pRoot, m_Blackboard);
 	AddComponent(m_pAnimator);
-	auto pBubbled = new AnimatorState(3,"ZenChanBubble");
-	m_pAnimator->AddState(pBubbled);
+	m_pBubbledAnim = new AnimatorState(3,"ZenChanBubble");
+	m_pAnimator->AddState(m_pBubbledAnim);
 
 	std::map<int, AnimData> animData = Anim::Loader::Load("../BubbleBobble/Resources/Enemies.anim");
 	
@@ -61,8 +61,8 @@ void Zen::Initialize()
 	////BLACKBOARD KEYS
 	m_Blackboard.AddKey((int)BlackboardKey::InBubble,ValueType::boolValue);
 	////LINKS
-	m_pAnimator->LinkStates(pRoot, pBubbled, Req((int)BlackboardKey::InBubble, true));
-	m_pAnimator->LinkStates(pBubbled, pRoot, Req((int)BlackboardKey::InBubble, false));
+	m_pAnimator->LinkStates(m_pRoot, m_pBubbledAnim, Req((int)BlackboardKey::InBubble, true));
+	m_pAnimator->LinkStates(m_pBubbledAnim, m_pRoot, Req((int)BlackboardKey::InBubble, false));
 }
 
 
@@ -75,10 +75,16 @@ void Zen::Update(float elapsedSec)
 
 }
 
-
-
-void Zen::HandleAI(float elapsedSec)
+void Zen::SetRush(bool b)
 {
+	if(b)
+	{
+		m_pRoot->SetValue(7);
+	}
+	else
+	{
+		m_pRoot->SetValue(0);
+	}
 }
 
 void Zen::SetControlled(int PlayerId)
@@ -87,9 +93,11 @@ void Zen::SetControlled(int PlayerId)
 
 	m_pInputHandler = new InputHandler();
 	
+	const int playerId = 1;
 	//SET INPUTS
-	const std::map<KeyAction, ButtonInput> keyMap = S_ButtonMap.at(PlayerId);
-	const std::map<AxisAction, AxisInput> axisMap = S_AxisMap.at(PlayerId);
+	const std::map<KeyAction, ButtonInput> keyMap = S_ButtonMap.at(playerId);
+	const std::map<AxisAction, AxisInput> axisMap = S_AxisMap.at(playerId);
+	m_pInputHandler->SetPlayerId(playerId);
 
 	
 	//KEYBOARD

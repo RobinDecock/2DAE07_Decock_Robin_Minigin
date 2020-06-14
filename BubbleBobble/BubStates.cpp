@@ -21,6 +21,7 @@ void RespawnState::StartState()
 
 BubState* RespawnState::Execute(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	const Animator* pAnimator = m_pBub->GetComponent<Animator>();
 
 	bool& playerR = m_pBub->m_PlayerReady;
@@ -75,27 +76,30 @@ void RespawnState::EndState()
 
 void NormalState::StartState()
 {
+	const int playerId = m_pBub->GetPlayerId();
 	//SET INPUTS
-	const std::map<KeyAction, ButtonInput> keyMap = S_ButtonMap.at(m_pBub->GetPlayerId());
-	const std::map<AxisAction, AxisInput> axisMap = S_AxisMap.at(m_pBub->GetPlayerId());
-
+	const std::map<KeyAction, ButtonInput> keyMap = S_ButtonMap.at(playerId);
+	const std::map<AxisAction, AxisInput> axisMap = S_AxisMap.at(playerId);
+	m_InputHandler.SetPlayerId(playerId);
 	m_InputHandler.AddInputButton(keyMap.at(KeyAction::K_Key2), m_pBub->m_ShootC);
-	m_InputHandler.AddInputButton(keyMap.at(KeyAction::K_Key1), m_pBub->m_JumpC);
 	m_InputHandler.AddInputAxis(axisMap.at(AxisAction::K_StickH), m_pBub->m_MoveHC);
 	m_InputHandler.AddInputAxis(axisMap.at(AxisAction::K_StickV), m_pBub->m_GoDownC);
-
+	m_InputHandler.AddInputButton(keyMap.at(KeyAction::K_Key1), m_pBub->m_JumpC);
+	
 	m_InputHandler.AddInputButton(keyMap.at(KeyAction::C_Key2), m_pBub->m_ShootC);
-	m_InputHandler.AddInputButton(keyMap.at(KeyAction::C_Key1), m_pBub->m_JumpC);
 	m_InputHandler.AddInputAxis(axisMap.at(AxisAction::C_StickH), m_pBub->m_MoveHC);
+	m_InputHandler.AddInputButton(keyMap.at(KeyAction::C_Key1), m_pBub->m_JumpC);
+
 	m_InputHandler.AddInputAxis(axisMap.at(AxisAction::C_StickV), m_pBub->m_GoDownC);
 //
 }
 
 BubState* NormalState::Execute(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	RigidbodyComponent* pRigid = m_pBub->GetComponent<RigidbodyComponent>();
 	pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, pRigid->GetBody()->GetLinearVelocity().y));
-	m_InputHandler.HandleInput(elapsedSec);
+
 	AnimatorBlackboard& blackboard = m_pBub->m_Blackboard;
 	
 	if (!m_pBub->m_DoneRespawning)
@@ -109,19 +113,21 @@ BubState* NormalState::Execute(float elapsedSec)
 	{
 		return new HitState(m_pBub);
 	}
+	if (!m_pBub->m_IsOnGround)
+	{
+		return new AerialState(m_pBub);
+	}
+	m_InputHandler.HandleInput(elapsedSec);
+	
 	return nullptr;
-}
-
-void NormalState::EndState()
-{
-	m_pBub->GetComponent<RigidbodyComponent>()->GetBody()->SetLinearVelocity(b2Vec2(0, 0));
 }
 
 BubState* HitState::Execute(float elapsedSec)
 {
+	UNREF(elapsedSec);
 	const Animator * pAnimator = m_pBub->GetComponent<Animator>();
 	const SpriteComponent* pSprite = m_pBub->GetComponent<SpriteComponent>();
-	if(pAnimator->GetCurrenState()->GetName() == "BubHit" && pSprite->GetCycle() > 2)
+	if(pAnimator->GetCurrenState()->GetName() == "BubHit" && pSprite->GetCycle() >= 1)
 	{
 		return new NormalState(m_pBub);
 	}
@@ -138,7 +144,7 @@ void HitState::EndState()
 	if (m_pBub->GetHealth() <= 0)
 	{
 		SingleScene* singleScene = static_cast<SingleScene*>(m_pBub->m_ParentScene);
-		singleScene->RemovePlayer(m_pBub);
+		singleScene->Remove(m_pBub);
 	}
 }
 
@@ -158,7 +164,9 @@ void AerialState::StartState()
 
 BubState* AerialState::Execute(float elapsedSec)
 {
-	m_InputHandler.HandleInput(elapsedSec);
+	RigidbodyComponent* pRigid = m_pBub->GetComponent<RigidbodyComponent>();
+	pRigid->GetBody()->SetLinearVelocity(b2Vec2(0, pRigid->GetBody()->GetLinearVelocity().y));
+
 	AnimatorBlackboard& blackboard = m_pBub->m_Blackboard;
 	if(m_pBub->m_IsOnGround)
 	{
@@ -168,5 +176,7 @@ BubState* AerialState::Execute(float elapsedSec)
 	{
 		return new HitState(m_pBub);
 	}
+
+	m_InputHandler.HandleInput(elapsedSec);
 	return nullptr;
 }

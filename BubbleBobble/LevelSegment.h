@@ -13,7 +13,7 @@ public:
 	LevelSegment(int levelId,SingleScene* pScene);
 	~LevelSegment();
 
-	unsigned int GetEnemyCount()
+	size_t GetEnemyCount()
 	{
 		return m_pEnemies.size();
 	}
@@ -47,12 +47,12 @@ public:
 
 		if(enemy->IsControlled())
 		{
-			Notify(LostControl, enemy);
+			Notify(int(SceneEvent::LostControl), enemy);
 		}
 		
 		if(m_pEnemies.size()==0)
 		{
-			Notify(LevelSegmentComplete);
+			Notify(int(SceneEvent::LevelSegmentComplete));
 		}
 	}
 	void Release()
@@ -64,13 +64,19 @@ public:
 		}
 		m_pSegObjects.clear();
 	}
+	std::vector<glm::vec2> GetSpawnLocations()
+	{
+		return spawnLocations;
+	}
+	glm::vec2 GetCamLocation() { return camLocation; }
+	
 	bool IsDoneIni = false;
 private:
 
-	
+	glm::vec2 camLocation;
 	int m_LevelId = 0;
 	SingleScene* m_pCurrScene = nullptr;
-
+	std::vector<glm::vec2>spawnLocations;
 
 	std::vector<BaseEnemy*> m_pEnemies;
 	std::vector<GameObject*> m_pSegObjects;

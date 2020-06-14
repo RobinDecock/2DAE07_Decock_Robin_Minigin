@@ -22,8 +22,8 @@ void b2DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b
 		}
 
 	}
-
-	SDL_Point* points = new SDL_Point[vertexCount+1];
+	int count = int(vertexCount) + 1;
+	SDL_Point* points = new SDL_Point[count];
 	for (int32 i = 0; i < vertexCount; i++)
 	{
 		points[i] = { (int)glmPoints[i].x,(int)glmPoints[i].y };
@@ -54,10 +54,8 @@ void b2DebugDraw::DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, co
 		}
 
 	}
-
-	
-
-	SDL_Point* points = new SDL_Point[vertexCount+1];
+	int count = int(vertexCount) + 1;
+	SDL_Point* points = new SDL_Point[count];
 	for (int32 i = 0; i < vertexCount; i++)
 	{
 		points[i] = { (int)glmPoints[i].x,(int)glmPoints[i].y };

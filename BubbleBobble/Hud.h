@@ -12,10 +12,6 @@ public:
 	~Hud() override;
 	void AddLifeCounter(PlayerHud* counter);
 private:
-	void Initialize() override;
-	
-	void Update(float elapsedSec) override;
-	void LateUpdate(float elapsedSec) override;
 	void Draw()const override;
 private:
 	int m_Score = 0;

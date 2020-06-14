@@ -26,6 +26,7 @@
 	{
 		mScenes[m_CurrentSceneIndex]->RootUpdate(elapsedSec);
 
+#if _DEBUG
 		const Uint8* pStates = SDL_GetKeyboardState(nullptr);
 		if (pStates[SDL_SCANCODE_F2])
 		{
@@ -35,7 +36,7 @@
 		{
 			SetPreviousSceneIndex();
 		}
-
+#endif
 
 		while (m_pToDelete.size() != 0)
 		{

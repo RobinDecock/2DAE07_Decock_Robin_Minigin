@@ -35,7 +35,7 @@
 			XINPUT_STATE state;
 			ZeroMemory(&state, sizeof(XINPUT_STATE));
 
-			if (XInputGetState(0, &state) == ERROR_SUCCESS)
+			if (XInputGetState(i, &state) == ERROR_SUCCESS)
 			{
 				m_pPrevGamepadStates[i] = m_pCurGamepadStates[i];
 				m_pCurGamepadStates[i] = state;

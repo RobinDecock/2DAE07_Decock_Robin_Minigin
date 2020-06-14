@@ -9,9 +9,7 @@ public:
 protected:
 
 	void Update(float elapsedSec) override;
-	void LateUpdate(float elapsedSec) override;
 public:
-	void Initialize() override;
 	~FixedCamera() override;
 private:
 	GameObject* targetLock = nullptr;

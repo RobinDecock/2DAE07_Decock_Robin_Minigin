@@ -12,15 +12,11 @@
 #include "ScoreAnnouncer.h"
 #include "AnimLoader.h"
 #include "ItemManager.h"
+#include "SoundManager.h"
 #include "TransformComponent.h"
 
-void BaseItem::PickUp()
+BaseItem::~BaseItem()
 {
-	ScoreAnnouncer* announcer = new ScoreAnnouncer(scoreValue);
-	announcer->SetPosition(m_Transform->Get2DPosition());
-
-	m_ParentScene->Add(announcer);
-	ItemManager::GetInstance().RemoveItem(this);
 	
 }
 
@@ -29,8 +25,8 @@ void BaseItem::Initialize()
 	ItemManager::GetInstance().AddItem(this);
 	AddComponent(new RigidbodyComponent(false));
 	BoxCollider *pBoxC = new BoxCollider(glm::vec2(8, 4),glm::vec2(0,7));
-	
-	pBoxC->SetIgnoreMask(LayerMask::Player|LayerMask::Bubbles|LayerMask::Enemies);
+	pBoxC->SetCategory(LayerMask::None);
+	pBoxC->SetIgnoreMask(LayerMask::Player | LayerMask::Bubbles | LayerMask::Enemies | LayerMask::Roof);
 	AddComponent(pBoxC);
 	BoxTrigger* pBoxT = new BoxTrigger(glm::vec2(4, 4));
 	AddComponent(pBoxT);
@@ -38,12 +34,23 @@ void BaseItem::Initialize()
 	
 	this->AddContactCallback([this](b2Fixture* thisFix, b2Fixture* otherFix, b2Contact* contact, ContactType type)
 		{
+			UNREF(contact);
+			UNREF(thisFix);
 			if(type==ContactType::BeginContact&& (otherFix->GetFilterData().categoryBits&LayerMask::Player)==LayerMask::Player)
 			{
-				SingleScene*scene = static_cast<SingleScene*>(m_ParentScene);
+				if(pickedup)
+				{
+					__debugbreak();
+				}
+				
+				pickedup = true;
 				Bub* bubRef = static_cast<Bub*>(otherFix->GetUserData());
 				bubRef->AddScore(scoreValue);
-				PickUp();
+				ItemManager::GetInstance().RemoveItem(this);
+				ScoreAnnouncer* announcer = new ScoreAnnouncer(scoreValue);
+				m_ParentScene->Add(announcer);
+				announcer->SetPosition(m_Transform->Get2DPosition());
+				SoundManager::PlayFX("../BubbleBobble/Resources/Audio/ItemPickUpSound.wav");
 			}
 		}
 	);
