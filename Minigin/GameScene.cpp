@@ -200,7 +200,7 @@
 	{
 		std::cout << "Added GameObject For Removal, Tag(" << obj->GetTag() << ") Id(" << obj->GetId() << ")" << std::endl;
 
-		for(int i = 0;i<m_pToDelete.size();i++)
+		for(unsigned int i = 0;i<m_pToDelete.size();i++)
 		{
 			if(m_pToDelete[i]==obj)
 			{

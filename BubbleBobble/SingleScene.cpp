@@ -136,7 +136,7 @@ void SingleScene::Update(float elapsedSec)
 void SingleScene::LateUpdate(float elapsedSec)
 {
 	UNREF(elapsedSec);
-	for(int i= 0;i<LostPlayers.size();i++)
+	for(unsigned int i= 0;i<LostPlayers.size();i++)
 	{
 		currSegment->EnemyUnlockPlayer(LostPlayers[i]);
 	}
